@@ -30,12 +30,14 @@ public class Profil {
         return allureMinKm;
     }
 
+
     public String getAllureFormatee(double pourcentageVMA) {
         double allure = getAllure(pourcentageVMA);
         int minutes = (int) allure;
         int secondes = (int) ((allure - minutes) * 60);
         return String.format("%d:%02d min/km", minutes, secondes);
     }
+
 
     public double getAllureFromObjectif(double distanceKm) {
         if (objectifSeconds == null || distanceKm <= 0) return getAllure(0.85); // fallback
@@ -44,12 +46,14 @@ public class Profil {
         return minutesPerKm;
     }
 
+
     public String getAllureObjectifFormatee(double distanceKm) {
         double allure = getAllureFromObjectif(distanceKm);
         int minutes = (int) allure;
         int secondes = (int) ((allure - minutes) * 60);
         return String.format("%d:%02d min/km", minutes, secondes);
     }
+
 
     public String[] getAlluresPrincipales(double distanceKm) {
         String allureEF = getAllureFormatee(0.65); 
@@ -78,6 +82,40 @@ public class Profil {
         double pVMA = 1.0;
         return new double[] { pEF, pSpec, pSeuil, pVMA };
     }
+
+
+    // Allure VMA (min/km)
+    public double getAllureVMA() {
+        return getAllure(1.0);
+    }
+    public String getAllureVMAFormatee() {
+        return getAllureFormatee(1.0);
+    }
+
+    // Allure Endurance Fondamentale (EF) (min/km)
+    public double getAllureEF() {
+        return getAllure(0.65);
+    }
+    public String getAllureEFFormatee() {
+        return getAllureFormatee(0.65);
+    }
+
+    // Allure Seuil (min/km)
+    public double getAllureSeuil() {
+        return getAllure(0.85);
+    }
+    public String getAllureSeuilFormatee() {
+        return getAllureFormatee(0.85);
+    }
+
+    // Allure Spécifique (AS) basée sur l'objectif pour une distance donnée (min/km)
+    public double getAllureAS(double distanceKm) {
+        return getAllureFromObjectif(distanceKm);
+    }
+    public String getAllureASFormatee(double distanceKm) {
+        return getAllureObjectifFormatee(distanceKm);
+    }
+
 
     public void sauvegarder(String filename) throws IOException {
         PrintWriter writer = new PrintWriter(new FileWriter(filename));
