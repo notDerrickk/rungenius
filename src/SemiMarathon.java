@@ -16,6 +16,12 @@ public class SemiMarathon {
     // suivi pour AS (ordre + cumul km)
     private double cumulativeASKm = 0.0;
     private int asSequenceIndex = 0;
+    private int fractionneCycleIndex = 0;
+
+    // Séquences prédéfinies pour AS selon niveau
+    private List<CorpsDeSeance> asSequenceDebutant;
+    private List<CorpsDeSeance> asSequenceMoyen;
+    private List<CorpsDeSeance> asSequenceExpert;
 
     public SemiMarathon(Profil profil) {
         this(profil, 12);
@@ -26,7 +32,29 @@ public class SemiMarathon {
         this.semaines = new ArrayList<Seance[]>();
         this.banque = new BanqueExercices();
         this.nbSemaines = (nbSemaines > 0) ? nbSemaines : 12;
+        initialiserSequencesAS();
         genererSemaines();
+    }
+
+    private void initialiserSequencesAS() {
+        // exercices AS par difficulté depuis la banque
+        List<CorpsDeSeance> niveau1 = banque.getExercicesParDifficulte("Allure Spécifique", 1);
+        List<CorpsDeSeance> niveau2 = banque.getExercicesParDifficulte("Allure Spécifique", 2);
+        List<CorpsDeSeance> niveau3 = banque.getExercicesParDifficulte("Allure Spécifique", 3);
+
+        // Pour débutant: niveau 1 (12 exercices) puis niveau 2 (11 exercices)
+        asSequenceDebutant = new ArrayList<>();
+        if (niveau1 != null) asSequenceDebutant.addAll(niveau1);
+        if (niveau2 != null) asSequenceDebutant.addAll(niveau2);
+
+        // Pour moyen: niveau 2 (11 exercices) puis niveau 3 (8 exercices)
+        asSequenceMoyen = new ArrayList<>();
+        if (niveau2 != null) asSequenceMoyen.addAll(niveau2);
+        if (niveau3 != null) asSequenceMoyen.addAll(niveau3);
+
+        // Pour expert: niveau 3 en boucle (8 exercices)
+        asSequenceExpert = new ArrayList<>();
+        if (niveau3 != null) asSequenceExpert.addAll(niveau3);
     }
 
     private void genererSemaines() {
@@ -84,6 +112,12 @@ public class SemiMarathon {
         }
     }
 
+    private boolean useFractionneLongNext() {
+        boolean useLong = (fractionneCycleIndex % 3) < 2;
+        fractionneCycleIndex++;
+        return useLong;
+    }
+
     private Seance creerSeanceNormale(int jour, int semaine) {
         String niveau = profil.getNiveau();
         int difficulteGenerale = niveauToDifficulte(niveau);
@@ -100,31 +134,29 @@ public class SemiMarathon {
             String corps = formatKmValue(km) + "km en endurance fondamentale";
             return new Seance(nom, "Endurance Fondamentale", 5, corps, 5, pEF);
         } else if (jour == 1) {
-            String nom = "Séance 2 - Fractionné";
+            boolean useLong = useFractionneLongNext();
+            String typeFrac = useLong ? "Fractionné Long" : "Fractionné Court";
+            String nom = "Séance 2 - " + typeFrac;
             int difficulteFrac = choisirDifficulteFractionne(niveau);
-            CorpsDeSeance ex = banque.getExerciceAleatoire("Fractionné Court", difficulteFrac);
+            CorpsDeSeance ex = banque.getExerciceAleatoire(typeFrac, difficulteFrac);
             String corps;
             double pourcentageFractionne;
             if (ex != null) {
                 corps = ex.getDescription();
                 pourcentageFractionne = ex.resolvePourcentageVMA(profil);
+            } else if (useLong) {
+                corps = "5 x 1000m récup 2min";
+                pourcentageFractionne = 0.90;
             } else {
                 corps = "8 x 400m récup 1min";
                 pourcentageFractionne = 0.95;
             }
-            return new Seance(nom, "Fractionné Court", 15, corps, 10, pourcentageFractionne);
+            return new Seance(nom, typeFrac, 15, corps, 10, pourcentageFractionne);
 
         } else {
             String nom = "Séance " + (jour + 1) + " - Allure spécifique (AS21)";
 
-            // détermination de difficulté selon cumul AS parcouru
-            int chosenDiff = determineASDifficulty();
-            List<CorpsDeSeance> candidats = banque.getExercicesParDifficulte("Allure Spécifique", chosenDiff);
-            CorpsDeSeance exAS = null;
-            if (candidats != null && !candidats.isEmpty()) {
-                exAS = candidats.get(asSequenceIndex % candidats.size());
-                asSequenceIndex++;
-            }
+            CorpsDeSeance exAS = getNextASExercice();
 
             String corpsAS;
             double pourcentageAS = pSpec;
@@ -146,6 +178,43 @@ public class SemiMarathon {
 
             cumulativeASKm += kmAS;
             return new Seance(nom, "Allure Spécifique (AS21)", 15, corpsAS, 10, pourcentageAS);
+        }
+    }
+
+
+    private CorpsDeSeance getNextASExercice() {
+        String niveau = profil.getNiveau();
+        if (niveau == null) niveau = "";
+        String niv = niveau.toLowerCase();
+
+        List<CorpsDeSeance> sequence;
+        
+        if (niv.contains("début") || niv.contains("debut") || niv.contains("debutant")) {
+            sequence = asSequenceDebutant;
+        } else if (niv.contains("avanc") || niv.contains("expert")) {
+            sequence = asSequenceExpert;
+        } else {
+            // Moyen
+            sequence = asSequenceMoyen;
+        }
+
+        if (sequence == null || sequence.isEmpty()) {
+            return null;
+        }
+
+        // Pour expert (niveau 3), on boucle
+        if (niv.contains("avanc") || niv.contains("expert")) {
+            int index = asSequenceIndex % sequence.size();
+            asSequenceIndex++;
+            return sequence.get(index);
+        } else {
+            // Pour débutant et moyen, progression linéaire
+            if (asSequenceIndex < sequence.size()) {
+                return sequence.get(asSequenceIndex++);
+            } else {
+                // Si on dépasse, on prend le dernier
+                return sequence.get(sequence.size() - 1);
+            }
         }
     }
 
@@ -177,12 +246,6 @@ public class SemiMarathon {
             return String.format(Locale.US, "%d", (int) Math.round(km));
         }
         return String.format(Locale.US, "%.1f", km);
-    }
-
-    private int determineASDifficulty() {
-        if (cumulativeASKm < 10.0) return 1;
-        if (cumulativeASKm < 14.0) return 2;
-        return 3;
     }
 
     private double parseKmFromDescription(String desc) {
