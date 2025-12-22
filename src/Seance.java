@@ -11,7 +11,7 @@ public class Seance {
         this.type = type;
         this.dureeEchauffement = dureeEchauffement;
         this.corps = corps;
-        this.dureeCooldown = dureeCooldown;
+        this. dureeCooldown = dureeCooldown;
         this.pourcentageVMA = pourcentageVMA;
     }
 
@@ -62,15 +62,26 @@ public class Seance {
         }
 
         String lower = c.toLowerCase().trim();
+        lower = lower.replace('×', 'x');
 
-        // Fractionné:
+        double repKm = parseRepsKm(lower);
+        if (repKm > 0) {
+            distance += repKm;
+            return distance;
+        }
+
+        double kmContinu = parseKmContinu(lower);
+        if (kmContinu > 0) {
+            distance += kmContinu;
+            return distance;
+        }
+
         double fracKm = parseFractionMetresToKm(lower);
         if (fracKm > 0) {
             distance += fracKm;
             return distance;
         }
 
-        // Répétitions au temps
         int rep = parseReps(lower);
         int minutesPerRep = parseMinutesPerRep(lower);
         if (rep > 0 && minutesPerRep > 0) {
@@ -79,21 +90,6 @@ public class Seance {
             return distance;
         }
 
-        // Répétitions en km: "2 x 3km" / "5 x 1.5km"
-        double repKm = parseRepsKm(lower);
-        if (repKm > 0) {
-            distance += repKm;
-            return distance;
-        }
-
-        // "10km en continu" / "8km en continu"
-        double kmContinu = parseKmContinu(lower);
-        if (kmContinu > 0) {
-            distance += kmContinu;
-            return distance;
-        }
-
-        // Simple durée: "40 min ..." / "30min ..."
         int minutes = parseSingleMinutes(lower);
         if (minutes > 0) {
             distance += distanceFromMinutesAtPercent(profil, minutes, pourcentageVMA);
@@ -109,27 +105,24 @@ public class Seance {
             return 0.0;
         }
         double hours = minutes / 60.0;
-        double speed = profil.getVma() * percentVma;
+        double speed = profil. getVma() * percentVma;
         return speed * hours;
     }
 
     private double parseFractionMetresToKm(String lower) {
-        // Cherche un pattern simple: "<reps> x <metres>m"
-        int xIndex = lower.indexOf("x");
-        int mIndex = lower.indexOf("m");
-        if (xIndex < 0 || mIndex < 0) {
+        if (lower.contains("km")) {
             return 0.0;
         }
 
-        // On prend le premier "m" après le x
-        if (mIndex < xIndex) {
+        int xIndex = lower.indexOf("x");
+        int mIndex = lower.indexOf("m");
+        if (xIndex < 0 || mIndex < 0 || mIndex < xIndex) {
             return 0.0;
         }
 
         String left = lower.substring(0, xIndex).trim();
         String right = lower.substring(xIndex + 1).trim();
 
-        // right commence par "400m ..."
         int mPos = right.indexOf("m");
         if (mPos < 0) {
             return 0.0;
@@ -137,8 +130,8 @@ public class Seance {
 
         String metresStr = right.substring(0, mPos).trim();
 
-        left = left.replace(" ", "");
-        metresStr = metresStr.replace(" ", "");
+        left = left.replaceAll("\\s+", "");
+        metresStr = metresStr.replaceAll("\\s+", "");
 
         int reps;
         int metres;
@@ -158,12 +151,11 @@ public class Seance {
     }
 
     private int parseReps(String lower) {
-        // "3 x 10min" => 3
         int xIndex = lower.indexOf("x");
         if (xIndex < 0) {
             return 0;
         }
-        String left = lower.substring(0, xIndex).trim().replace(" ", "");
+        String left = lower.substring(0, xIndex).trim().replaceAll("\\s+", "");
         try {
             return Integer.parseInt(extractLeadingNumber(left));
         } catch (Exception e) {
@@ -172,23 +164,19 @@ public class Seance {
     }
 
     private int parseMinutesPerRep(String lower) {
-        // "3 x 10min" => 10
         int xIndex = lower.indexOf("x");
         if (xIndex < 0) {
             return 0;
         }
         String right = lower.substring(xIndex + 1).trim();
 
-        // trouver "min"
         int minIndex = right.indexOf("min");
         if (minIndex < 0) {
             return 0;
         }
 
-        String beforeMin = right.substring(0, minIndex).trim();
-        beforeMin = beforeMin.replace(" ", "");
+        String beforeMin = right.substring(0, minIndex).trim().replaceAll("\\s+", "");
 
-        // beforeMin peut contenir "10" ou "10mn" etc  on extrait le nombre au début
         try {
             return Integer.parseInt(extractLeadingNumber(beforeMin));
         } catch (Exception e) {
@@ -197,34 +185,41 @@ public class Seance {
     }
 
     private double parseRepsKm(String lower) {
-        // "2 x 3km" => 6 km
         int xIndex = lower.indexOf("x");
         if (xIndex < 0) {
             return 0.0;
         }
-        int kmIndex = lower.indexOf("km");
+
+        String left = lower.substring(0, xIndex).trim();
+        String right = lower.substring(xIndex + 1).trim();
+
+        int kmIndex = right.indexOf("km");
         if (kmIndex < 0) {
             return 0.0;
         }
-        if (kmIndex < xIndex) {
+
+        int reps;
+        try {
+            String repsStr = left.replaceAll("\\s+", "");
+            reps = Integer. parseInt(extractLeadingNumber(repsStr));
+        } catch (Exception e) {
             return 0.0;
         }
 
-        int reps = parseReps(lower);
         if (reps <= 0) {
             return 0.0;
         }
 
-        String right = lower.substring(xIndex + 1).trim();
-        int kmPos = right.indexOf("km");
-        if (kmPos < 0) {
+        String kmPart = right.substring(0, kmIndex).trim();
+        kmPart = kmPart.replaceAll("[^0-9.,]", "");
+        
+        if (kmPart.isEmpty()) {
             return 0.0;
         }
 
-        String kmStr = right.substring(0, kmPos).trim().replace(" ", "");
         double km;
         try {
-            km = Double.parseDouble(extractLeadingDecimal(kmStr));
+            km = Double.parseDouble(kmPart. replace(',', '.'));
         } catch (Exception e) {
             return 0.0;
         }
@@ -232,22 +227,23 @@ public class Seance {
         if (km <= 0) {
             return 0.0;
         }
+
         return reps * km;
     }
 
     private double parseKmContinu(String lower) {
-        // "10km en continu ..." => 10
+        if (lower.contains("x")) {
+            return 0.0;
+        }
+
         int kmIndex = lower.indexOf("km");
         if (kmIndex < 0) {
             return 0.0;
         }
 
-        // on ne veut pas confondre avec "2 x 3km"
-        if (lower.contains("x") && lower.indexOf("x") < kmIndex) {
-            return 0.0;
-        }
-
-        String beforeKm = lower.substring(0, kmIndex).trim().replace(" ", "");
+        String beforeKm = lower.substring(0, kmIndex).trim();
+        beforeKm = beforeKm.replaceAll("\\s+", "");
+        
         if (beforeKm.isEmpty()) {
             return 0.0;
         }
@@ -271,12 +267,11 @@ public class Seance {
             return 0;
         }
 
-        // si c'est un format "3 x 10min" on laisse parseMinutesPerRep gérer
         if (lower.contains("x") && lower.indexOf("x") < minIndex) {
             return 0;
         }
 
-        String beforeMin = lower.substring(0, minIndex).trim().replace(" ", "");
+        String beforeMin = lower.substring(0, minIndex).trim().replaceAll("\\s+", "");
         try {
             return Integer.parseInt(extractLeadingNumber(beforeMin));
         } catch (Exception e) {
@@ -285,7 +280,6 @@ public class Seance {
     }
 
     private String extractLeadingNumber(String s) {
-        // garde uniquement les chiffres au début
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char ch = s.charAt(i);
@@ -299,16 +293,15 @@ public class Seance {
     }
 
     private String extractLeadingDecimal(String s) {
-        // garde chiffres + "." au début (ex: "21.1")
         StringBuilder b = new StringBuilder();
         boolean dotUsed = false;
         for (int i = 0; i < s.length(); i++) {
-            char ch = s.charAt(i);
+            char ch = s. charAt(i);
             if (ch >= '0' && ch <= '9') {
-                b.append(ch);
-            } else if (ch == '.' && !dotUsed) {
+                b. append(ch);
+            } else if ((ch == '.' || ch == ',') && !dotUsed) {
                 dotUsed = true;
-                b.append(ch);
+                b.append('.');
             } else {
                 break;
             }

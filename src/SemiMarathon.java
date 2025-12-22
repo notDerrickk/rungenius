@@ -1,24 +1,36 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SemiMarathon {
     private Profil profil;
     private List<Seance[]> semaines;
-    private static final int NB_SEMAINES = 12;
+    private int nbSemaines;
     private static final double DISTANCE_SEMI = 21.1;
 
-    private BanqueExercices banque; 
+    private BanqueExercices banque;
+
+    // suivi pour AS (ordre + cumul km)
+    private double cumulativeASKm = 0.0;
+    private int asSequenceIndex = 0;
 
     public SemiMarathon(Profil profil) {
+        this(profil, 12);
+    }
+
+    public SemiMarathon(Profil profil, int nbSemaines) {
         this.profil = profil;
         this.semaines = new ArrayList<Seance[]>();
-        this.banque = new BanqueExercices(); 
+        this.banque = new BanqueExercices();
+        this.nbSemaines = (nbSemaines > 0) ? nbSemaines : 12;
         genererSemaines();
     }
 
     private void genererSemaines() {
-        for (int i = 0; i < NB_SEMAINES; i++) {
+        for (int i = 0; i < nbSemaines; i++) {
             boolean semaineRepos = ((i + 1) % 5 == 0);
             Seance[] semaine = genererSemaine(i + 1, semaineRepos);
             semaines.add(semaine);
@@ -31,7 +43,7 @@ public class SemiMarathon {
 
         if (repos) {
             for (int i = 0; i < nbSeances; i++) {
-                semaine[i] = creerSeanceRepos(i);
+                semaine[i] = creerSeanceRepos(i, numeroSemaine);
             }
         } else {
             for (int i = 0; i < nbSeances; i++) {
@@ -42,12 +54,13 @@ public class SemiMarathon {
         return semaine;
     }
 
-    private Seance creerSeanceRepos(int jour) {
+    private Seance creerSeanceRepos(int jour, int semaine) {
         double[] p = profil.getPourcentagesPrincipales(DISTANCE_SEMI);
         double pEF = p[0];
         String nom = "Séance " + (jour + 1) + " (Repos)";
-        String corps = "30 min en endurance fondamentale";
-        return new Seance(nom, "Endurance Fondamentale", 10, corps, 5, pEF);
+        double km = computeEnduranceKmForWeek(semaine);
+        String corps = formatKmValue(km) + "km en endurance fondamentale";
+        return new Seance(nom, "Endurance Fondamentale", 5, corps, 5, pEF);
     }
 
     private int niveauToDifficulte(String niveau) {
@@ -58,11 +71,6 @@ public class SemiMarathon {
         return 2;
     }
 
-    
-    // Choisit une difficulté pour les séances de fractionné selon le niveau :
-    // - Débutant  : 60% diff 1, 40% diff 2
-    // - Medium    : 80% diff 2, 20% diff 3
-    // - Expert    : 50% diff 2, 50% diff 3
     private int choisirDifficulteFractionne(String niveau) {
         String s = (niveau == null) ? "" : niveau.toLowerCase();
         Random rnd = new Random();
@@ -72,7 +80,6 @@ public class SemiMarathon {
         } else if (s.contains("avanc") || s.contains("expert")) {
             return (r < 0.5) ? 2 : 3;
         } else {
-            // medium / par défaut
             return (r < 0.8) ? 2 : 3;
         }
     }
@@ -89,9 +96,9 @@ public class SemiMarathon {
 
         if (jour == 0) {
             String nom = "Séance 1 - Endurance";
-            int duree = calculerDureeProgressive(40, semaine);
-            String corps = duree + " min en endurance fondamentale";
-            return new Seance(nom, "Endurance Fondamentale", 10, corps, 5, pEF);
+            double km = computeEnduranceKmForWeek(semaine);
+            String corps = formatKmValue(km) + "km en endurance fondamentale";
+            return new Seance(nom, "Endurance Fondamentale", 5, corps, 5, pEF);
         } else if (jour == 1) {
             String nom = "Séance 2 - Fractionné";
             int difficulteFrac = choisirDifficulteFractionne(niveau);
@@ -100,25 +107,44 @@ public class SemiMarathon {
             double pourcentageFractionne;
             if (ex != null) {
                 corps = ex.getDescription();
-                pourcentageFractionne = ex.resolvePourcentageVMA(profil); // derive % from allure (or AS)
+                pourcentageFractionne = ex.resolvePourcentageVMA(profil);
             } else {
                 corps = "8 x 400m récup 1min";
-                pourcentageFractionne = 0.95; // fallback
+                pourcentageFractionne = 0.95;
             }
             return new Seance(nom, "Fractionné Court", 15, corps, 10, pourcentageFractionne);
 
         } else {
             String nom = "Séance " + (jour + 1) + " - Allure spécifique (AS21)";
-            CorpsDeSeance exAS = banque.getExerciceAleatoire("Allure Spécifique (AS21)", difficulteGenerale);
+
+            // détermination de difficulté selon cumul AS parcouru
+            int chosenDiff = determineASDifficulty();
+            List<CorpsDeSeance> candidats = banque.getExercicesParDifficulte("Allure Spécifique", chosenDiff);
+            CorpsDeSeance exAS = null;
+            if (candidats != null && !candidats.isEmpty()) {
+                exAS = candidats.get(asSequenceIndex % candidats.size());
+                asSequenceIndex++;
+            }
+
             String corpsAS;
-            double pourcentageAS = pSpec; // fallback
+            double pourcentageAS = pSpec;
+            double kmAS = 0.0;
+
             if (exAS != null) {
                 corpsAS = exAS.getDescription();
                 pourcentageAS = exAS.resolvePourcentageVMA(profil);
+                kmAS = parseKmFromDescription(corpsAS);
             } else {
-                int duree = calculerDureeProgressive(30, semaine);
-                corpsAS = duree + " min à allure semi-marathon";
+                kmAS = calculerDistanceProgressiveKm(30, semaine, pourcentageAS);
+                corpsAS = formatKmValue(kmAS) + "km à allure semi-marathon";
             }
+
+            // si on n'a pas trouvé de km dans la description, estimer depuis %VMA et durée fallback
+            if (kmAS <= 0.0) {
+                kmAS = calculerDistanceProgressiveKm(30, semaine, pourcentageAS);
+            }
+
+            cumulativeASKm += kmAS;
             return new Seance(nom, "Allure Spécifique (AS21)", 15, corpsAS, 10, pourcentageAS);
         }
     }
@@ -129,6 +155,61 @@ public class SemiMarathon {
             facteur = 1.8;
         }
         return (int) (dureeBase * facteur);
+    }
+
+    private double calculerDistanceProgressiveKm(int dureeBaseMinutes, int semaine, double percent) {
+        int duree = calculerDureeProgressive(dureeBaseMinutes, semaine);
+        double hours = duree / 60.0;
+        double speed = profil.getVma() * percent;
+        return speed * hours;
+    }
+
+    private double computeEnduranceKmForWeek(int semaine) {
+        // base 5 km, +1 après 6 semaines, +1 après 12 semaines (max +2)
+        int add = 0;
+        if (semaine > 6) add++;
+        if (semaine > 12) add++;
+        return 5.0 + Math.min(add, 2);
+    }
+
+    private String formatKmValue(double km) {
+        if (Math.abs(km - Math.round(km)) < 1e-6) {
+            return String.format(Locale.US, "%d", (int) Math.round(km));
+        }
+        return String.format(Locale.US, "%.1f", km);
+    }
+
+    private int determineASDifficulty() {
+        if (cumulativeASKm < 10.0) return 1;
+        if (cumulativeASKm < 14.0) return 2;
+        return 3;
+    }
+
+    private double parseKmFromDescription(String desc) {
+        if (desc == null) return 0.0;
+        String s = desc.toLowerCase();
+
+        // pattern reps x km  => e.g. "2 x 3km"
+        Pattern pRepsKm = Pattern.compile("(\\d+)\\s*[x×]\\s*(\\d+(?:[.,]\\d+)?)\\s*km");
+        Matcher m1 = pRepsKm.matcher(s);
+        if (m1.find()) {
+            try {
+                int reps = Integer.parseInt(m1.group(1));
+                double km = Double.parseDouble(m1.group(2).replace(',', '.'));
+                return reps * km;
+            } catch (Exception ignored) {}
+        }
+
+        // pattern single km e.g. "6km", "10 km en continu"
+        Pattern pSingleKm = Pattern.compile("(\\d+(?:[.,]\\d+)?)\\s*km");
+        Matcher m2 = pSingleKm.matcher(s);
+        if (m2.find()) {
+            try {
+                return Double.parseDouble(m2.group(1).replace(',', '.'));
+            } catch (Exception ignored) {}
+        }
+
+        return 0.0;
     }
 
     public String genererProgramme() {
