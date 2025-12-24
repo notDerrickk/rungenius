@@ -67,18 +67,30 @@ public class SemiMarathon {
 
     private Seance[] genererSemaine(int numeroSemaine, boolean repos) {
         int nbSeances = profil.getSortiesParSemaine();
-        Seance[] semaine = new Seance[nbSeances];
-
         if (repos) {
-            for (int i = 0; i < nbSeances; i++) {
-                semaine[i] = creerSeanceRepos(i, numeroSemaine);
-            }
+            return genererSemaineRepos(numeroSemaine, nbSeances);
         } else {
+            Seance[] semaine = new Seance[nbSeances];
             for (int i = 0; i < nbSeances; i++) {
                 semaine[i] = creerSeanceNormale(i, numeroSemaine);
             }
+            return semaine;
         }
+    }
 
+    private Seance[] genererSemaineRepos(int numeroSemaine, int nbSeances) {
+        Seance[] semaine = new Seance[nbSeances];
+        for (int i = 0; i < nbSeances; i++) {
+            if (i == 0) {
+                // séance EF tranquille 
+                semaine[i] = creerSeanceRepos(i, numeroSemaine);
+            } else if (i == 1) {
+                // une séance tempo modérée 
+                semaine[i] = creerSeanceTempo(i, numeroSemaine);
+            } else {
+                semaine[i] = creerSeanceRepos(i, numeroSemaine);
+            }
+        }
         return semaine;
     }
 
@@ -89,6 +101,29 @@ public class SemiMarathon {
         double km = computeEnduranceKmForWeek(semaine);
         String corps = formatKmValue(km) + "km en endurance fondamentale";
         return new Seance(nom, "Endurance Fondamentale", 5, corps, 5, pEF);
+    }
+
+    private Seance creerSeanceTempo(int jour, int semaine) {
+        String niveau = profil.getNiveau();
+        int difficulte = niveauToDifficulte(niveau);
+
+        CorpsDeSeance ex = banque.getExerciceAleatoire("Tempo", difficulte);
+
+        double pSeuil;
+        String corps;
+
+        if (ex != null) {
+            corps = ex.getDescription();
+            pSeuil = ex.resolvePourcentageVMA(profil);
+        } else {
+            double[] p = profil.getPourcentagesPrincipales(DISTANCE_SEMI);
+            pSeuil = p[2];
+            int dureeMin = calculerDureeProgressive(25, semaine);
+            corps = dureeMin + "min en tempo confortable (pas trop dur)";
+        }
+
+        String nom = "Séance " + (jour + 1) + " - Tempo confortable";
+        return new Seance(nom, "Tempo", 10, corps, 5, pSeuil);
     }
 
     private int niveauToDifficulte(String niveau) {
