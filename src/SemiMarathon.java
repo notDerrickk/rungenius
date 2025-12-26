@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,7 +13,6 @@ public class SemiMarathon {
     private BanqueExercices banque;
 
     // suivi pour AS (ordre + cumul km)
-    private double cumulativeASKm = 0.0;
     private int asSequenceIndex = 0;
     private int fractionneCycleIndex = 0;
 
@@ -135,16 +133,11 @@ public class SemiMarathon {
     }
 
     private int choisirDifficulteFractionne(String niveau) {
-        String s = (niveau == null) ? "" : niveau.toLowerCase();
-        Random rnd = new Random();
-        double r = rnd.nextDouble();
-        if (s.contains("début") || s.contains("debut") || s.contains("debutant")) {
-            return (r < 0.6) ? 1 : 2;
-        } else if (s.contains("avanc") || s.contains("expert")) {
-            return (r < 0.5) ? 2 : 3;
-        } else {
-            return (r < 0.8) ? 2 : 3;
-        }
+        String s = niveau.toLowerCase();
+        if (s.contains("début") || s.contains("debut") || s.contains("debutant") || s.contains("débutant")) return 1;
+        if (s.contains("novice")) return 2;
+        if (s.contains("avanc") || s.contains("expert")) return 3;
+        return 2;
     }
 
     private boolean useFractionneLongNext() {
@@ -155,23 +148,16 @@ public class SemiMarathon {
 
     private Seance creerSeanceNormale(int jour, int semaine) {
         String niveau = profil.getNiveau();
-        int difficulteGenerale = niveauToDifficulte(niveau);
 
         double[] p = profil.getPourcentagesPrincipales(DISTANCE_SEMI);
-        double pEF = p[0];
         double pSpec = p[1];
-        double pSeuil = p[2];
-        double pVMA = p[3];
+
 
         if (jour == 0) {
-            String nom = "Séance 1 - Endurance";
-            double km = computeEnduranceKmForWeek(semaine);
-            String corps = formatKmValue(km) + "km en endurance fondamentale";
-            return new Seance(nom, "Endurance Fondamentale", 5, corps, 5, pEF);
-        } else if (jour == 1) {
+            // Séance 1 : Fractionné
             boolean useLong = useFractionneLongNext();
             String typeFrac = useLong ? "Fractionné Long" : "Fractionné Court";
-            String nom = "Séance 2 - " + typeFrac;
+            String nom = "Séance 1 - " + typeFrac;
             int difficulteFrac = choisirDifficulteFractionne(niveau);
             CorpsDeSeance ex = banque.getExerciceAleatoire(typeFrac, difficulteFrac);
             String corps;
@@ -189,7 +175,8 @@ public class SemiMarathon {
             return new Seance(nom, typeFrac, 15, corps, 10, pourcentageFractionne);
 
         } else {
-            String nom = "Séance " + (jour + 1) + " - Allure spécifique (AS21)";
+            // Séance 2 : Allure Spécifique (AS21)
+            String nom = "Séance 2 - Allure spécifique (AS21)";
 
             CorpsDeSeance exAS = getNextASExercice();
 
@@ -206,12 +193,10 @@ public class SemiMarathon {
                 corpsAS = formatKmValue(kmAS) + "km à allure semi-marathon";
             }
 
-            // si on n'a pas trouvé de km dans la description, estimer depuis %VMA et durée fallback
             if (kmAS <= 0.0) {
                 kmAS = calculerDistanceProgressiveKm(30, semaine, pourcentageAS);
             }
 
-            cumulativeASKm += kmAS;
             return new Seance(nom, "Allure Spécifique (AS21)", 15, corpsAS, 10, pourcentageAS);
         }
     }

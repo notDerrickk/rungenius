@@ -25,12 +25,12 @@ public class MainFrame extends JFrame {
         center.setBorder(BorderFactory.createTitledBorder("Configuration du profil"));
 
         center.add(new JLabel("Niveau :"));
-        String[] niveaux = {"Débutant", "Novice", "Expert"};
+        String[] niveaux = {"Débutant (En douceur)", "Novice (Moyen)", "Expert (Intense dès le début)"};
         niveauCombo = new JComboBox<>(niveaux);
         center.add(niveauCombo);
 
         center.add(new JLabel("Sorties par semaine :"));
-        sortiesSpinner = new JSpinner(new SpinnerNumberModel(3, 1, 7, 1));
+        sortiesSpinner = new JSpinner(new SpinnerNumberModel(2, 2, 5, 1));
         center.add(sortiesSpinner);
 
         center.add(new JLabel("VMA (km/h) :"));
