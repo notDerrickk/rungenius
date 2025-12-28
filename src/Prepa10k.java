@@ -4,7 +4,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SemiMarathon {
+public class Prepa10k {
     private Profil profil;
     private List<Seance[]> semaines;
     private int nbSemaines;
@@ -23,15 +23,15 @@ public class SemiMarathon {
     private double targetDistanceKm;
     private String title;
 
-    public SemiMarathon(Profil profil) {
-        this(profil, 12, 21.1, "Semi-Marathon");
+    public Prepa10k(Profil profil) {
+        this(profil, 12, 10.0, "10 km");
     }
 
-    public SemiMarathon(Profil profil, int nbSemaines) {
-        this(profil, nbSemaines, 21.1, "Semi-Marathon");
+    public Prepa10k(Profil profil, int nbSemaines) {
+        this(profil, nbSemaines, 10.0, "10 km");
     }
 
-    public SemiMarathon(Profil profil, int nbSemaines, double targetDistanceKm, String title) {
+    public Prepa10k(Profil profil, int nbSemaines, double targetDistanceKm, String title) {
         this.profil = profil;
         this.semaines = new ArrayList<Seance[]>();
         this.banque = new BanqueExercices();
@@ -43,6 +43,7 @@ public class SemiMarathon {
     }
 
     private void initialiserSequencesAS() {
+        // Déterminer le type d'AS selon la distance
         String typeAS = getTypeAllureSpecifique();
         
         // exercices AS par difficulté depuis la banque
@@ -55,10 +56,12 @@ public class SemiMarathon {
         if (niveau1 != null) asSequenceDebutant.addAll(niveau1);
         if (niveau2 != null) asSequenceDebutant.addAll(niveau2);
 
+        // Pour moyen: niveau 2 puis niveau 3
         asSequenceMoyen = new ArrayList<>();
         if (niveau2 != null) asSequenceMoyen.addAll(niveau2);
         if (niveau3 != null) asSequenceMoyen.addAll(niveau3);
 
+        // Pour expert: niveau 3 en boucle
         asSequenceExpert = new ArrayList<>();
         if (niveau3 != null) asSequenceExpert.addAll(niveau3);
     }
@@ -70,6 +73,7 @@ public class SemiMarathon {
         } else if (Math.abs(targetDistanceKm - 21.1) < 1e-6) {
             return "Allure Spécifique";
         } else {
+            // Par défaut, si la distance est plus proche de 10km
             if (targetDistanceKm <= 15.0) {
                 return "Allure Spécifique 10km";
             } else {

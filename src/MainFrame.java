@@ -6,6 +6,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 
 public class MainFrame extends JFrame {
+    private JComboBox<String> raceTypeCombo;
     private JComboBox<String> niveauCombo;
     private JSpinner sortiesSpinner;
     private JTextField vmaField;
@@ -14,15 +15,20 @@ public class MainFrame extends JFrame {
     private JButton exportButton;
 
     public MainFrame() {
-        setTitle("Run Genius - Préparation Semi-Marathon");
-        setSize(760, 400);
+        setTitle("Run Genius - Préparation");
+        setSize(760, 420);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         setLayout(new BorderLayout(10, 10));
 
-        JPanel center = new JPanel(new GridLayout(5, 2, 10, 10));
+        JPanel center = new JPanel(new GridLayout(6, 2, 10, 10));
         center.setBorder(BorderFactory.createTitledBorder("Configuration du profil"));
+
+        center.add(new JLabel("Type de course :"));
+        String[] raceTypes = {"Semi-Marathon", "10 km"};
+        raceTypeCombo = new JComboBox<>(raceTypes);
+        center.add(raceTypeCombo);
 
         center.add(new JLabel("Niveau :"));
         String[] niveaux = {"Débutant (En douceur)", "Novice (Moyen)", "Expert (Intense dès le début)"};
@@ -57,6 +63,7 @@ public class MainFrame extends JFrame {
 
     private void exporterHTML(ActionEvent e) {
         try {
+            String raceType = (String) raceTypeCombo.getSelectedItem();
             String niveau = (String) niveauCombo.getSelectedItem();
             int sorties = (Integer) sortiesSpinner.getValue();
             double vma = Double.parseDouble(vmaField.getText());
@@ -95,24 +102,34 @@ public class MainFrame extends JFrame {
             long daysBetween = ChronoUnit.DAYS.between(today, raceDate);
             int weeksBetween = (int) (daysBetween / 7);
 
-            if (weeksBetween < 10) {
+            if (weeksBetween < 4) {
                 JOptionPane.showMessageDialog(this,
-                    "Trop juste pour un plan (moins de 10 semaines) — aucun plan généré.",
+                    "Trop juste pour un plan (moins de 4 semaines) — aucun plan généré.",
                     "Intervalle insuffisant",
                     JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            if (weeksBetween > 25) {
+            if (weeksBetween > 52) {
                 JOptionPane.showMessageDialog(this,
-                    "Intervalle trop long pour ce générateur (plus de 25 semaines) — aucun plan généré.",
+                    "Intervalle trop long pour ce générateur (plus de 52 semaines) — aucun plan généré.",
                     "Intervalle trop long",
                     JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
+            double distanceKm;
+            String title;
+            if ("10 km".equals(raceType)) {
+                distanceKm = 10.0;
+                title = "10 km";
+            } else {
+                distanceKm = 21.1;
+                title = "Semi-Marathon";
+            }
+
             Profil profil = new Profil(niveau, sorties, vma, objectifSec);
-            SemiMarathon semi = new SemiMarathon(profil, weeksBetween);
+            SemiMarathon semi = new SemiMarathon(profil, weeksBetween, distanceKm, title);
 
             HtmlGenerator generator = new HtmlGenerator();
             String filename = generator.genererHTML(semi, profil);

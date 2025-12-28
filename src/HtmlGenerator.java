@@ -3,10 +3,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 public class HtmlGenerator {
     public String genererHTML(SemiMarathon semi, Profil profil) throws IOException {
-        String filename = "programme_semi_" + ".html";
+        String safeTitle = semi.getTitle().toLowerCase().replaceAll("\\s+", "_");
+        String filename = "programme_" + safeTitle + ".html";
 
         StringBuilder html = new StringBuilder();
 
@@ -15,7 +17,7 @@ public class HtmlGenerator {
         append(html, "<head>");
         append(html, "  <meta charset='utf-8'>");
         append(html, "  <meta name='viewport' content='width=device-width, initial-scale=1'>");
-        append(html, "  <title>RunGenius - Programme Semi-Marathon</title>");
+        append(html, "  <title>RunGenius - Programme " + semi.getTitle() + "</title>");
 
         append(html, "  <style>");
         append(html, "    :root {");
@@ -56,12 +58,12 @@ public class HtmlGenerator {
         append(html, "  <div class='container'>");
 
         append(html, "    <header>");
-        append(html, "      <h1>🏃 RunGenius — Programme Semi-Marathon</h1>");
+        append(html, "      <h1>🏃 RunGenius — Programme " + semi.getTitle() + "</h1>");
         append(html, "      <p>Progression douce • Semaines de repos toutes les 5 semaines</p>");
         append(html, "      <div class='meta'>");
         append(html, "        <div class='chip'>Niveau: " + profil.getNiveau() + "</div>");
         append(html, "        <div class='chip'>Sorties / semaine: " + profil.getSortiesParSemaine() + "</div>");
-        append(html, "        <div class='chip'>VMA: " + String.format("%.1f km/h", profil.getVma()) + "</div>");
+        append(html, "        <div class='chip'>VMA: " + String.format(Locale.US, "%.1f km/h", profil.getVma()) + "</div>");
         append(html, "        <div class='chip'>Généré: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + "</div>");
         append(html, "      </div>");
         append(html, "    </header>");
@@ -74,7 +76,7 @@ public class HtmlGenerator {
         append(html, "          <span style='color:var(--muted)'>" + profil.getNiveau() + " — " + profil.getSortiesParSemaine() + " sorties / semaine</span>");
         append(html, "        </div>");
         append(html, "        <div style='text-align:right'>");
-        append(html, "          <div style='font-weight:800;font-size:18px'>" + String.format("%.1f km", kmEstime) + "</div>");
+        append(html, "          <div style='font-weight:800;font-size:18px'>" + String.format(Locale.US, "%.1f km", kmEstime) + "</div>");
         append(html, "          <div style='color:var(--muted);font-size:13px'>Kilométrage estimé total</div>");
         append(html, "        </div>");
         append(html, "      </div>");
@@ -83,10 +85,14 @@ public class HtmlGenerator {
         append(html, "    <div class='card'>");
         append(html, "      <h3>Zones d'allure</h3>");
         append(html, "      <div class='grid' style='margin-top:10px'>");
-        append(html, createAllureCard("Endurance (EF)", profil.getAlluresPrincipales(21.1)[0], "#4caf50"));
-        append(html, createAllureCard("Allure spécifique (semi)", profil.getAlluresPrincipales(21.1)[1], "#ffc107"));
-        append(html, createAllureCard("Seuil", profil.getAlluresPrincipales(21.1)[2], "#ff9800"));
-        append(html, createAllureCard("VMA (100%)", profil.getAlluresPrincipales(21.1)[3], "#f44336"));
+        double planDistance = semi.getDistanceKm();
+        String distanceLabel = (Math.abs(planDistance - Math.round(planDistance)) < 1e-6)
+                ? String.format(Locale.US, "%d", (int)Math.round(planDistance))
+                : String.format(Locale.US, "%.1f", planDistance);
+        append(html, createAllureCard("Endurance (EF)", profil.getAlluresPrincipales(planDistance)[0], "#4caf50"));
+        append(html, createAllureCard("Allure spécifique (" + distanceLabel + " km)", profil.getAlluresPrincipales(planDistance)[1], "#ffc107"));
+        append(html, createAllureCard("Seuil", profil.getAlluresPrincipales(planDistance)[2], "#ff9800"));
+        append(html, createAllureCard("VMA (100%)", profil.getAlluresPrincipales(planDistance)[3], "#f44336"));
         append(html, "      </div>");
         append(html, "    </div>");
 
@@ -130,7 +136,7 @@ public class HtmlGenerator {
                 append(html, "          </div>");
                 append(html, "          <div class='right'>");
                 append(html, "            <div class='allure'>" + allure + "</div>");
-                append(html, "            <div class='distance'>" + String.format("%.2f km", kmSeance) + "</div>");
+                append(html, "            <div class='distance'>" + String.format(Locale.US, "%.2f km", kmSeance) + "</div>");
                 append(html, "          </div>");
                 append(html, "        </div>");
 
@@ -139,7 +145,7 @@ public class HtmlGenerator {
 
             append(html, "        <div class='week-total'>");
             append(html, "          <div class='label'>TOTAL SEMAINE</div>");
-            append(html, "          <div>" + String.format("%.2f km", weekKm) + "</div>");
+            append(html, "          <div>" + String.format(Locale.US, "%.2f km", weekKm) + "</div>");
             append(html, "        </div>");
             append(html, "      </div>");
         }

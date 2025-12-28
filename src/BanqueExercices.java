@@ -135,7 +135,53 @@ public class BanqueExercices {
 
         exercicesParType.put("Allure Spécifique", allureSpecAS21);
 
-        
+        // ALLURE SPÉCIFIQUE 10 KM
+        List<CorpsDeSeance> allureSpecAS10 = new ArrayList<>();
+
+        // Niveau 1 - Facile (jusqu’à 5-6 km AS)
+        allureSpecAS10.add(new CorpsDeSeance("4 x 1km à allure 10k récup 2min", CorpsDeSeance.AllureType.AS, 10.0, 1));
+        allureSpecAS10.add(new CorpsDeSeance("5 x 1km à allure 10k récup 90sec", CorpsDeSeance.AllureType.AS, 10.0, 1));
+        allureSpecAS10.add(new CorpsDeSeance("3 x 2km à allure 10k récup 2min", CorpsDeSeance.AllureType.AS, 10.0, 1));
+        allureSpecAS10.add(new CorpsDeSeance("2 x 3km à allure 10k récup 3min", CorpsDeSeance.AllureType.AS, 10.0, 1));
+        allureSpecAS10.add(new CorpsDeSeance("6 x 800m à allure 10k récup 1min30", CorpsDeSeance.AllureType.AS, 10.0, 1));
+        allureSpecAS10.add(new CorpsDeSeance("8 x 600m à allure 10k récup 1min15", CorpsDeSeance.AllureType.AS, 10.0, 1));
+        allureSpecAS10.add(new CorpsDeSeance("10 x 400m à allure 10k récup 1min", CorpsDeSeance.AllureType.AS, 10.0, 1));
+        allureSpecAS10.add(new CorpsDeSeance("3 x 1,5km à allure 10k récup 2min", CorpsDeSeance.AllureType.AS, 10.0, 1));
+        allureSpecAS10.add(new CorpsDeSeance("2 x 2,5km à allure 10k récup 3min", CorpsDeSeance.AllureType.AS, 10.0, 1));
+        allureSpecAS10.add(new CorpsDeSeance("5km en continu à allure 10k", CorpsDeSeance.AllureType.AS, 10.0, 1));
+        allureSpecAS10.add(new CorpsDeSeance("6km progressif jusqu’à allure 10k", CorpsDeSeance.AllureType.AS, 10.0, 1));
+        allureSpecAS10.add(new CorpsDeSeance("4 x 1200m à allure 10k récup 90sec", CorpsDeSeance.AllureType.AS, 10.0, 1));
+
+        // Niveau 2 - Moyen (jusqu’à ~8–9 km AS)
+        allureSpecAS10.add(new CorpsDeSeance("5 x 1km à allure 10k récup 1min30", CorpsDeSeance.AllureType.AS, 10.0, 2));
+        allureSpecAS10.add(new CorpsDeSeance("6 x 1km à allure 10k récup 1min15", CorpsDeSeance.AllureType.AS, 10.0, 2));
+        allureSpecAS10.add(new CorpsDeSeance("4 x 2km à allure 10k récup 2min", CorpsDeSeance.AllureType.AS, 10.0, 2));
+        allureSpecAS10.add(new CorpsDeSeance("3 x 3km à allure 10k récup 2min30", CorpsDeSeance.AllureType.AS, 10.0, 2));
+        allureSpecAS10.add(new CorpsDeSeance("8 x 800m à allure 10k récup 1min15", CorpsDeSeance.AllureType.AS, 10.0, 2));
+        allureSpecAS10.add(new CorpsDeSeance("10 x 600m à allure 10k récup 1min", CorpsDeSeance.AllureType.AS, 10.0, 2));
+        allureSpecAS10.add(new CorpsDeSeance("12 x 400m à allure 10k récup 1min", CorpsDeSeance.AllureType.AS, 10.0, 2));
+        allureSpecAS10.add(new CorpsDeSeance("2 x 4km à allure 10k récup 3min", CorpsDeSeance.AllureType.AS, 10.0, 2));
+        allureSpecAS10.add(new CorpsDeSeance("3 x 2,5km à allure 10k récup 2min", CorpsDeSeance.AllureType.AS, 10.0, 2));
+        allureSpecAS10.add(new CorpsDeSeance("5km en continu à allure 10k", CorpsDeSeance.AllureType.AS, 10.0, 2));
+        allureSpecAS10.add(new CorpsDeSeance("6km en continu à allure 10k", CorpsDeSeance.AllureType.AS, 10.0, 2));
+        allureSpecAS10.add(new CorpsDeSeance("4 x 1500m à allure 10k récup 1min30", CorpsDeSeance.AllureType.AS, 10.0, 2));
+
+        // Niveau 3 - Difficile (jusqu’à 10 km AS)
+        allureSpecAS10.add(new CorpsDeSeance("6 x 1km à allure 10k récup 1min", CorpsDeSeance.AllureType.AS, 10.0, 3));
+        allureSpecAS10.add(new CorpsDeSeance("7 x 1km à allure 10k récup 1min", CorpsDeSeance.AllureType.AS, 10.0, 3));
+        allureSpecAS10.add(new CorpsDeSeance("5 x 2km à allure 10k récup 2min", CorpsDeSeance.AllureType.AS, 10.0, 3));
+        allureSpecAS10.add(new CorpsDeSeance("3 x 3km à allure 10k récup 2min", CorpsDeSeance.AllureType.AS, 10.0, 3));
+        allureSpecAS10.add(new CorpsDeSeance("10 x 800m à allure 10k récup 1min", CorpsDeSeance.AllureType.AS, 10.0, 3));
+        allureSpecAS10.add(new CorpsDeSeance("12 x 600m à allure 10k récup 1min", CorpsDeSeance.AllureType.AS, 10.0, 3));
+        allureSpecAS10.add(new CorpsDeSeance("15 x 400m à allure 10k récup 1min", CorpsDeSeance.AllureType.AS, 10.0, 3));
+        allureSpecAS10.add(new CorpsDeSeance("2 x 5km à allure 10k récup 3min", CorpsDeSeance.AllureType.AS, 10.0, 3));
+        allureSpecAS10.add(new CorpsDeSeance("3 x 4km à allure 10k récup 2min", CorpsDeSeance.AllureType.AS, 10.0, 3));
+        allureSpecAS10.add(new CorpsDeSeance("6km en continu à allure 10k", CorpsDeSeance.AllureType.AS, 10.0, 3));
+        allureSpecAS10.add(new CorpsDeSeance("7km en continu à allure 10k", CorpsDeSeance.AllureType.AS, 10.0, 3));
+        allureSpecAS10.add(new CorpsDeSeance("5km + 3km + 2km à allure 10k récup 2min", CorpsDeSeance.AllureType.AS, 10.0, 3));
+        exercicesParType.put("Allure Spécifique 10km", allureSpecAS10);
+
+
         // TEMPO (80-85% VMA)
         List<CorpsDeSeance> tempo = new ArrayList<>();
         // Niveau 1 - Facile
