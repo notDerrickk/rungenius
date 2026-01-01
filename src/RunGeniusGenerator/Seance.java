@@ -1,3 +1,4 @@
+package RunGeniusGenerator;
 public class Seance {
     private String nom;
     private String type;
@@ -307,5 +308,17 @@ public class Seance {
             }
         }
         return b.toString();
+    }
+
+    public String getCorps() {
+        return corps;
+    }
+
+    public int getDureeEchauffement() {
+        return dureeEchauffement;
+    }
+
+    public int getDureeCooldown() {
+        return dureeCooldown;
     }
 }

@@ -1,3 +1,4 @@
+package RunGeniusGenerator;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -165,11 +166,11 @@ public class HtmlGenerator {
         return filename;
     }
 
-    private static void append(StringBuilder sb, String line) {
+    public static void append(StringBuilder sb, String line) {
         sb.append(line).append("\n");
     }
 
-    private static String createAllureCard(String label, String pace, String color) {
+    public static String createAllureCard(String label, String pace, String color) {
         String bg = "#ffffff";
         if (color != null && !color.isEmpty()) {
             bg = color.trim();
@@ -182,7 +183,7 @@ public class HtmlGenerator {
         return b.toString();
     }
 
-    private static double estimerKilometragePrecis(Programme programme, Profil profil) {
+    public static double estimerKilometragePrecis(Programme programme, Profil profil) {
         double totalKm = 0.0;
         List<Seance[]> semaines = programme.getSemaines();
         for (int i = 0; i < semaines.size(); i++) {
@@ -194,7 +195,7 @@ public class HtmlGenerator {
         return totalKm;
     }
 
-    private static boolean isSemaineRecup(int numeroSemaine, int totalSemaines) {
+    public static boolean isSemaineRecup(int numeroSemaine, int totalSemaines) {
         return numeroSemaine % 5 == 0;
     }
 }

@@ -1,14 +1,15 @@
+package RunGeniusGenerator;
 import java.util.*;
 
 public class BanqueExercices {
-    private Map<String, List<CorpsDeSeance>> exercicesParType;
+    public Map<String, List<CorpsDeSeance>> exercicesParType;
     
     public BanqueExercices() {
         exercicesParType = new HashMap<>();
         initialiserExercices();
     }
     
-    private void initialiserExercices() {
+    public void initialiserExercices() {
         // FRACTIONNÉ COURT (VMA, 95-100% VMA)
         List<CorpsDeSeance> fracCourt = new ArrayList<>();
         // Niveau 1 - Facile

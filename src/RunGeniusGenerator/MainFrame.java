@@ -1,4 +1,8 @@
+package RunGeniusGenerator;
 import javax.swing.*;
+
+import RunGeniusEditor.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
@@ -59,6 +63,11 @@ public class MainFrame extends JFrame {
         exportButton = new JButton("Exporter le programme (HTML)");
         exportButton.addActionListener(this::exporterHTML);
         bottom.add(exportButton);
+
+        JButton editeurButton = new JButton("Éditeur de Programme");
+        editeurButton.addActionListener(this::ouvrirEditeur);
+        bottom.add(editeurButton);
+
         add(bottom, BorderLayout.SOUTH);
     }
 
@@ -173,6 +182,16 @@ public class MainFrame extends JFrame {
                 "Erreur lors de l'export : " + ex.getMessage(),
                 "Erreur",
                 JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void ouvrirEditeur(ActionEvent e) {
+        ConfigProgrammeDialog dialog = new ConfigProgrammeDialog(this);
+        dialog.setVisible(true);
+        
+        if (dialog.isValide()) {
+            ProgrammeEditeurFrame editeur = new ProgrammeEditeurFrame(dialog);
+            editeur.setVisible(true);
         }
     }
 

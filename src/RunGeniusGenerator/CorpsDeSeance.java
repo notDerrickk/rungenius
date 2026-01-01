@@ -1,3 +1,4 @@
+package RunGeniusGenerator;
 public class CorpsDeSeance {
     public enum AllureType { PERCENT_VMA, EF, SEUIL, AS }
 

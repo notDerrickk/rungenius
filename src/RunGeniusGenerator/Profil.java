@@ -1,3 +1,4 @@
+package RunGeniusGenerator;
 import java.io.*;
 
 public class Profil {
