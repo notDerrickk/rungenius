@@ -26,8 +26,9 @@ public class MainFrame extends JFrame {
         center.setBorder(BorderFactory.createTitledBorder("Configuration du profil"));
 
         center.add(new JLabel("Type de course :"));
-        String[] raceTypes = {"Semi-Marathon", "10 km"};
+        String[] raceTypes = {"5km","10km","Semi-Marathon"};
         raceTypeCombo = new JComboBox<>(raceTypes);
+        raceTypeCombo.addActionListener(e -> updateDefaultObjectif());
         center.add(raceTypeCombo);
 
         center.add(new JLabel("Niveau :"));
@@ -44,7 +45,7 @@ public class MainFrame extends JFrame {
         center.add(vmaField);
 
         center.add(new JLabel("Objectif (HH:MM:SS ou MM:SS ou minutes) :"));
-        objectifField = new JTextField("2:00:00");
+        objectifField = new JTextField("25:00");
         center.add(objectifField);
 
         center.add(new JLabel("Date de la course (YYYY-MM-DD) :"));
@@ -59,6 +60,17 @@ public class MainFrame extends JFrame {
         exportButton.addActionListener(this::exporterHTML);
         bottom.add(exportButton);
         add(bottom, BorderLayout.SOUTH);
+    }
+
+    private void updateDefaultObjectif() {
+        String raceType = (String) raceTypeCombo.getSelectedItem();
+        if ("5km".equals(raceType)) {
+            objectifField.setText("25:00");
+        } else if ("10km".equals(raceType)) {
+            objectifField.setText("50:00");
+        } else { // Semi-Marathon
+            objectifField.setText("2:00:00");
+        }
     }
 
     private void exporterHTML(ActionEvent e) {
@@ -120,21 +132,30 @@ public class MainFrame extends JFrame {
 
             double distanceKm;
             String title;
-            if ("10 km".equals(raceType)) {
+            if ("5km".equals(raceType)) {
+                distanceKm = 5.0;
+                title = "Préparation 5 km";
+            } else if ("10km".equals(raceType)) {
                 distanceKm = 10.0;
-                title = "10 km";
+                title = "Préparation 10 km";
             } else {
                 distanceKm = 21.1;
-                title = "Semi-Marathon";
+                title = "Préparation Semi-Marathon";
+            }
+            Profil profil = new Profil(niveau, sorties, vma, objectifSec);
+            Programme programme;
+            if ("5km".equals(raceType)) {
+                programme = new Prepa5k(profil, weeksBetween, distanceKm, title);
+            } else if ("10km".equals(raceType)) {
+                programme = new Prepa10k(profil, weeksBetween, distanceKm, title);
+            } else {
+                programme = new SemiMarathon(profil, weeksBetween, distanceKm, title);
             }
 
-            Profil profil = new Profil(niveau, sorties, vma, objectifSec);
-            SemiMarathon semi = new SemiMarathon(profil, weeksBetween, distanceKm, title);
-
             HtmlGenerator generator = new HtmlGenerator();
-            String filename = generator.genererHTML(semi, profil);
+            String filename = generator.genererHTML(programme, profil);
 
-            int nbSemaines = semi.getSemaines().size();
+            int nbSemaines = programme.getSemaines().size();
 
             JOptionPane.showMessageDialog(this,
                 "Programme de " + nbSemaines + " semaines exporté en HTML :\n" + filename,

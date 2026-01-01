@@ -181,6 +181,46 @@ public class BanqueExercices {
         allureSpecAS10.add(new CorpsDeSeance("5km + 3km + 2km à allure 10k récup 2min", CorpsDeSeance.AllureType.AS, 10.0, 3));
         exercicesParType.put("Allure Spécifique 10km", allureSpecAS10);
 
+        // ALLURE SPÉCIFIQUE 5 KM
+        List<CorpsDeSeance> allureSpecAS5 = new ArrayList<>();
+
+        // Niveau 1 - Facile 
+        allureSpecAS5.add(new CorpsDeSeance("5 x 600m à allure 5k récup 1min30", CorpsDeSeance.AllureType.AS, 5.0, 1));
+        allureSpecAS5.add(new CorpsDeSeance("6 x 500m à allure 5k récup 1min30", CorpsDeSeance.AllureType.AS, 5.0, 1));
+        allureSpecAS5.add(new CorpsDeSeance("8 x 400m à allure 5k récup 1min15", CorpsDeSeance.AllureType.AS, 5.0, 1));
+        allureSpecAS5.add(new CorpsDeSeance("10 x 300m à allure 5k récup 1min", CorpsDeSeance.AllureType.AS, 5.0, 1));
+        allureSpecAS5.add(new CorpsDeSeance("3 x 1km à allure 5k récup 2min", CorpsDeSeance.AllureType.AS, 5.0, 1));
+        allureSpecAS5.add(new CorpsDeSeance("2 x 1,5km à allure 5k récup 2min30", CorpsDeSeance.AllureType.AS, 5.0, 1));
+        allureSpecAS5.add(new CorpsDeSeance("12 x 200m à allure 5k récup 45sec", CorpsDeSeance.AllureType.AS, 5.0, 1));
+        allureSpecAS5.add(new CorpsDeSeance("4 x 800m à allure 5k récup 1min30", CorpsDeSeance.AllureType.AS, 5.0, 1));
+        allureSpecAS5.add(new CorpsDeSeance("2km en continu à allure 5k", CorpsDeSeance.AllureType.AS, 5.0, 1));
+        allureSpecAS5.add(new CorpsDeSeance("3km progressif jusqu’à allure 5k", CorpsDeSeance.AllureType.AS, 5.0, 1));
+
+        // Niveau 2 - Moyen 
+        allureSpecAS5.add(new CorpsDeSeance("5 x 600m à allure 5k récup 1min15", CorpsDeSeance.AllureType.AS, 5.0, 2));
+        allureSpecAS5.add(new CorpsDeSeance("6 x 600m à allure 5k récup 1min15", CorpsDeSeance.AllureType.AS, 5.0, 2));
+        allureSpecAS5.add(new CorpsDeSeance("8 x 500m à allure 5k récup 1min15", CorpsDeSeance.AllureType.AS, 5.0, 2));
+        allureSpecAS5.add(new CorpsDeSeance("10 x 400m à allure 5k récup 1min", CorpsDeSeance.AllureType.AS, 5.0, 2));
+        allureSpecAS5.add(new CorpsDeSeance("12 x 300m à allure 5k récup 1min", CorpsDeSeance.AllureType.AS, 5.0, 2));
+        allureSpecAS5.add(new CorpsDeSeance("4 x 1km à allure 5k récup 2min", CorpsDeSeance.AllureType.AS, 5.0, 2));
+        allureSpecAS5.add(new CorpsDeSeance("2 x 2km à allure 5k récup 3min", CorpsDeSeance.AllureType.AS, 5.0, 2));
+        allureSpecAS5.add(new CorpsDeSeance("3km en continu à allure 5k", CorpsDeSeance.AllureType.AS, 5.0, 2));
+        allureSpecAS5.add(new CorpsDeSeance("3 x 1200m à allure 5k récup 2min", CorpsDeSeance.AllureType.AS, 5.0, 2));
+        allureSpecAS5.add(new CorpsDeSeance("6 x 800m à allure 5k récup 1min15", CorpsDeSeance.AllureType.AS, 5.0, 2));
+
+        // Niveau 3 - Difficile 
+        allureSpecAS5.add(new CorpsDeSeance("7 x 600m à allure 5k récup 1min", CorpsDeSeance.AllureType.AS, 5.0, 3));
+        allureSpecAS5.add(new CorpsDeSeance("8 x 600m à allure 5k récup 1min", CorpsDeSeance.AllureType.AS, 5.0, 3));
+        allureSpecAS5.add(new CorpsDeSeance("10 x 500m à allure 5k récup 1min", CorpsDeSeance.AllureType.AS, 5.0, 3));
+        allureSpecAS5.add(new CorpsDeSeance("12 x 400m à allure 5k récup 1min", CorpsDeSeance.AllureType.AS, 5.0, 3));
+        allureSpecAS5.add(new CorpsDeSeance("15 x 300m à allure 5k récup 1min", CorpsDeSeance.AllureType.AS, 5.0, 3));
+        allureSpecAS5.add(new CorpsDeSeance("5 x 1km à allure 5k récup 1min30", CorpsDeSeance.AllureType.AS, 5.0, 3));
+        allureSpecAS5.add(new CorpsDeSeance("3 x 2km à allure 5k récup 2min30", CorpsDeSeance.AllureType.AS, 5.0, 3));
+        allureSpecAS5.add(new CorpsDeSeance("2 x 2,5km à allure 5k récup 3min", CorpsDeSeance.AllureType.AS, 5.0, 3));
+        allureSpecAS5.add(new CorpsDeSeance("3km en continu à allure 5k", CorpsDeSeance.AllureType.AS, 5.0, 3));
+        allureSpecAS5.add(new CorpsDeSeance("3km + 2km à allure 5k récup 2min", CorpsDeSeance.AllureType.AS, 5.0, 3));
+
+        exercicesParType.put("Allure Spécifique 5km", allureSpecAS5);
 
         // TEMPO (80-85% VMA)
         List<CorpsDeSeance> tempo = new ArrayList<>();

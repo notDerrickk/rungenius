@@ -4,18 +4,16 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SemiMarathon implements Programme {
+public class Prepa5k implements Programme {
     private Profil profil;
     private List<Seance[]> semaines;
     private int nbSemaines;
 
     private BanqueExercices banque;
 
-    // suivi pour AS (ordre + cumul km)
     private int asSequenceIndex = 0;
     private int fractionneCycleIndex = 0;
 
-    // Séquences prédéfinies pour AS selon niveau
     private List<CorpsDeSeance> asSequenceDebutant;
     private List<CorpsDeSeance> asSequenceMoyen;
     private List<CorpsDeSeance> asSequenceExpert;
@@ -23,34 +21,32 @@ public class SemiMarathon implements Programme {
     private double targetDistanceKm;
     private String title;
 
-    public SemiMarathon(Profil profil) {
-        this(profil, 12, 21.1, "Semi-Marathon");
+    public Prepa5k(Profil profil) {
+        this(profil, 8, 5.0, "5 km");
     }
 
-    public SemiMarathon(Profil profil, int nbSemaines) {
-        this(profil, nbSemaines, 21.1, "Semi-Marathon");
+    public Prepa5k(Profil profil, int nbSemaines) {
+        this(profil, nbSemaines, 5.0, "5 km");
     }
 
-    public SemiMarathon(Profil profil, int nbSemaines, double targetDistanceKm, String title) {
+    public Prepa5k(Profil profil, int nbSemaines, double targetDistanceKm, String title) {
         this.profil = profil;
         this.semaines = new ArrayList<Seance[]>();
         this.banque = new BanqueExercices();
-        this.nbSemaines = (nbSemaines > 0) ? nbSemaines : 12;
+        this.nbSemaines = (nbSemaines > 0) ? nbSemaines : 8;
         this.targetDistanceKm = targetDistanceKm;
-        this.title = title != null ? title : (targetDistanceKm == 10.0 ? "10 km" : "Semi-Marathon");
+        this.title = title != null ? title : (targetDistanceKm == 5.0 ? "5 km" : "Course");
         initialiserSequencesAS();
         genererSemaines();
     }
 
     private void initialiserSequencesAS() {
-        String typeAS = getTypeAllureSpecifique();
-        
-        // exercices AS par difficulté depuis la banque
+        String typeAS = getTypeAllureSpecifique(); 
+
         List<CorpsDeSeance> niveau1 = banque.getExercicesParDifficulte(typeAS, 1);
         List<CorpsDeSeance> niveau2 = banque.getExercicesParDifficulte(typeAS, 2);
         List<CorpsDeSeance> niveau3 = banque.getExercicesParDifficulte(typeAS, 3);
 
-        // Pour débutant: niveau 1 puis niveau 2
         asSequenceDebutant = new ArrayList<>();
         if (niveau1 != null) asSequenceDebutant.addAll(niveau1);
         if (niveau2 != null) asSequenceDebutant.addAll(niveau2);
@@ -64,18 +60,7 @@ public class SemiMarathon implements Programme {
     }
 
     private String getTypeAllureSpecifique() {
-        // Retourne le type d'exercice AS approprié selon la distance
-        if (Math.abs(targetDistanceKm - 10.0) < 1e-6) {
-            return "Allure Spécifique 10km";
-        } else if (Math.abs(targetDistanceKm - 21.1) < 1e-6) {
-            return "Allure Spécifique";
-        } else {
-            if (targetDistanceKm <= 15.0) {
-                return "Allure Spécifique 10km";
-            } else {
-                return "Allure Spécifique";
-            }
-        }
+        return "Allure Spécifique 5km";
     }
 
     private void genererSemaines() {
@@ -103,10 +88,8 @@ public class SemiMarathon implements Programme {
         Seance[] semaine = new Seance[nbSeances];
         for (int i = 0; i < nbSeances; i++) {
             if (i == 0) {
-                // séance EF tranquille 
                 semaine[i] = creerSeanceRepos(i, numeroSemaine);
             } else if (i == 1) {
-                // une séance tempo modérée 
                 semaine[i] = creerSeanceTempo(i, numeroSemaine);
             } else {
                 semaine[i] = creerSeanceRepos(i, numeroSemaine);
@@ -139,7 +122,7 @@ public class SemiMarathon implements Programme {
         } else {
             double[] p = profil.getPourcentagesPrincipales(targetDistanceKm);
             pSeuil = p[2];
-            int dureeMin = calculerDureeProgressive(25, semaine);
+            int dureeMin = calculerDureeProgressive(20, semaine);
             corps = dureeMin + "min en tempo confortable (pas trop dur)";
         }
 
@@ -176,7 +159,6 @@ public class SemiMarathon implements Programme {
         double pSpec = p[1];
 
         if (jour == 0) {
-            // Séance 1 : Fractionné
             boolean useLong = useFractionneLongNext();
             String typeFrac = useLong ? "Fractionné Long" : "Fractionné Court";
             String nom = "Séance 1 - " + typeFrac;
@@ -188,16 +170,15 @@ public class SemiMarathon implements Programme {
                 corps = ex.getDescription();
                 pourcentageFractionne = ex.resolvePourcentageVMA(profil);
             } else if (useLong) {
-                corps = "5 x 1000m récup 2min";
-                pourcentageFractionne = 0.90;
+                corps = "4 x 800m récup 2min";
+                pourcentageFractionne = 0.92;
             } else {
-                corps = "8 x 400m récup 1min";
-                pourcentageFractionne = 0.95;
+                corps = "10 x 400m récup 1min";
+                pourcentageFractionne = 0.96;
             }
             return new Seance(nom, typeFrac, 15, corps, 10, pourcentageFractionne);
 
         } else {
-            // Séance 2 : Allure Spécifique
             String distanceLabel = (Math.abs(targetDistanceKm - Math.round(targetDistanceKm)) < 1e-6)
                     ? String.format(Locale.US, "%d", (int)Math.round(targetDistanceKm))
                     : String.format(Locale.US, "%.1f", targetDistanceKm);
@@ -214,18 +195,17 @@ public class SemiMarathon implements Programme {
                 pourcentageAS = exAS.resolvePourcentageVMA(profil);
                 kmAS = parseKmFromDescription(corpsAS);
             } else {
-                kmAS = calculerDistanceProgressiveKm(30, semaine, pourcentageAS);
+                kmAS = calculerDistanceProgressiveKm(20, semaine, pourcentageAS);
                 corpsAS = formatKmValue(kmAS) + "km à allure " + title;
             }
 
             if (kmAS <= 0.0) {
-                kmAS = calculerDistanceProgressiveKm(30, semaine, pourcentageAS);
+                kmAS = calculerDistanceProgressiveKm(20, semaine, pourcentageAS);
             }
 
-            return new Seance(nom, "Allure Spécifique", 15, corpsAS, 10, pourcentageAS);
+            return new Seance(nom, "Allure Spécifique", 12, corpsAS, 10, pourcentageAS);
         }
     }
-
 
     private CorpsDeSeance getNextASExercice() {
         String niveau = profil.getNiveau();
@@ -239,7 +219,6 @@ public class SemiMarathon implements Programme {
         } else if (niv.contains("avanc") || niv.contains("expert")) {
             sequence = asSequenceExpert;
         } else {
-            // Moyen
             sequence = asSequenceMoyen;
         }
 
@@ -247,17 +226,14 @@ public class SemiMarathon implements Programme {
             return null;
         }
 
-        // Pour expert (niveau 3), on boucle
         if (niv.contains("avanc") || niv.contains("expert")) {
             int index = asSequenceIndex % sequence.size();
             asSequenceIndex++;
             return sequence.get(index);
         } else {
-            // Pour débutant et moyen, progression linéaire
             if (asSequenceIndex < sequence.size()) {
                 return sequence.get(asSequenceIndex++);
             } else {
-                // Si on dépasse, on prend le dernier
                 return sequence.get(sequence.size() - 1);
             }
         }
@@ -265,8 +241,8 @@ public class SemiMarathon implements Programme {
 
     private int calculerDureeProgressive(int dureeBase, int semaine) {
         double facteur = 1.0 + (semaine - 1) * 0.08;
-        if (facteur > 1.8) {
-            facteur = 1.8;
+        if (facteur > 1.6) {
+            facteur = 1.6;
         }
         return (int) (dureeBase * facteur);
     }
@@ -279,11 +255,10 @@ public class SemiMarathon implements Programme {
     }
 
     private double computeEnduranceKmForWeek(int semaine) {
-        // base 5 km, +1 après 6 semaines, +1 après 12 semaines (max +2)
         int add = 0;
-        if (semaine > 6) add++;
-        if (semaine > 12) add++;
-        return 5.0 + Math.min(add, 2);
+        if (semaine > 4) add++;
+        if (semaine > 8) add++;
+        return 6.0 + Math.min(add, 2);
     }
 
     private String formatKmValue(double km) {
@@ -297,7 +272,6 @@ public class SemiMarathon implements Programme {
         if (desc == null) return 0.0;
         String s = desc.toLowerCase();
 
-        // pattern reps x km  => e.g. "2 x 3km"
         Pattern pRepsKm = Pattern.compile("(\\d+)\\s*[x×]\\s*(\\d+(?:[.,]\\d+)?)\\s*km");
         Matcher m1 = pRepsKm.matcher(s);
         if (m1.find()) {
@@ -308,7 +282,6 @@ public class SemiMarathon implements Programme {
             } catch (Exception ignored) {}
         }
 
-        // pattern single km e.g. "6km", "10 km en continu"
         Pattern pSingleKm = Pattern.compile("(\\d+(?:[.,]\\d+)?)\\s*km");
         Matcher m2 = pSingleKm.matcher(s);
         if (m2.find()) {

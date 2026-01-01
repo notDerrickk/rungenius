@@ -4,7 +4,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Prepa10k {
+public class Prepa10k implements Programme {
     private Profil profil;
     private List<Seance[]> semaines;
     private int nbSemaines;

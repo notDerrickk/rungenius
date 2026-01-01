@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class HtmlGenerator {
-    public String genererHTML(SemiMarathon semi, Profil profil) throws IOException {
-        String safeTitle = semi.getTitle().toLowerCase().replaceAll("\\s+", "_");
+    public String genererHTML(Programme programme, Profil profil) throws IOException {
+        String safeTitle = programme.getTitle().toLowerCase().replaceAll("\\s+", "_");
         String filename = "programme_" + safeTitle + ".html";
 
         StringBuilder html = new StringBuilder();
@@ -17,7 +17,7 @@ public class HtmlGenerator {
         append(html, "<head>");
         append(html, "  <meta charset='utf-8'>");
         append(html, "  <meta name='viewport' content='width=device-width, initial-scale=1'>");
-        append(html, "  <title>RunGenius - Programme " + semi.getTitle() + "</title>");
+        append(html, "  <title>RunGenius - Programme " + programme.getTitle() + "</title>");
 
         append(html, "  <style>");
         append(html, "    :root {");
@@ -58,7 +58,7 @@ public class HtmlGenerator {
         append(html, "  <div class='container'>");
 
         append(html, "    <header>");
-        append(html, "      <h1>🏃 RunGenius — Programme " + semi.getTitle() + "</h1>");
+        append(html, "      <h1>🏃 RunGenius — Programme " + programme.getTitle() + "</h1>");
         append(html, "      <p>Progression douce • Semaines de repos toutes les 5 semaines</p>");
         append(html, "      <div class='meta'>");
         append(html, "        <div class='chip'>Niveau: " + profil.getNiveau() + "</div>");
@@ -68,7 +68,7 @@ public class HtmlGenerator {
         append(html, "      </div>");
         append(html, "    </header>");
 
-        double kmEstime = estimerKilometragePrecis(semi, profil);
+        double kmEstime = estimerKilometragePrecis(programme, profil);
         append(html, "    <div class='card'>");
         append(html, "      <div style='display:flex;justify-content:space-between;align-items:center'>");
         append(html, "        <div>");
@@ -85,7 +85,7 @@ public class HtmlGenerator {
         append(html, "    <div class='card'>");
         append(html, "      <h3>Zones d'allure</h3>");
         append(html, "      <div class='grid' style='margin-top:10px'>");
-        double planDistance = semi.getDistanceKm();
+        double planDistance = programme.getDistanceKm();
         String distanceLabel = (Math.abs(planDistance - Math.round(planDistance)) < 1e-6)
                 ? String.format(Locale.US, "%d", (int)Math.round(planDistance))
                 : String.format(Locale.US, "%.1f", planDistance);
@@ -101,7 +101,7 @@ public class HtmlGenerator {
         append(html, "    <div style='margin-top:20px'>");
         append(html, "      <h2 style='text-align:center'>Planning détaillé</h2>");
 
-        List<Seance[]> semaines = semi.getSemaines();
+        List<Seance[]> semaines = programme.getSemaines();
         int totalSemaines = semaines.size();
         int seanceIndex = 1;
         for (int i = 0; i < totalSemaines; i++) {
@@ -182,9 +182,9 @@ public class HtmlGenerator {
         return b.toString();
     }
 
-    private static double estimerKilometragePrecis(SemiMarathon semi, Profil profil) {
+    private static double estimerKilometragePrecis(Programme programme, Profil profil) {
         double totalKm = 0.0;
-        List<Seance[]> semaines = semi.getSemaines();
+        List<Seance[]> semaines = programme.getSemaines();
         for (int i = 0; i < semaines.size(); i++) {
             Seance[] arr = semaines.get(i);
             for (int j = 0; j < arr.length; j++) {
@@ -195,12 +195,6 @@ public class HtmlGenerator {
     }
 
     private static boolean isSemaineRecup(int numeroSemaine, int totalSemaines) {
-        if (numeroSemaine > totalSemaines - 2) {
-            return false;
-        }
-        if (numeroSemaine % 5 == 0) {
-            return true;
-        }
-        return false;
+        return numeroSemaine % 5 == 0;
     }
 }
