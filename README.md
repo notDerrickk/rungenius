@@ -1,5 +1,5 @@
 # RunGenius
-![Java](https://img.shields.io/badge/Java-8%2B-blue)
+![Java](https://img.shields.io/badge/Java-21%2B-blue)
 ![Version](https://img.shields.io/github/v/release/notDerrickk/rungenius)
 ![License](https://img.shields.io/github/license/notDerrickk/rungenius)
 
