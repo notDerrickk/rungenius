@@ -1,4 +1,4 @@
-package RunGeniusGenerator;
+package com.rungenius.model.RunGeniusGenerator;
 public class Seance {
     private String nom;
     private String type;
