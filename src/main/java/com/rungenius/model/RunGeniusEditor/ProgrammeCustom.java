@@ -1,9 +1,9 @@
-package RunGeniusEditor;
+package com.rungenius.model.RunGeniusEditor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import RunGeniusGenerator.*;
+import com.rungenius.model.RunGeniusGenerator.*;
 
 public class ProgrammeCustom implements Programme {
     private String title;

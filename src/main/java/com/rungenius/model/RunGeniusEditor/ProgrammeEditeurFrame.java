@@ -1,11 +1,11 @@
-package RunGeniusEditor;
+package com.rungenius.model.RunGeniusEditor;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import RunGeniusGenerator.*;
+import com.rungenius.model.RunGeniusGenerator.*;
 
 public class ProgrammeEditeurFrame extends JFrame {
     private double vma;

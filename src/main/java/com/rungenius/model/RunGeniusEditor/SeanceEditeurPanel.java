@@ -1,9 +1,9 @@
-package RunGeniusEditor;
+package com.rungenius.model.RunGeniusEditor;
 
 import javax.swing.*;
 import java.awt.*;
 
-import RunGeniusGenerator.*;
+import com.rungenius.model.RunGeniusGenerator.*;
 
 public class SeanceEditeurPanel extends JPanel {
     private JTextField nomField;
@@ -13,8 +13,8 @@ public class SeanceEditeurPanel extends JPanel {
     private JComboBox<String> allureCombo;
     private JSpinner cooldownSpinner;
     
-    private String[] allureLabels;
-    private double[] allureValues;
+    protected String[] allureLabels;
+    protected double[] allureValues;
     
     public SeanceEditeurPanel(String[] allureLabels, double[] allureValues) {
         this.allureLabels = allureLabels;

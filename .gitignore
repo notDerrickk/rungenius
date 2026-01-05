@@ -6,6 +6,8 @@
 /target/
 /*.class
 /*.html
+/target/
+
 
 # OS
 .DS_Store

@@ -1,4 +1,4 @@
-package RunGeniusEditor;
+package com.rungenius.model.RunGeniusEditor;
 import javax.swing.*;
 
 
