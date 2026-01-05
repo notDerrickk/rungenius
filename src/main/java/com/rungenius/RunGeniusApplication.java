@@ -8,4 +8,4 @@ public class RunGeniusApplication {
     public static void main(String[] args) {
         SpringApplication.run(RunGeniusApplication.class, args);
     }
-} 
+}
