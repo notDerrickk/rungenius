@@ -157,6 +157,7 @@ public class Prepa5k implements Programme {
 
         double[] p = profil.getPourcentagesPrincipales(targetDistanceKm);
         double pSpec = p[1];
+        double pEF = p[0];
 
         if (jour == 0) {
             boolean useLong = useFractionneLongNext();
@@ -179,6 +180,17 @@ public class Prepa5k implements Programme {
             return new Seance(nom, typeFrac, 15, corps, 10, pourcentageFractionne);
 
         } else {
+            // À partir de 3 sorties/semaine : alterner Endurance (séances paires) et AS (séances impaires)
+            if (profil.getSortiesParSemaine() >= 3) {
+                if (jour % 2 == 1) {
+                    // Séance paire : Endurance tranquille
+                    double km = computeEnduranceKmForWeek(semaine);
+                    String nom = "Séance " + (jour + 1) + " - Endurance tranquille";
+                    String corps = formatKmValue(km) + "km en endurance fondamentale";
+                    return new Seance(nom, "Endurance Fondamentale", 5, corps, 5, pEF);
+                }
+            }
+            
             String distanceLabel = (Math.abs(targetDistanceKm - Math.round(targetDistanceKm)) < 1e-6)
                     ? String.format(Locale.US, "%d", (int)Math.round(targetDistanceKm))
                     : String.format(Locale.US, "%.1f", targetDistanceKm);
