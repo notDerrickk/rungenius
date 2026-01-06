@@ -1,13 +1,14 @@
 # RunGenius
 ![Java](https://img.shields.io/badge/Java-21%2B-blue)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.6-green)
 ![Version](https://img.shields.io/github/v/release/notDerrickk/rungenius)
 ![License](https://img.shields.io/github/license/notDerrickk/rungenius)
 
 ## À propos
 
-**RunGenius** est une application de bureau Java conçue pour accompagner les coureurs dans leur préparation physique. Que vous visiez un 5km, un 10km ou un Semi-Marathon, RunGenius génère automatiquement un plan d'entraînement structuré et personnalisé en fonction de votre niveau, de votre VMA (Vitesse Maximale Aérobie) et de vos contraintes d'emploi du temps.
+**RunGenius** est une application web Java/Spring Boot conçue pour accompagner les coureurs dans leur préparation physique. Que vous visiez un 5km, un 10km ou un Semi-Marathon, RunGenius génère automatiquement un plan d'entraînement structuré et personnalisé en fonction de votre niveau, de votre VMA (Vitesse Maximale Aérobie) et de vos contraintes d'emploi du temps.
 
-Le projet inclut également un éditeur complet permettant de modifier manuellement les séances, d'ajuster les allures et d'exporter le programme final sous forme de calendrier HTML imprimable.
+L'application propose deux fonctionnalités principales : un **générateur automatique** de programmes d'entraînement et un **éditeur web interactif** permettant de créer et personnaliser entièrement vos séances. Le calendrier final est exportable en HTML pour un suivi et une impression facilités.
 
 ## Table des matières
 
@@ -25,8 +26,10 @@ Le projet inclut également un éditeur complet permettant de modifier manuellem
 
 Pour compiler et exécuter ce projet, vous aurez besoin des éléments suivants :
 
-- **Java Development Kit (JDK)** : Version 8 ou supérieure.
+- **Java Development Kit (JDK)** : Version 21 ou supérieure.
   - [Télécharger Java](https://www.oracle.com/java/technologies/downloads/)
+- **Apache Maven** : Version 3.6+ pour la gestion des dépendances.
+  - [Télécharger Maven](https://maven.apache.org/download.cgi)
 - **Git** : Pour cloner le dépôt.
   - [Télécharger Git](https://git-scm.com/downloads)
 
@@ -40,47 +43,72 @@ Suivez ces étapes pour installer et lancer le projet en local :
    cd rungenius
    ```
 
-2. **Compiler les sources**
-   Créez un dossier pour les fichiers compilés (par exemple `bin`) et compilez le projet :
+2. **Compiler le projet avec Maven**
    ```bash
-   mkdir bin
-   javac -d bin -sourcepath src src/RunGeniusGenerator/Main.java
+   mvn clean install
    ```
-   *Note : Assurez-vous d'inclure tous les fichiers sources si votre commande javac n'est pas récursive par défaut.*
 
 3. **Lancer l'application**
    ```bash
-   java -cp bin RunGeniusGenerator.Main
+   mvn spring-boot:run
+   ```
+   
+   Ou en utilisant le JAR compilé :
+   ```bash
+   java -jar target/rungenius-web-0.0.1-SNAPSHOT.jar
+   ```
+
+4. **Accéder à l'application**
+   
+   Ouvrez votre navigateur et rendez-vous sur :
+   ```
+   http://localhost:8080
    ```
 
 ## Utilisation
 
-L'application se divise en deux fonctionnalités principales accessibles depuis l'interface d'accueil.
+L'application web propose deux modes d'utilisation accessibles depuis la page d'accueil (http://localhost:8080).
 
 ### Générateur de Programme (Automatique)
 
-1. Lancez l'application.
-2. Remplissez le formulaire de **Configuration du profil** :
-   - **Type de course** : 5km, 10km ou Semi-Marathon.
-   - **Niveau** : Débutant, Novice ou Expert (influe sur la complexité des séances de fractionné).
-   - **Sorties par semaine** : De 2 à 5 séances.
-   - **VMA** : Votre VMA actuelle en km/h (ex: 15.0).
-   - **Objectif** : Votre temps cible (ex: 50:00).
-   - **Date de la course** : Format YYYY-MM-DD.
-3. Cliquez sur **"Exporter le programme (HTML)"**.
-4. Un fichier HTML sera généré à la racine du projet contenant votre calendrier complet avec les allures calculées.
+Mode recommandé pour générer rapidement un plan d'entraînement adapté à votre objectif :
 
-### Éditeur de Programme (Manuel)
+1. Depuis la page d'accueil, remplissez le formulaire de **Configuration du profil** :
+   - **Type de course** : Sélectionnez 5km, 10km ou Semi-Marathon.
+   - **Niveau** : Choisissez Débutant, Novice ou Expert (détermine la complexité des séances de fractionné).
+   - **Sorties par semaine** : De 2 à 5 séances hebdomadaires.
+   - **VMA** : Votre Vitesse Maximale Aérobie en km/h (ex: 15.0).
+   - **Objectif** : Votre temps cible pour la course (ex: 50:00 pour un 10km).
+   - **Date de la course** : Format YYYY-MM-DD.
+2. Cliquez sur **"Générer le programme"**.
+3. L'application calcule automatiquement :
+   - Les zones d'allure (EF, Seuil, VMA, AS)
+   - Le volume hebdomadaire progressif
+   - Les séances de fractionné adaptées à votre niveau
+4. Visualisez votre calendrier complet avec toutes les séances détaillées.
+5. Téléchargez le programme au format HTML pour l'imprimer ou le consulter hors ligne.
+
+### Éditeur de Programme (Personnalisé)
 
 Pour un contrôle total sur votre entraînement :
 
-1. Cliquez sur **"Éditeur de Programme"** depuis l'écran d'accueil.
-2. Configurez les paramètres globaux (Distance, VMA, Allures EF/Seuil/VMA).
-3. Utilisez l'interface visuelle pour :
-   - Naviguer entre les semaines et les séances.
-   - Modifier le type de séance (Endurance, Fractionné, Sortie longue, etc.).
-   - Ajuster l'échauffement, le corps de séance et le retour au calme.
-4. Exportez votre création personnalisée en HTML.
+1. Cliquez sur **"Créer un programme personnalisé"** depuis la page d'accueil.
+2. Accédez à l'interface web de l'**Éditeur** (http://localhost:8080/editor).
+3. Configurez les paramètres globaux :
+   - Titre du programme
+   - Distance de la course (km)
+   - VMA et date de course
+   - Nombre de semaines
+   - Nombre de séances par semaine
+4. Utilisez l'interface interactive pour personnaliser chaque séance :
+   - Naviguez entre les semaines via les boutons de navigation
+   - Modifiez le nom, le type et la description de chaque séance
+   - Ajustez l'échauffement (en minutes)
+   - Définissez le corps de séance (ex: "5x1000m R:2min")
+   - Configurez le retour au calme (en minutes)
+   - Sélectionnez l'allure cible (% VMA ou allures prédéfinies)
+5. Prévisualisez le kilométrage hebdomadaire et total en temps réel.
+6. Exportez votre programme personnalisé en HTML via le bouton **"Générer le programme"**.
 
 ## Contribution
 
@@ -96,14 +124,30 @@ Les contributions sont les bienvenues ! Voici la marche à suivre :
 
 ### Langages & Frameworks
 
-- **[Java](https://www.java.com/)** - Langage principal du projet.
-- **[Swing](https://docs.oracle.com/javase/tutorial/uiswing/)** - Bibliothèque graphique utilisée pour l'interface utilisateur (GUI).
+- **[Java 21](https://www.java.com/)** - Langage principal du projet.
+- **[Spring Boot 3.2.6](https://spring.io/projects/spring-boot)** - Framework pour l'application web.
+- **[Thymeleaf](https://www.thymeleaf.org/)** - Moteur de template pour les vues HTML.
+- **[Maven](https://maven.apache.org/)** - Gestion des dépendances et build.
 
 ### Architecture
 
-Le projet est structuré en deux packages principaux :
-- `RunGeniusGenerator` : Contient la logique de génération algorithmique des plans (Prepa5k, Prepa10k, SemiMarathon) et la banque d'exercices.
-- `RunGeniusEditor` : Contient les composants de l'interface graphique pour l'édition manuelle des programmes.
+Le projet suit une architecture MVC (Model-View-Controller) organisée en plusieurs packages :
+
+- **`controller`** : Contient `ProgramController` qui gère les routes web (`/`, `/editor`, etc.).
+- **`service`** : Services métier comme `HtmlGeneratorService` pour la génération de HTML.
+- **`model`** :
+  - `RunGeniusGenerator` : Logique de génération algorithmique des plans (Prepa5k, Prepa10k, SemiMarathon) et la banque d'exercices.
+  - `RunGeniusEditor` : Modèles pour l'édition manuelle de programmes personnalisés.
+  - `dto` : Objets de transfert de données (Data Transfer Objects) pour les échanges JSON.
+- **`templates`** : Vues Thymeleaf (index.html, editor.html, result.html).
+
+### Stack Technique
+
+- **Backend** : Spring Boot avec Spring Web MVC
+- **Frontend** : HTML5, CSS3, JavaScript vanilla
+- **Templating** : Thymeleaf pour le rendu côté serveur
+- **Build** : Maven
+- **Serveur** : Tomcat embarqué (via Spring Boot)
 
 ## Documentation
 
