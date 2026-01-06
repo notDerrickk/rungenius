@@ -202,7 +202,7 @@ public class ConfigProgrammeDialog extends JDialog {
             } else if (distanceStr.startsWith("Marathon")) {
                 distanceKm = 42.195;
             } else {
-                distanceKm = 10.0; // Par défaut
+                distanceKm = 10.0; 
             }
             
             valide = true;
@@ -241,14 +241,11 @@ public class ConfigProgrammeDialog extends JDialog {
                 int seconds = Integer.parseInt(parts[2]);
                 totalMinutes = hours * 60 + minutes + seconds / 60.0;
             } else {
-                // Format invalide, retourner l'allure seuil par défaut
                 return allureSeuil;
             }
             
-            // Calculer l'allure en min/km
             return totalMinutes / distanceKm;
         } catch (Exception e) {
-            // En cas d'erreur, retourner l'allure seuil
             return allureSeuil;
         }
     }
