@@ -288,9 +288,8 @@ function initializeProgram() {
     renderProgram();
 }
 
-// Recalculer les allures pour toutes les séances non-personnalisées (comme le bouton dans ProgrammeEditeurFrame)
+// Recalculer les allures pour toutes les séances non-personnalisées
 function recalculerAllures() {
-    // Recalculer les pourcentages VMA depuis les champs d'allure actuels
     programData._allurePct = {
         ef: getPourcentageFromAllure(programData.vma, parseAllure(programData.allures.ef)),
         seuil: getPourcentageFromAllure(programData.vma, parseAllure(programData.allures.seuil)),
@@ -435,7 +434,6 @@ function updateSeance(weekIdx, seanceIdx, field, value) {
     if (field === 'nom' || field === 'type') {
         renderProgram();
     } else if (field === 'allure') {
-        // Changement du type d'allure (ef/seuil/vma/objectif)
         const seance = programData.weeks[weekIdx][seanceIdx];
         if (!seance.customAllure) {
             seance.allureText = programData.allures[value];
@@ -448,7 +446,7 @@ function updateSeance(weekIdx, seanceIdx, field, value) {
 function updateSeanceAllureText(weekIdx, seanceIdx, newText) {
     const seance = programData.weeks[weekIdx][seanceIdx];
     seance.allureText = newText;
-    seance.customAllure = true; // Marquer comme personnalisé
+    seance.customAllure = true;
     seance.allurePct = getPourcentageFromAllure(programData.vma, parseAllure(newText));
     renderProgram();
 }
@@ -458,12 +456,10 @@ function toggleCustomAllure(weekIdx, seanceIdx, isCustom) {
     seance.customAllure = isCustom;
     
     if (!isCustom) {
-        // Revenir à l'allure calculée
         const key = seance.allure || 'ef';
         seance.allureText = programData.allures[key];
         seance.allurePct = programData._allurePct[key];
     } else {
-        // Recalculer le pourcentage depuis le texte actuel
         seance.allurePct = getPourcentageFromAllure(programData.vma, parseAllure(seance.allureText));
     }
     
