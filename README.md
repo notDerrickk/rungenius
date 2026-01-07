@@ -1,177 +1,175 @@
 # RunGenius
+Read this in: [Français](README.fr.md)
+
 ![Java](https://img.shields.io/badge/Java-21%2B-blue)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.6-green)
 ![Version](https://img.shields.io/github/v/release/notDerrickk/rungenius)
 ![License](https://img.shields.io/github/license/notDerrickk/rungenius)
 
-## À propos
+## About
 
-**RunGenius** est une application web Java/Spring Boot conçue pour accompagner les coureurs dans leur préparation physique. Que vous visiez un 5km, un 10km ou un Semi-Marathon, RunGenius génère automatiquement un plan d'entraînement structuré et personnalisé en fonction de votre niveau, de votre VMA (Vitesse Maximale Aérobie) et de vos contraintes d'emploi du temps.
+**RunGenius** is a Java/Spring Boot web application designed to support runners in their physical preparation. Whether you are targeting a 5K, 10K, or Half Marathon, RunGenius automatically generates a structured and personalized training plan based on your fitness level, your VMA (Maximal Aerobic Speed), and your scheduling constraints.
 
-L'application propose deux fonctionnalités principales : un **générateur automatique** de programmes d'entraînement et un **éditeur web interactif** permettant de créer et personnaliser entièrement vos séances. Le calendrier final est exportable en HTML pour un suivi et une impression facilités.
+The application offers two main features: an **automatic training plan generator** and an **interactive web editor** that allows you to fully create and customize your sessions. The final training calendar can be exported in HTML format for easy tracking and printing.
 
-## Table des matières
+## Table of Contents
 
-- 🪧 [À propos](#à-propos)
-- 📦 [Prérequis](#prérequis)
+- 🪧 [About](#about)
+- 📦 [Requirements](#requirements)
 - 🚀 [Installation](#installation)
-- 🛠️ [Utilisation](#utilisation)
-- 🤝 [Contribution](#contribution)
-- 🏗️ [Construit avec](#construit-avec)
+- 🛠️ [Usage](#usage)
+- 🤝 [Contributing](#contributing)
+- 🏗️ [Built With](#built-with)
 - 📚 [Documentation](#documentation)
-- 🏷️ [Gestion des versions](#gestion-des-versions)
-- 📝 [Licence](#licence)
+- 🏷️ [Versioning](#versioning)
+- 📝 [License](#license)
 
-## Prérequis
+## Requirements
 
-Pour compiler et exécuter ce projet, vous aurez besoin des éléments suivants :
+To build and run this project, you will need:
 
-- **Java Development Kit (JDK)** : Version 21 ou supérieure.
-  - [Télécharger Java](https://www.oracle.com/java/technologies/downloads/)
-- **Apache Maven** : Version 3.6+ pour la gestion des dépendances.
-  - [Télécharger Maven](https://maven.apache.org/download.cgi)
-- **Git** : Pour cloner le dépôt.
-  - [Télécharger Git](https://git-scm.com/downloads)
+- **Java Development Kit (JDK)**: Version 21 or higher.
+  - [Download Java](https://www.oracle.com/java/technologies/downloads/)
+- **Apache Maven**: Version 3.6+ for dependency management.
+  - [Download Maven](https://maven.apache.org/download.cgi)
+- **Git**: To clone the repository.
+  - [Download Git](https://git-scm.com/downloads)
 
 ## Installation
 
-Suivez ces étapes pour installer et lancer le projet en local :
+Follow these steps to install and run the project locally:
 
-1. **Cloner le dépôt**
+1. **Clone the repository**
    ```bash
    git clone https://github.com/notDerrickk/rungenius.git
    cd rungenius
    ```
 
-2. **Compiler le projet avec Maven**
+2. **Build the project with Maven**
    ```bash
    mvn clean install
    ```
 
-3. **Lancer l'application**
+3. **Run the application**
    ```bash
    mvn spring-boot:run
    ```
-   
-   Ou en utilisant le JAR compilé :
-   ```bash
-   java -jar target/rungenius-web-0.0.1-SNAPSHOT.jar
-   ```
 
-4. **Accéder à l'application**
+4. **Access the application**
    
-   Ouvrez votre navigateur et rendez-vous sur :
+   Open your browser and go to:
    ```
    http://localhost:8080
    ```
 
-## Utilisation
+## Usage
 
-L'application web propose deux modes d'utilisation accessibles depuis la page d'accueil (http://localhost:8080).
+The web application provides two usage modes accessible from the home page (http://localhost:8080).
 
-### Générateur de Programme (Automatique)
+### Training Plan Generator (Automatic)
 
-Mode recommandé pour générer rapidement un plan d'entraînement adapté à votre objectif :
+Recommended mode to quickly generate a training plan adapted to your goal:
 
-1. Depuis la page d'accueil, remplissez le formulaire de **Configuration du profil** :
-   - **Type de course** : Sélectionnez 5km, 10km ou Semi-Marathon.
-   - **Niveau** : Choisissez Débutant, Novice ou Expert (détermine la complexité des séances de fractionné).
-   - **Sorties par semaine** : De 2 à 5 séances hebdomadaires.
-   - **VMA** : Votre Vitesse Maximale Aérobie en km/h (ex: 15.0).
-   - **Objectif** : Votre temps cible pour la course (ex: 50:00 pour un 10km).
-   - **Date de la course** : Format YYYY-MM-DD.
-2. Cliquez sur **"Générer le programme"**.
-3. L'application calcule automatiquement :
-   - Les zones d'allure (EF, Seuil, VMA, AS)
-   - Le volume hebdomadaire progressif
-   - Les séances de fractionné adaptées à votre niveau
-4. Visualisez votre calendrier complet avec toutes les séances détaillées.
-5. Téléchargez le programme au format HTML pour l'imprimer ou le consulter hors ligne.
+1. From the home page, fill in the **Profile Configuration** form:
+   - **Race type**: Select 5K, 10K or Half Marathon.
+   - **Level**: Choose Beginner, Novice or Expert (determines the complexity of interval sessions).
+   - **Sessions per week**: From 2 to 5 weekly sessions.
+   - **VMA**: Your Maximal Aerobic Speed in km/h (e.g: 15.0).
+   - **Goal**: Your target race time (e.g: 50:00 for a 10K).
+   - **Race date**: Format YYYY-MM-DD.
+2. Click **"Generate program"**.
+3. The application automatically calculates:
+   - Pace zones (Easy, Threshold, VMA, Race Pace)
+   - Progressive weekly volume
+   - Interval sessions adapted to your level
+4. View your complete calendar with all detailed sessions.
+5. Download the program in HTML format to print it or view it offline.
 
-### Éditeur de Programme (Personnalisé)
+### Training Plan Editor (Custom)
 
-Pour un contrôle total sur votre entraînement :
+For full control over your training:
 
-1. Cliquez sur **"Créer un programme personnalisé"** depuis la page d'accueil.
-2. Accédez à l'interface web de l'**Éditeur** (http://localhost:8080/editor).
-3. Configurez les paramètres globaux :
-   - Titre du programme
-   - Distance de la course (km)
-   - VMA et date de course
-   - Nombre de semaines
-   - Nombre de séances par semaine
-4. Utilisez l'interface interactive pour personnaliser chaque séance :
-   - Naviguez entre les semaines via les boutons de navigation
-   - Modifiez le nom, le type et la description de chaque séance
-   - Ajustez l'échauffement (en minutes)
-   - Définissez le corps de séance (ex: "5x1000m R:2min")
-   - Configurez le retour au calme (en minutes)
-   - Sélectionnez l'allure cible (% VMA ou allures prédéfinies)
-5. Prévisualisez le kilométrage hebdomadaire et total en temps réel.
-6. Exportez votre programme personnalisé en HTML via le bouton **"Générer le programme"**.
+1. Click **"Create a custom program"** from the home page.
+2. Access the **Editor** web interface (http://localhost:8080/editor).
+3. Configure global settings:
+   - Program title
+   - Race distance (km)
+   - VMA and race date
+   - Number of weeks
+   - Number of sessions per week
+4. Use the interactive interface to customize each session:
+   - Navigate between weeks using navigation buttons
+   - Edit session name, type and description
+   - Adjust warm-up (in minutes)
+   - Define the main workout (e.g: "5x1000m R:2min")
+   - Configure cool-down (in minutes)
+   - Select target pace (% VMA or predefined paces)
+5. Preview weekly and total mileage in real time.
+6. Export your custom program to HTML using the **"Generate program"** button.
 
-## Contribution
+## Contributing
 
-Les contributions sont les bienvenues ! Voici la marche à suivre :
+Contributions are welcome! Here's how to proceed:
 
-1. Forkez le projet.
-2. Créez votre branche de fonctionnalité (`git checkout -b feature/MaSuperFeature`).
-3. Committez vos changements (`git commit -m 'Ajout de MaSuperFeature'`).
-4. Pushez vers la branche (`git push origin feature/MaSuperFeature`).
-5. Ouvrez une Pull Request sur le dépôt principal.
+1. Fork the project.
+2. Create your feature branch (`git checkout -b feature/MyAwesomeFeature`).
+3. Commit your changes (`git commit -m 'Add MyAwesomeFeature'`).
+4. Push to the branch (`git push origin feature/MyAwesomeFeature`).
+5. Open a Pull Request on the main repository.
 
-## Construit avec
+## Built With
 
-### Langages & Frameworks
+### Languages & Frameworks
 
-- **[Java 21](https://www.java.com/)** - Langage principal du projet.
-- **[Spring Boot 3.2.6](https://spring.io/projects/spring-boot)** - Framework pour l'application web.
-- **[Thymeleaf](https://www.thymeleaf.org/)** - Moteur de template pour les vues HTML.
-- **[Maven](https://maven.apache.org/)** - Gestion des dépendances et build.
+- **[Java 21](https://www.java.com/)** - Main project language.
+- **[Spring Boot 3.2.6](https://spring.io/projects/spring-boot)** - Framework for the web application.
+- **[Thymeleaf](https://www.thymeleaf.org/)** - Template engine for HTML views.
+- **[Maven](https://maven.apache.org/)** - Dependency management and build.
 
 ### Architecture
 
-Le projet suit une architecture MVC (Model-View-Controller) organisée en plusieurs packages :
+The project follows an MVC (Model-View-Controller) architecture organized into several packages:
 
-- **`controller`** : Contient `ProgramController` qui gère les routes web (`/`, `/editor`, etc.).
-- **`service`** : Services métier comme `HtmlGeneratorService` pour la génération de HTML.
-- **`model`** :
-  - `RunGeniusGenerator` : Logique de génération algorithmique des plans (Prepa5k, Prepa10k, SemiMarathon) et la banque d'exercices.
-  - `RunGeniusEditor` : Modèles pour l'édition manuelle de programmes personnalisés.
-  - `dto` : Objets de transfert de données (Data Transfer Objects) pour les échanges JSON.
-- **`templates`** : Vues Thymeleaf (index.html, editor.html, result.html).
+- **`controller`**: Contains `ProgramController` which handles web routes (`/`, `/editor`, etc.).
+- **`service`**: Business services such as `HtmlGeneratorService` for HTML generation.
+- **`model`**:
+  - `RunGeniusGenerator`: Logic for algorithmic plan generation (Prepa5k, Prepa10k, SemiMarathon) and the exercise bank.
+  - `RunGeniusEditor`: Models for manual editing of custom programs.
+  - `dto`: Data Transfer Objects for JSON exchanges.
+- **`templates`**: Thymeleaf views (index.html, editor.html, result.html).
 
-### Stack Technique
+### Technical Stack
 
-- **Backend** : Spring Boot avec Spring Web MVC
-- **Frontend** : HTML5, CSS3, JavaScript vanilla
-- **Templating** : Thymeleaf pour le rendu côté serveur
-- **Build** : Maven
-- **Serveur** : Tomcat embarqué (via Spring Boot)
+- **Backend**: Spring Boot with Spring Web MVC
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Templating**: Thymeleaf for server-side rendering
+- **Build**: Maven
+- **Server**: Embedded Tomcat (via Spring Boot)
 
 ## Documentation
 
-### Calcul des allures
+### Pace Calculations
 
-Le logiciel utilise des pourcentages de VMA pour calculer les zones d'entraînement :
-- **Endurance Fondamentale (EF)** : ~65% VMA
-- **Seuil** : ~80-85% VMA
-- **VMA** : 95-100% VMA
-- **Allure Spécifique (AS)** : Calculée en fonction de l'objectif de temps et de la distance.
+The software uses VMA percentages to calculate training zones:
+- **Easy Run (Easy)**: ~65% VMA
+- **Threshold**: ~80-85% VMA
+- **VMA**: 95-100% VMA
+- **Race Pace**: Calculated based on goal time and distance.
 
-### Structure des données
+### Data Structure
 
-- **Profil** : Stocke les données physiologiques du coureur.
-- **Seance** : Représente une unité d'entraînement (échauffement + corps + retour au calme).
-- **Programme** : Interface implémentée par les différents types de préparations (`Prepa5k`, `Prepa10k`, `SemiMarathon`).
+- **Profile**: Stores the runner's physiological data.
+- **Session**: Represents a training unit (warm-up + main workout + cool-down).
+- **Program**: Interface implemented by the different types of preparations (`Prepa5k`, `Prepa10k`, `SemiMarathon`).
 
-## Gestion des versions
+## Versioning
 
-Les versions disponibles ainsi que les journaux décrivant les changements apportés sont disponibles depuis [la page des Releases](https://github.com/notDerrickk/rungenius/releases).
+Available versions as well as changelogs describing the changes made are available from [the Releases page](https://github.com/notDerrickk/rungenius/releases).
 
-## Licence
+## License
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](./LICENSE) du dépôt pour plus de détails.
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file in the repository for more details.
 
 
 Copyright © Rodéric Neveu (https://github.com/notDerrickk)
+
