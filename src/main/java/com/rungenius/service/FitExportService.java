@@ -44,6 +44,7 @@ public class FitExportService {
 
             WorkoutMesg workout = new WorkoutMesg();
             workout.setSport(Sport.RUNNING);
+            workout.setWktName(safeName(seance.getNom()));
             encoder.write(workout);
         
             int stepIndex = 0;
@@ -77,6 +78,7 @@ public class FitExportService {
     }
     private WorkoutStepMesg createTimeStep(String name, int minutes, boolean isRecovery) {
         WorkoutStepMesg step = new WorkoutStepMesg();
+        step.setWktStepName(safeName(name));
         step.setDurationType(WktStepDuration.TIME);
         step.setDurationValue((long) minutes * 60); // seconds
         step.setTargetType(WktStepTarget.OPEN);
@@ -86,6 +88,7 @@ public class FitExportService {
 
     private WorkoutStepMesg createDistanceStep(String name, int meters, boolean isRecovery) {
         WorkoutStepMesg step = new WorkoutStepMesg();
+        step.setWktStepName(safeName(name));
         step.setDurationType(WktStepDuration.DISTANCE);
         step.setDurationValue((long) meters); // meters
         step.setTargetType(WktStepTarget.OPEN);
@@ -94,7 +97,7 @@ public class FitExportService {
     }
     private WorkoutStepMesg createRecoveryStep(int seconds) {
         WorkoutStepMesg step = new WorkoutStepMesg();
-        step.setWktStepName("Récup");
+        step.setWktStepName(safeName("Récup"));
         step.setDurationType(WktStepDuration.TIME);
         step.setDurationValue((long) seconds); // seconds
         step.setTargetType(WktStepTarget.OPEN);
@@ -188,5 +191,9 @@ public class FitExportService {
 
         return null;
     }
-
+    private String safeName(String name) {
+        if (name == null) return "Seance";
+        String safe = name.replaceAll("[^A-Za-z0-9àâäéèêëïîôöùûüÿæœç\\s-]", "");
+        return safe.length() > 15 ? safe.substring(0, 15) : safe;
+    }
 }
