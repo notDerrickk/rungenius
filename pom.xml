@@ -37,6 +37,15 @@
       <scope>runtime</scope>
       <optional>true</optional>
     </dependency>
+    
+    <!-- Garmin FIT SDK -->
+    <dependency>
+      <groupId>com.garmin</groupId>
+      <artifactId>fit</artifactId>
+      <version>21.105.00</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/fit.jar</systemPath>
+    </dependency>
   </dependencies>
 
   <build>
@@ -54,6 +63,9 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>${project.parent.version}</version>
+        <configuration>
+          <includeSystemScope>true</includeSystemScope>
+        </configuration>
       </plugin>
     </plugins>
   </build>
