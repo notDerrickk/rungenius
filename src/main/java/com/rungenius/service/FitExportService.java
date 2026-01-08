@@ -42,13 +42,24 @@ public class FitExportService {
             workout.setWktName("Seance");
             encoder.write(workout);
 
-            WorkoutStepMesg step = new WorkoutStepMesg();
-            step.setWktStepName("Bloc");
-            step.setDurationType(WktStepDuration.TIME);
-            step.setDurationValue(20 * 60L);
-            step.setIntensity(Intensity.ACTIVE);
-            step.setMessageIndex(0);
-            encoder.write(step);
+            int idx = 0;
+
+            if (seance.getDureeEchauffement() > 0) {
+                WorkoutStepMesg warmup = createTimeStep("Echauffement", seance.getDureeEchauffement(), false);
+                warmup.setMessageIndex(idx++);
+                encoder.write(warmup);
+            }
+
+            WorkoutStepMesg main = createTimeStep("Bloc", 20, false);
+            main.setMessageIndex(idx++);
+            encoder.write(main);
+
+            if (seance.getDureeCooldown() > 0) {
+                WorkoutStepMesg cooldown = createTimeStep("Cooldown", seance.getDureeCooldown(), true);
+                cooldown.setMessageIndex(idx++);
+                encoder.write(cooldown);
+            }
+
 
             encoder.close();
             return Files.readAllBytes(temp);
@@ -57,4 +68,13 @@ public class FitExportService {
             Files.deleteIfExists(temp);
         }
     }
+    private WorkoutStepMesg createTimeStep(String name, int minutes, boolean recovery) {
+        WorkoutStepMesg step = new WorkoutStepMesg();
+        step.setWktStepName(name);
+        step.setDurationType(WktStepDuration.TIME);
+        step.setDurationValue(minutes * 60L);
+        step.setIntensity(recovery ? Intensity.REST : Intensity.ACTIVE);
+        return step;
+    }
+
 }
