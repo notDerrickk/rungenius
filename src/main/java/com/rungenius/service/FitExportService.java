@@ -19,7 +19,9 @@ import com.rungenius.model.RunGeniusGenerator.Profil;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -75,6 +77,40 @@ public class FitExportService {
         step.setDurationValue(minutes * 60L);
         step.setIntensity(recovery ? Intensity.REST : Intensity.ACTIVE);
         return step;
+    }
+    private WorkoutStepMesg createDistanceStep(String name, int meters, boolean recovery) {
+        WorkoutStepMesg step = new WorkoutStepMesg();
+        step.setWktStepName(name);
+        step.setDurationType(WktStepDuration.DISTANCE);
+        step.setDurationValue((long) meters);
+        step.setIntensity(recovery ? Intensity.REST : Intensity.ACTIVE);
+        return step;
+    }
+    
+    private List<WorkoutStepMesg> buildBodySteps(String corps) {
+        List<WorkoutStepMesg> steps = new ArrayList<>();
+
+        if (corps == null) {
+            steps.add(createTimeStep("Bloc", 20, false));
+            return steps;
+        }
+
+        corps = corps.toLowerCase();
+
+        if (corps.contains("km")) {
+            double km = Double.parseDouble(corps.replaceAll("[^0-9.,]", "").replace(',', '.'));
+            steps.add(createDistanceStep("Continu", (int)(km * 1000), false));
+            return steps;
+        }
+
+        if (corps.contains("min")) {
+            int min = Integer.parseInt(corps.replaceAll("[^0-9]", ""));
+            steps.add(createTimeStep("Continu", min, false));
+            return steps;
+        }
+
+        steps.add(createTimeStep("Bloc", 20, false));
+        return steps;
     }
 
 }
