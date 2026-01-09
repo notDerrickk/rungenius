@@ -2,7 +2,6 @@
 # Java / build
 /out/
 /bin/
-/lib/
 /target/
 /*.class
 /*.html
