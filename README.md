@@ -82,6 +82,8 @@ Recommended mode to quickly generate a training plan adapted to your goal:
    - Pace zones (Easy, Threshold, VMA, Race Pace)
    - Progressive weekly volume
    - Interval sessions adapted to your level
+### Exporting to FIT
+You can also export sessions in `.fit` format (use the "Export FIT" button in the interface). To load the `.fit` files onto a Garmin watch, connect the watch to your computer, copy the `.fit` files into the `workout` folder on the device, then safely eject the watch before unplugging it.
 4. View your complete calendar with all detailed sessions.
 5. Download the program in HTML format to print it or view it offline.
 

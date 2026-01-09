@@ -82,6 +82,8 @@ Mode recommandé pour générer rapidement un plan d'entraînement adapté à vo
    - Les zones d'allure (EF, Seuil, VMA, AS)
    - Le volume hebdomadaire progressif
    - Les séances de fractionné adaptées à votre niveau
+### Exporter en FIT
+Vous pouvez également exporter les séances au format `.fit` (bouton "Exporter en FIT" dans l'interface). Pour les charger sur une montre Garmin, connectez la montre à votre ordinateur, copiez les fichiers `.fit` dans le dossier `workout` de la montre, puis éjectez-la en toute sécurité avant de la débrancher.
 4. Visualisez votre calendrier complet avec toutes les séances détaillées.
 5. Téléchargez le programme au format HTML pour l'imprimer ou le consulter hors ligne.
 
