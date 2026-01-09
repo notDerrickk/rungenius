@@ -3,6 +3,8 @@ package com.rungenius.controller;
 import com.rungenius.model.RunGeniusGenerator.*;
 import com.rungenius.model.RunGeniusEditor.ProgrammeCustom;
 import com.rungenius.model.dto.ProgramDataDTO;
+import com.rungenius.service.FitExportService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,9 +20,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Controller
 public class ProgramController {
+
+    @Autowired
+    private FitExportService fitExportService;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -60,7 +67,7 @@ public class ProgramController {
                     // Utiliser allurePct si disponible, sinon calculer depuis allureText
                     Double pctVMA = seanceDTO.getAllurePct();
                     if (pctVMA == null || pctVMA <= 0) {
-                        pctVMA = 0.65; // Fallback
+                        pctVMA = 0.65; 
                     }
                     
                     Seance seance = new Seance(nom, type, echauffement, corps, cooldown, pctVMA);
@@ -311,6 +318,118 @@ public class ProgramController {
         response.getOutputStream().flush();
     }
 
+    // Export d'une seule séance en .fit
+    @PostMapping("/fit/export-single")
+    public void exportSingleSeance(
+            @RequestParam("nom") String nom,
+            @RequestParam(value="type", required=false) String type,
+            @RequestParam(value="echauffement", required=false, defaultValue="0") int echauffement,
+            @RequestParam(value="corps", required=false) String corps,
+            @RequestParam(value="cooldown", required=false, defaultValue="0") int cooldown,
+            @RequestParam(value="allurePct", required=false) Double allurePct,
+            @RequestParam(value="vma", required=false, defaultValue="0") double vma,
+            HttpServletResponse response
+    ) throws IOException {
+        try {
+            Double pct = (allurePct == null || allurePct <= 0) ? 0.85 : allurePct;
+            Seance seance = new Seance(nom, type, echauffement, corps, cooldown, pct);
+            Profil profil = new Profil("Custom", 3, vma, null);
+
+            byte[] fit = fitExportService.generateWorkoutFit(seance, profil);
+            
+            String filename = sanitizeFilename(nom) + ".fit"; // supprime les accents
+
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+            response.getOutputStream().write(fit);
+            response.getOutputStream().flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(500, "Erreur export FIT: " + e.getMessage());
+        }
+    }
+
+    // Export de toutes les séances en .zip
+    @PostMapping("/fit/export-all")
+    public void exportAllFit(
+            @RequestParam("raceType") String raceType,
+            @RequestParam("niveau") String niveau,
+            @RequestParam("sorties") int sorties,
+            @RequestParam("vma") double vma,
+            @RequestParam("objectif") String objectifStr,
+            @RequestParam("raceDate") String raceDateStr,
+            HttpServletResponse response
+    ) throws IOException {
+        try {
+            LocalDate raceDate = LocalDate.parse(raceDateStr);
+            long weeksBetween = ChronoUnit.WEEKS.between(LocalDate.now(), raceDate);
+            if (weeksBetween < 4) weeksBetween = 4;
+            if (weeksBetween > 52) weeksBetween = 52;
+
+            double distanceKm;
+            String title;
+            String raceFormat;
+            
+            if ("5km".equals(raceType)) { 
+                distanceKm = 5.0; 
+                title = "Préparation 5 km"; 
+                raceFormat = "5km";
+            }
+            else if ("10km".equals(raceType)) { 
+                distanceKm = 10.0; 
+                title = "Préparation 10 km"; 
+                raceFormat = "10km";
+            }
+            else { 
+                distanceKm = 21.1; 
+                title = "Préparation Semi-Marathon"; 
+                raceFormat = "semi_marathon";
+            }
+
+            Integer objectifSec = parseTimeToSeconds(objectifStr);
+            Profil profil = new Profil(niveau, sorties, vma, objectifSec);
+
+            Programme programme;
+            if ("5km".equals(raceType)) programme = new Prepa5k(profil, (int) weeksBetween, distanceKm, title);
+            else if ("10km".equals(raceType)) programme = new Prepa10k(profil, (int) weeksBetween, distanceKm, title);
+            else programme = new SemiMarathon(profil, (int) weeksBetween, distanceKm, title);
+
+            String zipFilename = String.format("preparation_%s_seances.zip", raceFormat);
+            
+            response.setContentType("application/zip");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + zipFilename + "\"");
+
+            try (ZipOutputStream zos = new ZipOutputStream(response.getOutputStream())) {
+                List<Seance[]> semaines = programme.getSemaines();
+                int seanceNumber = 1;
+
+                for (int i = 0; i < semaines.size(); i++) {
+                    Seance[] semaine = semaines.get(i);
+                    for (int j = 0; j < semaine.length; j++) {
+                        Seance seance = semaine[j];
+                        String filename = String.format("Seance_%d_%s.fit", 
+                            seanceNumber,
+                            sanitizeFilename(seance.getNom())  
+                        );
+
+                        byte[] fitData = fitExportService.generateWorkoutFit(seance, profil);
+                        
+                        ZipEntry entry = new ZipEntry(filename);
+                        zos.putNextEntry(entry);
+                        zos.write(fitData);
+                        zos.closeEntry();
+
+                        seanceNumber++;
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(500, "Erreur lors de l'export FIT: " + e.getMessage());
+        }
+    }
+
     private Integer parseTimeToSeconds(String s) {
         if (s == null || s.isEmpty()) return null;
         try {
@@ -338,5 +457,19 @@ public class ProgramController {
             }
         }
         return totalKm;
+    }
+
+    private String removeAccents(String text) {
+        if (text == null) return "";
+        return java.text.Normalizer.normalize(text, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+    }
+
+    private String sanitizeFilename(String name) {
+        if (name == null || name.isBlank()) return "seance";
+        String clean = removeAccents(name);
+        clean = clean.replaceAll("\\s+", "_");
+        clean = clean.replaceAll("[^A-Za-z0-9_-]", "");
+        return clean.substring(0, Math.min(clean.length(), 50));
     }
 }
