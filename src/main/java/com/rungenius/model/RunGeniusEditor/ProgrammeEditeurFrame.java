@@ -214,7 +214,7 @@ public class ProgrammeEditeurFrame extends JFrame {
         
         try {
             HtmlGenerator generator = new HtmlGenerator();
-            String filename = generator.genererHTML(programme, profil);
+            String filename = generator.genererHTMLString(programme, profil);
             
             JOptionPane.showMessageDialog(this,
                 "Programme personnalisé exporté en HTML :\n" + filename,

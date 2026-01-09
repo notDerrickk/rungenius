@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -163,17 +161,16 @@ public class ProgramController {
             Profil profil = new Profil("Novice", programData.getNbSessions(), vma, null);
             
             HtmlGenerator generator = new HtmlGenerator();
-            String filename = generator.genererHTML(programme, profil);
+            String html = generator.genererHTMLString(programme, profil);
             
-            Path file = Path.of(filename);
-            if (!Files.exists(file)) {
-                response.sendError(500, "Fichier non généré");
-                return;
-            }
-            
+            String safeTitle = sanitizeFilename(programme.getTitle());
+            String attachmentName = String.format("%s.html", safeTitle.isEmpty() ? "programme" : "programme_" + safeTitle);
+
+            byte[] bytes = html.getBytes(java.nio.charset.StandardCharsets.UTF_8);
             response.setContentType("text/html; charset=UTF-8");
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFileName().toString() + "\"");
-            Files.copy(file, response.getOutputStream());
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + attachmentName + "\"");
+            response.setContentLength(bytes.length);
+            response.getOutputStream().write(bytes);
             response.getOutputStream().flush();
             
         } catch (Exception e) {
@@ -304,17 +301,16 @@ public class ProgramController {
         else programme = new SemiMarathon(profil, (int) weeksBetween, distanceKm, title);
 
         HtmlGenerator generator = new HtmlGenerator();
-        String filename = generator.genererHTML(programme, profil); // produit le fichier sur disque
+        String html = generator.genererHTMLString(programme, profil);
+        
+        String safeTitle = sanitizeFilename(programme.getTitle());
+        String attachmentName = String.format("%s.html", safeTitle.isEmpty() ? "programme" : "programme_" + safeTitle);
 
-        Path file = Path.of(filename);
-        if (!Files.exists(file)) {
-            response.sendError(500, "Fichier non généré");
-            return;
-        }
-
+        byte[] bytes = html.getBytes(java.nio.charset.StandardCharsets.UTF_8);
         response.setContentType("text/html; charset=UTF-8");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFileName().toString() + "\"");
-        Files.copy(file, response.getOutputStream());
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + attachmentName + "\"");
+        response.setContentLength(bytes.length);
+        response.getOutputStream().write(bytes);
         response.getOutputStream().flush();
     }
 

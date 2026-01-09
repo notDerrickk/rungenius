@@ -1,16 +1,12 @@
 package com.rungenius.model.RunGeniusGenerator;
-import java.io.FileWriter;
-import java.io.IOException;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
 public class HtmlGenerator {
-    public String genererHTML(Programme programme, Profil profil) throws IOException {
-        String safeTitle = programme.getTitle().toLowerCase().replaceAll("\\s+", "_");
-        String filename = "programme_" + safeTitle + ".html";
-
+    public String genererHTMLString(Programme programme, Profil profil) {
         StringBuilder html = new StringBuilder();
 
         append(html, "<!doctype html>");
@@ -159,11 +155,7 @@ public class HtmlGenerator {
         append(html, "</body>");
         append(html, "</html>");
 
-        try (FileWriter fw = new FileWriter(filename)) {
-            fw.write(html.toString());
-        }
-
-        return filename;
+        return html.toString();
     }
 
     public static void append(StringBuilder sb, String line) {
