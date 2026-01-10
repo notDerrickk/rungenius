@@ -1,151 +1,173 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
-    <title>RunGenius - Éditeur de Programme</title>
+    <title>RunGenius — Éditeur</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="alternate icon" href="/favicon.ico">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background: linear-gradient(135deg,#e6f0ff 0%, #f7f9fb 100%); min-height: 100vh; padding: 20px 0; }
-        .card { border: none; border-radius: 15px; overflow: hidden; }
-        .header { background: linear-gradient(135deg,#2b8aef,#764ba2); color: white; padding: 30px; text-align: center; }
-        .seance-card { border: 1px solid #dee2e6; border-radius: 10px; padding: 15px; margin-bottom: 15px; background: white; }
-        .week-header { background: linear-gradient(135deg,#667eea,#764ba2); color: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
-        .btn-add-seance { border-style: dashed; }
-        .seance-type-badge { font-size: 0.85em; }
-        .allure-custom { background-color: #fff3cd; border-color: #ffc107; }
-    </style>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/app.css}">
 </head>
+
 <body>
-
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow-lg">
-                <div class="header">
-                    <h1>🏃 RunGenius - Éditeur</h1>
-                    <p class="mb-0">Créez votre programme d'entraînement personnalisé</p>
-                </div>
-                <div class="card-body p-4">
-                    
-                    <!-- Configuration du programme -->
-                    <div class="mb-4" id="configSection">
-                        <h4 class="mb-3">Configuration du programme</h4>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Titre du programme</label>
-                                <input type="text" id="programTitle" class="form-control" value="Mon Programme Personnalisé">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Distance (km)</label>
-                                <input type="number" id="programDistance" class="form-control" value="10" step="0.1">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">VMA (km/h)</label>
-                                <input type="number" id="programVma" class="form-control" value="15.0" step="0.1">
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Nombre de semaines</label>
-                                <input type="number" id="nbWeeks" class="form-control" value="8" min="4" max="52">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Sorties / semaine</label>
-                                <input type="number" id="nbSessions" class="form-control" value="3" min="1" max="7">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Objectif temps (MM:SS ou HH:MM:SS)</label>
-                                <input type="text" id="objectifTemps" class="form-control" value="50:00">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Date de la course</label>
-                                <input type="date" id="raceDate" class="form-control">
-                            </div>
-                        </div>
-
-                        <hr>
-                        <h5 class="mb-3">Configuration des allures</h5>
-                        <div class="alert alert-info">
-                            <small>Cliquez sur "Calculer les allures automatiquement" pour générer les allures selon votre VMA et objectif, puis modifiez-les si nécessaire.</small>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <button class="btn btn-secondary" onclick="calculerAlluresAuto()">
-                                    🔢 Calculer les allures automatiquement
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Allure EF (min/km)</label>
-                                <input type="text" id="allureEF" class="form-control" value="6:00">
-                                <small class="text-muted">65% VMA</small>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Allure Seuil (min/km)</label>
-                                <input type="text" id="allureSeuil" class="form-control" value="4:42">
-                                <small class="text-muted">85% VMA</small>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Allure VMA (min/km)</label>
-                                <input type="text" id="allureVMA" class="form-control" value="4:00">
-                                <small class="text-muted">100% VMA</small>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Allure Objectif (min/km)</label>
-                                <input type="text" id="allureObjectif" class="form-control" value="5:00">
-                                <small class="text-muted">Basée sur objectif temps</small>
-                            </div>
-                        </div>
-
-                        <button class="btn btn-primary btn-lg" onclick="initializeProgram()">
-                            Initialiser le programme
-                        </button>
-                    </div>
-
-                    <hr>
-
-                    <!-- Zone d'édition des séances -->
-                    <div id="programEditor" style="display: none;">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="mb-0">Édition des séances</h4>
-                            <div>
-                                <button class="btn btn-secondary me-2" onclick="recalculerAllures()">
-                                    🔁 Recalculer les allures
-                                </button>
-                                <button class="btn btn-success me-2" onclick="generateHTML()">
-                                    📄 Générer le programme HTML
-                                </button>
-                                <button class="btn btn-primary" onclick="downloadHTML()">
-                                    💾 Télécharger
-                                </button>
-                            </div>
-                        </div>
-
-                        <div id="weeksContainer">
-                            <!-- Les semaines seront ajoutées dynamiquement ici -->
-                        </div>
-                    </div>
-
-                    <div th:if="${error}" class="alert alert-danger mt-3">
-                        <span th:text="${error}"></span>
-                    </div>
-                </div>
+<div class="rg-topbar">
+    <div class="container py-3">
+        <div class="d-flex align-items-center justify-content-between gap-2">
+            <a class="rg-brand" href="/">
+                <img src="/logo.png" alt="RunGenius" class="rg-logo">
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <button class="rg-btn" type="button" data-theme-toggle aria-pressed="false">Light</button>
+                <a class="rg-btn" href="/">Générateur</a>
             </div>
         </div>
     </div>
 </div>
 
-<footer class="text-center mt-4">
-    <hr>
-    <p class="mb-0 small text-muted">&copy; 2025 Rodéric NEVEU</p>
-</footer>
+<div class="container my-4" style="padding-bottom: 90px;">
+    <div class="rg-card mb-3" id="configSection">
+        <div class="rg-card-inner">
+            <div class="d-flex justify-content-between align-items-start gap-2">
+                <div>
+                    <div class="rg-section-title">Editeur de programme</div>
+                    <div class="small-muted mt-1">Paramètres du programme + calcul des allures.</div>
+                </div>
+            </div>
+
+            <div class="rg-divider"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Titre du programme</label>
+                    <input type="text" id="programTitle" class="form-control rg-input" value="Mon Programme Personnalisé">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Distance (km)</label>
+                    <input type="number" id="programDistance" class="form-control rg-input" value="10" step="0.1">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">VMA (km/h)</label>
+                    <input type="number" id="programVma" class="form-control rg-input" value="15.0" step="0.1">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Nombre de semaines</label>
+                    <input type="number" id="nbWeeks" class="form-control rg-input" value="8" min="4" max="52">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Sorties / semaine</label>
+                    <input type="number" id="nbSessions" class="form-control rg-input" value="3" min="1" max="7">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Objectif temps</label>
+                    <input type="text" id="objectifTemps" class="form-control rg-input" value="50:00">
+                    <div class="small-muted">MM:SS ou HH:MM:SS</div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Date de la course</label>
+                    <input type="date" id="raceDate" class="form-control rg-input">
+                </div>
+            </div>
+
+            <div class="rg-divider"></div>
+
+            <div id="beforeInitActions">
+                <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+                    <div class="small-muted">
+                        Étape 1: Calculez d'abord les allures selon votre VMA et objectif
+                    </div>
+                    <button class="rg-btn" type="button" onclick="calculerAlluresAuto()">Calculer les allures</button>
+                </div>
+                <div class="rg-divider"></div>
+                <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+                    <div>
+                        <div class="small-muted mb-1">Étape 2: Initialisez votre programme personnalisé</div>
+                        <div class="small-muted">Crée la structure du programme avec vos paramètres (semaines, séances/semaine) que vous pourrez ensuite modifier.</div>
+                    </div>
+                    <button class="rg-btn rg-btn-primary" type="button" onclick="initializeProgram()">Initialiser le programme</button>
+                </div>
+            </div>
+            <div id="afterInitActions" style="display:none;">
+                <div class="d-flex flex-wrap gap-2 align-items-center justify-content-end">
+                    <button class="rg-btn" type="button" onclick="recalculerAllures()">Recalculer les allures</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="rg-card mb-3" id="paceCards">
+        <div class="rg-card-inner">
+            <div class="d-flex justify-content-between align-items-center gap-2">
+                <div>
+                    <div class="rg-section-title">Zones d'allure</div>
+                </div>
+            </div>
+
+            <div class="rg-divider"></div>
+
+
+            <div class="row g-3 mt-3">
+                <div class="col-md-3">
+                    <label class="form-label">Allure EF (min/km)</label>
+                    <input type="text" id="allureEF" class="form-control rg-input" value="6:00">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Allure Objectif (min/km)</label>
+                    <input type="text" id="allureObjectif" class="form-control rg-input" value="5:00">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Allure Seuil (min/km)</label>
+                    <input type="text" id="allureSeuil" class="form-control rg-input" value="4:42">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Allure VMA (min/km)</label>
+                    <input type="text" id="allureVMA" class="form-control rg-input" value="4:00">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Program editor -->
+    <div class="rg-card" id="programEditor" style="display:none;">
+        <div class="rg-card-inner">
+            <div class="d-flex justify-content-between align-items-center gap-2">
+                <div>
+                    <div class="rg-section-title">Édition des séances</div>
+                    <div class="small-muted mt-1">Simple, lisible, exportable via ton backend.</div>
+                </div>
+            </div>
+
+            <div class="rg-divider"></div>
+
+            <div id="weeksContainer"></div>
+
+            <div class="rg-divider"></div>
+
+            <div class="d-flex justify-content-end">
+                <button class="rg-btn rg-btn-primary btn-lg" type="button" onclick="generateHTMLInSameWindow()">
+                    Générer le programme
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger mt-3">
+        <span th:text="${error}"></span>
+    </div>
+</div>
+
+<div class="rg-actionbar" id="actionBar" style="display:none;">
+    <div class="container">
+        <div class="wrap">
+            <button class="rg-btn rg-btn-primary" type="button" onclick="generateHTMLInSameWindow()">Générer le programme</button>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/app.js}"></script>
 
 <script>
 let programData = {
@@ -158,17 +180,14 @@ let programData = {
     allures: {},
     raceDate: '',
     weeks: [],
-    _allurePct: {} // Stocke les pourcentages VMA calculés
+    _allurePct: {}
 };
 
-// Formater une allure en minutes décimales vers "MM:SS"
 function formatAllure(minutesPerKm) {
     const minutes = Math.floor(minutesPerKm);
     const seconds = Math.round((minutesPerKm - minutes) * 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
-
-// Parser une allure "MM:SS" vers minutes décimales
 function parseAllure(allureStr) {
     if (!allureStr) return null;
     const parts = allureStr.trim().split(':');
@@ -179,71 +198,52 @@ function parseAllure(allureStr) {
     }
     return null;
 }
-
-// Parser un temps objectif "MM:SS" ou "HH:MM:SS" vers secondes totales
 function parseTimeToSeconds(timeStr) {
     if (!timeStr) return null;
     const parts = timeStr.trim().split(':');
     try {
-        if (parts.length === 1) {
-            return parseInt(parts[0]) * 60; // Minutes seulement
-        } else if (parts.length === 2) {
-            return parseInt(parts[0]) * 60 + parseInt(parts[1]); // MM:SS
-        } else if (parts.length === 3) {
-            return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]); // HH:MM:SS
-        }
-    } catch (e) {
-        return null;
-    }
+        if (parts.length === 1) return parseInt(parts[0]) * 60;
+        if (parts.length === 2) return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        if (parts.length === 3) return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
+    } catch (e) { return null; }
     return null;
 }
-
-// Calculer l'allure objectif depuis le temps objectif et la distance
 function getAllureFromObjectif(distanceKm, objectifSeconds) {
-    if (!objectifSeconds || objectifSeconds <= 0 || distanceKm <= 0) {
-        return null;
-    }
+    if (!objectifSeconds || objectifSeconds <= 0 || distanceKm <= 0) return null;
     const secondsPerKm = objectifSeconds / distanceKm;
-    const minutesPerKm = secondsPerKm / 60.0;
-    return minutesPerKm;
+    return secondsPerKm / 60.0;
 }
-
-// Calculer le pourcentage VMA depuis une allure en min/km
 function getPourcentageFromAllure(vma, minutesPerKm) {
     if (minutesPerKm <= 0 || vma <= 0) return 0.65;
     return 60.0 / (vma * minutesPerKm);
 }
 
-// Calculer automatiquement les allures selon la VMA et l'objectif (comme ConfigProgrammeDialog.calculerAllures())
+function updatePaceCards(){
+    document.getElementById('paceEFCard').textContent = document.getElementById('allureEF').value || '—';
+    document.getElementById('paceObjCard').textContent = document.getElementById('allureObjectif').value || '—';
+    document.getElementById('paceSeuilCard').textContent = document.getElementById('allureSeuil').value || '—';
+    document.getElementById('paceVMACard').textContent = document.getElementById('allureVMA').value || '—';
+}
+
 function calculerAlluresAuto() {
     const vma = parseFloat(document.getElementById('programVma').value);
     const distanceKm = parseFloat(document.getElementById('programDistance').value);
     const objectifStr = document.getElementById('objectifTemps').value;
-    
-    if (!vma || vma <= 0) {
-        alert('Veuillez entrer une VMA valide.');
-        return;
-    }
 
-    // Calculer les allures basées sur la VMA
-    const allureEFValue = 60.0 / (vma * 0.65); // 65% VMA
-    const allureSeuilValue = 60.0 / (vma * 0.85); // 85% VMA
-    const allureVMAValue = 60.0 / vma; // 100% VMA
+    if (!vma || vma <= 0) { alert('Veuillez entrer une VMA valide.'); return; }
 
-    document.getElementById('allureEF').value = formatAllure(allureEFValue);
-    document.getElementById('allureSeuil').value = formatAllure(allureSeuilValue);
-    document.getElementById('allureVMA').value = formatAllure(allureVMAValue);
+    document.getElementById('allureEF').value = formatAllure(60.0 / (vma * 0.65));
+    document.getElementById('allureSeuil').value = formatAllure(60.0 / (vma * 0.85));
+    document.getElementById('allureVMA').value = formatAllure(60.0 / vma);
 
-    // Calculer l'allure objectif si un objectif temps est fourni
     const objectifSeconds = parseTimeToSeconds(objectifStr);
     if (objectifSeconds && distanceKm > 0) {
         const allureObjectifValue = getAllureFromObjectif(distanceKm, objectifSeconds);
-        if (allureObjectifValue) {
-            document.getElementById('allureObjectif').value = formatAllure(allureObjectifValue);
-        }
+        if (allureObjectifValue) document.getElementById('allureObjectif').value = formatAllure(allureObjectifValue);
     }
 
-    alert('Allures calculées automatiquement selon votre VMA et objectif.');
+    updatePaceCards();
+    alert('Allures calculées.');
 }
 
 function initializeProgram() {
@@ -254,7 +254,7 @@ function initializeProgram() {
     programData.nbSessions = parseInt(document.getElementById('nbSessions').value);
     programData.objectifTemps = document.getElementById('objectifTemps').value;
     programData.raceDate = document.getElementById('raceDate').value;
-    
+
     programData.allures = {
         ef: document.getElementById('allureEF').value,
         seuil: document.getElementById('allureSeuil').value,
@@ -262,7 +262,6 @@ function initializeProgram() {
         objectif: document.getElementById('allureObjectif').value
     };
 
-    // Calculer les pourcentages VMA pour chaque allure
     programData._allurePct = {
         ef: getPourcentageFromAllure(programData.vma, parseAllure(programData.allures.ef)),
         seuil: getPourcentageFromAllure(programData.vma, parseAllure(programData.allures.seuil)),
@@ -270,7 +269,6 @@ function initializeProgram() {
         objectif: getPourcentageFromAllure(programData.vma, parseAllure(programData.allures.objectif))
     };
 
-    // Initialiser les semaines
     programData.weeks = [];
     for (let i = 0; i < programData.nbWeeks; i++) {
         let week = [];
@@ -290,12 +288,13 @@ function initializeProgram() {
         programData.weeks.push(week);
     }
 
-    document.getElementById('configSection').style.display = 'none';
+    document.getElementById('beforeInitActions').style.display = 'none';
+    document.getElementById('afterInitActions').style.display = 'block';
     document.getElementById('programEditor').style.display = 'block';
+    document.getElementById('actionBar').style.display = 'block';
     renderProgram();
 }
 
-// Recalculer les allures pour toutes les séances non-personnalisées
 function recalculerAllures() {
     programData._allurePct = {
         ef: getPourcentageFromAllure(programData.vma, parseAllure(programData.allures.ef)),
@@ -304,7 +303,6 @@ function recalculerAllures() {
         objectif: getPourcentageFromAllure(programData.vma, parseAllure(programData.allures.objectif))
     };
 
-    // Mettre à jour les séances qui ne sont pas personnalisées
     let nbUpdated = 0;
     for (let i = 0; i < programData.weeks.length; i++) {
         for (let j = 0; j < programData.weeks[i].length; j++) {
@@ -317,7 +315,7 @@ function recalculerAllures() {
             }
         }
     }
-    
+    updatePaceCards();
     alert(`${nbUpdated} séance(s) recalculée(s).`);
     renderProgram();
 }
@@ -327,113 +325,80 @@ function renderProgram() {
     container.innerHTML = '';
 
     for (let i = 0; i < programData.weeks.length; i++) {
-        const weekDiv = document.createElement('div');
-        weekDiv.className = 'mb-4';
-        
-        const weekHeader = document.createElement('div');
-        weekHeader.className = 'week-header';
-        weekHeader.innerHTML = `<h5 class="mb-0">📅 Semaine ${i+1}</h5>`;
-        weekDiv.appendChild(weekHeader);
+        const weekEl = document.createElement('div');
+        weekEl.className = 'rg-week';
 
+        weekEl.innerHTML = `
+          <div class="rg-week-head">
+            <h3 class="rg-week-title">Semaine ${i+1}</h3>
+            <button class="rg-btn" type="button" onclick="addSeance(${i})">+ Séance</button>
+          </div>
+          <div class="rg-week-body" id="week_${i}"></div>
+        `;
+        container.appendChild(weekEl);
+
+        const weekBody = document.getElementById(`week_${i}`);
         for (let j = 0; j < programData.weeks[i].length; j++) {
-            const seance = programData.weeks[i][j];
-            const seanceCard = createSeanceCard(i, j, seance);
-            weekDiv.appendChild(seanceCard);
-        }
+            const s = programData.weeks[i][j];
+            const card = document.createElement('div');
+            card.className = 'rg-session';
 
-        // Bouton ajouter séance
-        const addBtn = document.createElement('button');
-        addBtn.className = 'btn btn-outline-primary btn-add-seance w-100';
-        addBtn.innerHTML = '➕ Ajouter une séance';
-        addBtn.onclick = () => addSeance(i);
-        weekDiv.appendChild(addBtn);
-
-        container.appendChild(weekDiv);
-    }
-}
-
-function createSeanceCard(weekIdx, seanceIdx, seance) {
-    const card = document.createElement('div');
-    card.className = 'seance-card';
-    
-    const customClass = seance.customAllure ? 'allure-custom' : '';
-    const customChecked = seance.customAllure ? 'checked' : '';
-
-    card.innerHTML = `
-        <div class="d-flex justify-content-between align-items-start mb-2">
-            <div>
-                <strong>${seance.nom}</strong>
-                <span class="badge bg-info seance-type-badge ms-2">${seance.type}</span>
-                ${seance.customAllure ? '<span class="badge bg-warning seance-type-badge ms-1">Personnalisé</span>' : ''}
-            </div>
-            <button class="btn btn-sm btn-danger" onclick="deleteSeance(${weekIdx}, ${seanceIdx})">🗑️</button>
-        </div>
-        <div class="row">
-            <div class="col-md-6 mb-2">
-                <label class="form-label small">Nom</label>
-                <input type="text" class="form-control form-control-sm" value="${seance.nom}" 
-                    onchange="updateSeance(${weekIdx}, ${seanceIdx}, 'nom', this.value)">
-            </div>
-            <div class="col-md-6 mb-2">
-                <label class="form-label small">Type</label>
-                <select class="form-select form-select-sm" 
-                    onchange="updateSeance(${weekIdx}, ${seanceIdx}, 'type', this.value)">
-                    <option value="Endurance" ${seance.type === 'Endurance' ? 'selected' : ''}>Endurance</option>
-                    <option value="Fractionné" ${seance.type === 'Fractionné' ? 'selected' : ''}>Fractionné</option>
-                    <option value="Sortie longue" ${seance.type === 'Sortie longue' ? 'selected' : ''}>Sortie longue</option>
-                    <option value="Seuil" ${seance.type === 'Seuil' ? 'selected' : ''}>Seuil</option>
-                    <option value="VMA" ${seance.type === 'VMA' ? 'selected' : ''}>VMA</option>
-                    <option value="Récupération" ${seance.type === 'Récupération' ? 'selected' : ''}>Récupération</option>
-                </select>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-3 mb-2">
-                <label class="form-label small">Échauffement (min)</label>
-                <input type="number" class="form-control form-control-sm" value="${seance.echauffement}" 
-                    onchange="updateSeance(${weekIdx}, ${seanceIdx}, 'echauffement', parseInt(this.value))">
-            </div>
-            <div class="col-md-3 mb-2">
-                <label class="form-label small">Cooldown (min)</label>
-                <input type="number" class="form-control form-control-sm" value="${seance.cooldown}" 
-                    onchange="updateSeance(${weekIdx}, ${seanceIdx}, 'cooldown', parseInt(this.value))">
-            </div>
-            <div class="col-md-6 mb-2">
-                <label class="form-label small">Allure (type)</label>
-                <select class="form-select form-select-sm" 
-                    onchange="updateSeance(${weekIdx}, ${seanceIdx}, 'allure', this.value)">
-                    <option value="ef" ${seance.allure === 'ef' ? 'selected' : ''}>Endurance Fondamentale (${programData.allures.ef})</option>
-                    <option value="seuil" ${seance.allure === 'seuil' ? 'selected' : ''}>Allure Seuil (${programData.allures.seuil})</option>
-                    <option value="vma" ${seance.allure === 'vma' ? 'selected' : ''}>Allure VMA (${programData.allures.vma})</option>
-                    <option value="objectif" ${seance.allure === 'objectif' ? 'selected' : ''}>Allure Objectif (${programData.allures.objectif})</option>
-                </select>
-            </div>
-        </div>
-        <div class="row align-items-center mb-2">
-            <div class="col-md-9">
-                <label class="form-label small">Allure (min/km) - modifiable</label>
-                <input type="text" class="form-control form-control-sm ${customClass}" 
-                    value="${seance.allureText || programData.allures[seance.allure || 'ef']}" 
-                    onchange="updateSeanceAllureText(${weekIdx}, ${seanceIdx}, this.value)">
-            </div>
-            <div class="col-md-3">
-                <div class="form-check mt-4">
-                    <input class="form-check-input" type="checkbox" id="custom_${weekIdx}_${seanceIdx}" 
-                        ${customChecked} onchange="toggleCustomAllure(${weekIdx}, ${seanceIdx}, this.checked)">
-                    <label class="form-check-label small" for="custom_${weekIdx}_${seanceIdx}">
-                        Personnalisé
-                    </label>
+            card.innerHTML = `
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <div>
+                  <p class="rg-session-title">${escapeHtml(s.nom)}</p>
+                  <div class="rg-session-sub">${escapeHtml(s.type)} • ${escapeHtml(s.allureText || '')}</div>
                 </div>
-            </div>
-        </div>
-        <div class="mb-2">
-            <label class="form-label small">Corps de séance</label>
-            <textarea class="form-control form-control-sm" rows="2" 
-                onchange="updateSeance(${weekIdx}, ${seanceIdx}, 'corps', this.value)">${seance.corps}</textarea>
-        </div>
-    `;
-    
-    return card;
+                <button class="rg-btn" type="button" onclick="deleteSeance(${i}, ${j})">Supprimer</button>
+              </div>
+
+              <div class="row g-3 mt-2">
+                <div class="col-md-6">
+                  <label class="form-label">Nom</label>
+                  <input class="form-control rg-input" value="${escapeAttr(s.nom)}"
+                    onchange="updateSeance(${i},${j},'nom',this.value)">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Type</label>
+                  <select class="form-select rg-select"
+                    onchange="updateSeance(${i},${j},'type',this.value)">
+                    ${['Endurance','Fractionné','Sortie longue','Seuil','VMA','Récupération']
+                      .map(t=>`<option value="${t}" ${s.type===t?'selected':''}>${t}</option>`).join('')}
+                  </select>
+                </div>
+
+                <div class="col-md-3">
+                  <label class="form-label">Échauffement (min)</label>
+                  <input type="number" class="form-control rg-input" value="${Number(s.echauffement||0)}"
+                    onchange="updateSeance(${i},${j},'echauffement',parseInt(this.value||0))">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Cooldown (min)</label>
+                  <input type="number" class="form-control rg-input" value="${Number(s.cooldown||0)}"
+                    onchange="updateSeance(${i},${j},'cooldown',parseInt(this.value||0))">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Allure (zone)</label>
+                  <select class="form-select rg-select"
+                    onchange="updateSeance(${i},${j},'allure',this.value)">
+                    <option value="ef" ${s.allure==='ef'?'selected':''}>EF (${escapeHtml(programData.allures.ef||'')})</option>
+                    <option value="objectif" ${s.allure==='objectif'?'selected':''}>Objectif (${escapeHtml(programData.allures.objectif||'')})</option>
+                    <option value="seuil" ${s.allure==='seuil'?'selected':''}>Seuil (${escapeHtml(programData.allures.seuil||'')})</option>
+                    <option value="vma" ${s.allure==='vma'?'selected':''}>VMA (${escapeHtml(programData.allures.vma||'')})</option>
+                  </select>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label">Corps</label>
+                  <textarea class="form-control rg-textarea" rows="2"
+                    onchange="updateSeance(${i},${j},'corps',this.value)">${escapeHtml(s.corps||'')}</textarea>
+                </div>
+              </div>
+            `;
+            weekBody.appendChild(card);
+        }
+    }
 }
 
 function updateSeance(weekIdx, seanceIdx, field, value) {
@@ -450,37 +415,25 @@ function updateSeance(weekIdx, seanceIdx, field, value) {
     }
 }
 
-function updateSeanceAllureText(weekIdx, seanceIdx, newText) {
-    const seance = programData.weeks[weekIdx][seanceIdx];
-    seance.allureText = newText;
-    seance.customAllure = true;
-    seance.allurePct = getPourcentageFromAllure(programData.vma, parseAllure(newText));
-    renderProgram();
-}
-
-function toggleCustomAllure(weekIdx, seanceIdx, isCustom) {
-    const seance = programData.weeks[weekIdx][seanceIdx];
-    seance.customAllure = isCustom;
-    
-    if (!isCustom) {
-        const key = seance.allure || 'ef';
-        seance.allureText = programData.allures[key];
-        seance.allurePct = programData._allurePct[key];
-    } else {
-        seance.allurePct = getPourcentageFromAllure(programData.vma, parseAllure(seance.allureText));
+function normalizeSeanceNames(weekIdx){
+    const week = programData.weeks[weekIdx];
+    if(!week) return;
+    for(let k=0;k<week.length;k++){
+        const s = week[k];
+        if(/^Semaine \d+ - Séance \d+$/.test(s.nom)){
+            s.nom = `Semaine ${weekIdx+1} - Séance ${k+1}`;
+        }
     }
-    
-    renderProgram();
 }
 
-function deleteSeance(weekIdx, seanceIdx) {
-    if (confirm('Supprimer cette séance ?')) {
+function deleteSeance(weekIdx, seanceIdx){
+    if(confirm("Supprimer cette séance ?")){
         programData.weeks[weekIdx].splice(seanceIdx, 1);
+        normalizeSeanceNames(weekIdx);
         renderProgram();
     }
 }
-
-function addSeance(weekIdx) {
+function addSeance(weekIdx){
     programData.weeks[weekIdx].push({
         nom: `Semaine ${weekIdx+1} - Séance ${programData.weeks[weekIdx].length + 1}`,
         type: 'Endurance',
@@ -492,51 +445,55 @@ function addSeance(weekIdx) {
         cooldown: 10,
         customAllure: false
     });
+    normalizeSeanceNames(weekIdx);
     renderProgram();
 }
 
-function generateHTML() {
+function generateHTMLInSameWindow(){
     fetch('/editor/generate', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(programData)
     })
-    .then(response => response.text())
+    .then(r => r.text())
     .then(html => {
         document.open();
         document.write(html);
         document.close();
     })
-    .catch(error => {
-        alert('Erreur lors de la génération: ' + error);
-    });
+    .catch(err => alert("Erreur génération: " + err));
 }
 
-function downloadHTML() {
+function downloadHTML(){
     fetch('/editor/download', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(programData)
     })
-    .then(response => response.blob())
+    .then(r => r.blob())
     .then(blob => {
-        const url = window.URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'programme_' + programData.title.replace(/\s+/g, '_') + '.html';
+        a.download = 'programme_' + (programData.title||'RunGenius').replace(/\s+/g,'_') + '.html';
         document.body.appendChild(a);
         a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
+        a.remove();
+        URL.revokeObjectURL(url);
     })
-    .catch(error => {
-        alert('Erreur lors du téléchargement: ' + error);
-    });
+    .catch(err => alert("Erreur téléchargement: " + err));
 }
 
-// Initialiser la date par défaut
-document.getElementById('raceDate').value = new Date(Date.now() + 90*24*60*60*1000).toISOString().split('T')[0];
-</script>
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+function escapeAttr(s){ return escapeHtml(s).replaceAll("\n"," "); }
 
+document.getElementById('raceDate').value = new Date(Date.now() + 90*24*60*60*1000).toISOString().split('T')[0];
+updatePaceCards();
+</script>
 </body>
 </html>

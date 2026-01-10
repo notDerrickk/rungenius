@@ -1,104 +1,133 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
-    <title>RunGenius - Générateur</title>
+    <title>RunGenius — Générateur</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="alternate icon" href="/favicon.ico">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg,#e6f0ff 0%, #f7f9fb 100%);
-            min-height: 100vh;
-            padding: 20px 0 40px 0;
-        }
-        .card { border: none; border-radius: 15px; overflow: hidden; }
-        .header { background: linear-gradient(135deg,#2b8aef,#764ba2); color: white; padding: 30px; text-align: center; }
-        .btn-editor { background: linear-gradient(135deg,#667eea,#764ba2); border: none; color: white; }
-        .btn-editor:hover { background: linear-gradient(135deg,#5568d3,#653a8b); color: white; }
 
-        .card-footer-inner {
-            text-align: center;
-            background: rgba(255,255,255,0.65);
-            padding: 10px 16px;
-            border-top: 1px solid rgba(0,0,0,0.04);
-            border-radius: 0 0 15px 15px;
-            margin-top: 16px;
-            color: #6c757d;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="" th:href="@{/app.css}" />
 </head>
+
 <body>
+    <div class="rg-topbar">
+        <div class="container py-3">
+            <div class="d-flex align-items-center justify-content-between gap-2">
+                <a class="rg-brand" href="/">
+                    <img src="/logo.png" alt="RunGenius" class="rg-logo">
+                </a>
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-lg">
-                <div class="header">
-                    <h1>🏃 RunGenius</h1>
-                    <p class="mb-0">Créez votre programme d'entraînement sur mesure</p>
-                </div>
-                <div class="card-body p-4">
-                    <form action="/generate" method="post">
-                        <div class="mb-3">
-                            <label class="form-label">Type de course</label>
-                            <select name="raceType" class="form-select">
-                                <option value="5km">5 km</option>
-                                <option value="10km" selected>10 km</option>
-                                <option value="Semi">Semi-Marathon</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Niveau</label>
-                            <select name="niveau" class="form-select">
-                                <option value="Débutant">Débutant (En douceur)</option>
-                                <option value="Novice" selected>Novice (Moyen)</option>
-                                <option value="Expert">Expert (Intense)</option>
-                            </select>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Sorties / semaine</label>
-                                <input type="number" name="sorties" class="form-control" value="3" min="1" max="7">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">VMA (km/h)</label>
-                                <input type="number" step="0.1" name="vma" class="form-control" value="15.0">
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Objectif Temps (MM:SS ou HH:MM:SS)</label>
-                            <input type="text" name="objectif" class="form-control" value="50:00">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Date de la course</label>
-                            <input type="date" name="raceDate" class="form-control" th:value="${today.plusMonths(3)}">
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">Générer mon programme</button>
-                            <a href="/editor" class="btn btn-editor btn-lg">✏️ Édition manuelle d'un programme</a>
-                        </div>
-                    </form>
-
-                    <div th:if="${error}" class="alert alert-danger mt-3">
-                        <span th:text="${error}"></span>
-                    </div>
-                </div>
-                <div class="card-footer-inner">
-                    <div class="container">
-                        <p class="mb-0 small text-muted">© 2025 Rodéric NEVEU</p>
-                    </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="rg-btn" type="button" data-theme-toggle aria-pressed="false" title="Basculer thème">
+                        Clair
+                    </button>
+                    <a class="rg-btn" href="/editor">Éditeur</a>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
+    <section class="rg-hero">
+        <div class="container">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-7">
+                    <h1>Générez un plan de course clair, exportable, prêt à suivre.</h1>
+                    <p>
+                        Sélectionnez votre objectif, votre niveau et votre VMA.
+                        RunGenius construit un programme structuré ou créer le votre dans l'éditeur de programme.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        <span class="rg-chip">Progression maîtrisée</span>
+                        <span class="rg-chip">Zones d'allure</span>
+                        <span class="rg-chip">Export HTML & Garmin</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="rg-card rg-card-strong">
+                        <div class="rg-card-inner">
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div>
+                                    <div class="rg-section-title">Créer votre programme</div>
+                                </div>
+                            </div>
+
+                            <div class="rg-divider"></div>
+
+                            <form action="/generate" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label">Type de course</label>
+
+                                    <div class="segmented-control" role="tablist" aria-label="Type de course">
+                                        <input type="radio" id="race-5km" name="raceType" value="5km">
+                                        <label for="race-5km">5 km</label>
+
+                                        <input type="radio" id="race-10km" name="raceType" value="10km" checked>
+                                        <label for="race-10km">10 km</label>
+
+                                        <input type="radio" id="race-semi" name="raceType" value="Semi">
+                                        <label for="race-semi">Semi</label>
+                                    </div>
+
+                                    <div class="small-muted mt-2">Cliquez pour choisir (5 km, 10 km, Semi)</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Niveau</label>
+                                    <select name="niveau" class="form-select rg-select">
+                                        <option value="Débutant">Débutant (En douceur)</option>
+                                        <option value="Novice" selected>Novice (Moyen)</option>
+                                        <option value="Expert">Expert (Intense)</option>
+                                    </select>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Sorties / semaine</label>
+                                        <input type="number" name="sorties" class="form-control rg-input" value="3" min="1" max="7">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">VMA (km/h)</label>
+                                        <input type="number" step="0.1" name="vma" class="form-control rg-input" value="15.0">
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <label class="form-label">Objectif (MM:SS ou HH:MM:SS)</label>
+                                    <input type="text" name="objectif" class="form-control rg-input" value="50:00">
+                                </div>
+
+                                <div class="mt-3">
+                                    <label class="form-label">Date de la course</label>
+                                    <input type="date" name="raceDate" class="form-control rg-input" th:value="${today.plusMonths(3)}">
+                                </div>
+
+                                <div class="d-grid gap-2 mt-4">
+                                    <button type="submit" class="rg-btn rg-btn-primary btn-lg">
+                                        Générer mon programme
+                                    </button>
+                                    <a href="/editor" class="rg-btn rg-btn-white btn-lg" role="button">
+                                        Ouvrir l'éditeur avancé
+                                    </a>
+                                </div>
+                            </form>
+
+                            <div th:if="${error}" class="alert alert-danger mt-3">
+                                <span th:text="${error}"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="small-muted text-center mt-3">© 2025 Rodéric NEVEU</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script th:src="@{/app.js}"></script>
 </body>
 </html>

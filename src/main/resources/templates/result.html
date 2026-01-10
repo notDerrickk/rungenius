@@ -3,99 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="'RunGenius - Programme ' + ${programme.title}">RunGenius - Programme</title>
+    <title th:text="'RunGenius — ' + ${programme.title}">RunGenius — Programme</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="alternate icon" href="/favicon.ico">
-
-    <style>
-        :root {
-            --bg: linear-gradient(135deg,#e6f0ff 0%, #f7f9fb 100%);
-            --card: #ffffff;
-            --primary: #2b8aef;
-            --accent: #ff6b6b;
-            --muted: #6b7280;
-            --green: #2ecc71;
-            --purple: #9b59b6;
-        }
-        *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family: Inter, Arial, Helvetica, sans-serif; background:var(--bg); color:#111; padding:20px}
-        .container{max-width:1100px;margin:0 auto}
-        header{background:linear-gradient(135deg,var(--primary),#764ba2); color:white;padding:26px;border-radius:12px;box-shadow:0 10px 30px rgba(15,23,42,0.18)}
-        header h1{font-size:22px;margin-bottom:6px}
-        header p{opacity:0.9;margin-top:4px}
-        .meta{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
-        .chip{background:rgba(255,255,255,0.12);padding:8px 12px;border-radius:999px;font-weight:600}
-        .card{background:var(--card);border-radius:12px;padding:18px;margin-top:18px;box-shadow:0 6px 18px rgba(20,30,60,0.06)}
-        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-        .week{border-left:6px solid var(--primary);padding:14px;margin-bottom:14px;border-radius:10px;background:#fff}
-        .week.recup{border-left-color:var(--green);background:linear-gradient(180deg,#f1fff4,#fffef9)}
-        .seance{display:flex;justify-content:space-between;background:#fbfdff;padding:12px;border-radius:8px;margin-bottom:8px;align-items:flex-start;gap:12px}
-        .seance .left{flex:1;max-width:none}
-        .seance .right{text-align:right;white-space:nowrap;display:flex;flex-direction:column;gap:6px;justify-content:center}
-        .type{font-weight:700;color:#174ea6}
-        .allure{background:linear-gradient(90deg,var(--primary),#764ba2);color:white;padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px;display:inline-block}
-        .distance{font-weight:700;font-size:14px;color:var(--primary)}
-        .week-total{border-top:2px solid var(--primary);padding-top:12px;margin-top:12px;text-align:right;font-weight:700;font-size:14px;color:#111}
-        .week-total .label{color:var(--muted);font-size:12px}
-        .footer{margin-top:26px;text-align:center;color:var(--muted);font-size:13px}
-        .btn-print{display:inline-block;margin:12px auto;border-radius:24px;padding:10px 16px;border:none;background:linear-gradient(90deg,var(--primary),#764ba2);color:white;cursor:pointer;text-decoration:none}
-        .btn-download{display:inline-block;margin:12px auto;border-radius:24px;padding:10px 16px;border:none;background:linear-gradient(90deg,#2ecc71,#27ae60);color:white;cursor:pointer;text-decoration:none}
-        .btn-fit{display:inline-block;margin:12px auto;border-radius:24px;padding:10px 16px;border:none;background:linear-gradient(90deg,var(--purple),#8e44ad);color:white;cursor:pointer;text-decoration:none}
-        .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-        @media print{.no-print{display:none!important}}
-        @media(max-width:760px){.seance{flex-direction:column;gap:6px}.seance .right{text-align:left}}
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/app.css}">
 </head>
+
 <body>
-    <div class="container">
-        <header>
-            <h1>🏃 RunGenius — Programme <span th:text="${programme.title}"></span></h1>
-            <p>Progression douce • Semaines de repos toutes les 5 semaines</p>
-            <div class="meta">
-                <div class="chip">Niveau: <span th:text="${profil.niveau}"></span></div>
-                <div class="chip">Sorties / semaine: <span th:text="${profil.sortiesParSemaine}"></span></div>
-                <div class="chip">VMA: <span th:text="${profil.vma} + ' km/h'"></span></div>
-                <div class="chip">Généré: <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span></div>
+<div class="rg-topbar">
+    <div class="container py-3">
+            <div class="d-flex align-items-center justify-content-between gap-2">
+                <a class="rg-brand" href="/">
+                    <img src="/logo.png" alt="RunGenius" class="rg-logo">
+                </a>
+            <div class="d-flex align-items-center gap-2">
+                <button class="rg-btn" type="button" data-theme-toggle aria-pressed="false">Light</button>
+                <a class="rg-btn" href="/editor">Éditer</a>
             </div>
-        </header>
+        </div>
+    </div>
+</div>
 
-        <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center">
+<div class="container my-4" style="padding-bottom: 90px;">
+    <div class="rg-card mb-3">
+        <div class="rg-card-inner">
+            <div class="rg-section-title" style="font-size: 1.35rem;" th:text="${programme.title}">Programme</div>
+            <div class="small-muted mt-1">Progression douce • Semaines de repos toutes les 5 semaines</div>
+
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                <span class="rg-chip">Niveau: <span th:text="${profil.niveau}"></span></span>
+                <span class="rg-chip">Sorties/sem: <span th:text="${profil.sortiesParSemaine}"></span></span>
+                <span class="rg-chip">VMA: <span th:text="${profil.vma}"></span> km/h</span>
+                <span class="rg-chip">Généré: <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="rg-card mb-3">
+        <div class="rg-card-inner">
+            <div class="d-flex justify-content-between align-items-center gap-2">
                 <div>
-                    <strong>Profil</strong><br>
-                    <span style="color:var(--muted)"><span th:text="${profil.niveau}"></span> — <span th:text="${profil.sortiesParSemaine}"></span> sorties / semaine</span>
+                    <div class="rg-section-title">Zones d'allure</div>
                 </div>
-                <div style="text-align:right">
-                    <div style="font-weight:800;font-size:18px" th:text="${#numbers.formatDecimal(totalKm, 1, 1)} + ' km'"></div>
-                    <div style="color:var(--muted);font-size:13px">Kilométrage estimé total</div>
+                <div class="small-muted" th:text="${#numbers.formatDecimal(totalKm, 1, 1)} + ' km total'">—</div>
+            </div>
+
+            <div class="rg-divider"></div>
+
+            <div class="rg-pace-grid">
+                <div class="rg-pace-card rg-pace-ef">
+                    <div class="label">Endurance (EF)</div>
+                    <div class="value" th:text="${allures[0]}">—</div>
+                </div>
+                <div class="rg-pace-card rg-pace-as">
+                    <div class="label">Allure spécifique</div>
+                    <div class="value" th:text="${allures[1]}">—</div>
+                </div>
+                <div class="rg-pace-card rg-pace-seuil">
+                    <div class="label">Seuil</div>
+                    <div class="value" th:text="${allures[2]}">—</div>
+                </div>
+                <div class="rg-pace-card rg-pace-vma">
+                    <div class="label">VMA</div>
+                    <div class="value" th:text="${allures[3]}">—</div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="card">
-            <h3>Zones d'allure</h3>
-            <div class="grid" style="margin-top:10px">
-                <div class="card" style="text-align:center;padding:12px;border-radius:12px;background:#4caf50;">
-                    <div style="font-size:12px;color:rgba(255,255,255,0.9)">Endurance (EF)</div>
-                    <div style="font-weight:800;margin-top:8px;color:#ffffff" th:text="${allures[0]}"></div>
+    <div class="rg-card">
+        <div class="rg-card-inner">
+            <div class="rg-section-title">Planning détaillé</div>
+            <div class="rg-divider"></div>
+
+            <div th:each="semaine, stat : ${programme.semaines}"
+                 th:with="numeroSemaine=${stat.index + 1}, isRecup=${numeroSemaine % 5 == 0}"
+                 class="rg-week">
+
+                <div class="rg-week-head">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <div class="rg-week-title">
+                            Semaine <span th:text="${numeroSemaine}"></span>
+                        </div>
+                        <span th:if="${isRecup}" class="rg-chip">Récup</span>
+                        <span class="rg-chip">Séances: <span th:text="${semaine.length}"></span></span>
+                    </div>
+
+                    <div class="small-muted">
+                        Total: <span th:text="${#numbers.formatDecimal(weekTotals[stat.index], 1, 2)} + ' km'"></span>
+                    </div>
                 </div>
-                <div class="card" style="text-align:center;padding:12px;border-radius:12px;background:#ffc107;">
-                    <div style="font-size:12px;color:rgba(255,255,255,0.9)">Allure spécifique (<span th:text="${distanceLabel}"></span> km)</div>
-                    <div style="font-weight:800;margin-top:8px;color:#ffffff" th:text="${allures[1]}"></div>
-                </div>
-                <div class="card" style="text-align:center;padding:12px;border-radius:12px;background:#ff9800;">
-                    <div style="font-size:12px;color:rgba(255,255,255,0.9)">Seuil</div>
-                    <div style="font-weight:800;margin-top:8px;color:#ffffff" th:text="${allures[2]}"></div>
-                </div>
-                <div class="card" style="text-align:center;padding:12px;border-radius:12px;background:#f44336;">
-                    <div style="font-size:12px;color:rgba(255,255,255,0.9)">VMA (100%)</div>
-                    <div style="font-weight:800;margin-top:8px;color:#ffffff" th:text="${allures[3]}"></div>
+
+                <div class="rg-week-body">
+                    <div th:each="seance, seanceStat : ${semaine}" class="rg-session">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <div style="flex:1;">
+                                <p class="rg-session-title">
+                                    Séance <span th:text="${seanceNumbers[stat.index][seanceStat.index]}"></span> —
+                                    <span th:text="${seance.nom}"></span>
+                                </p>
+                                <div class="rg-session-sub">
+                                    <div><strong>Type:</strong> <span th:text="${seance.type}"></span></div>
+                                    <div><strong>Échauffement:</strong> <span th:text="${seance.dureeEchauffement}"></span> min</div>
+                                    <div><strong>Corps:</strong> <span th:text="${seance.corps}"></span></div>
+                                    <div><strong>Retour au calme:</strong> <span th:text="${seance.dureeCooldown}"></span> min</div>
+                                </div>
+                            </div>
+
+                            <div class="text-end">
+                                <div class="rg-chip" th:text="${profil.getAllureFormatee(seance.pourcentageVMA)}">—</div>
+                                <div class="mt-2" style="font-weight:900;"
+                                     th:text="${#numbers.formatDecimal(seance.getDistanceKm(profil), 1, 2)} + ' km'">—</div>
+
+                                <form th:action="@{/fit/export-single}" method="post" style="margin-top:10px">
+                                    <input type="hidden" name="nom" th:value="${seance.nom}">
+                                    <input type="hidden" name="type" th:value="${seance.type}">
+                                    <input type="hidden" name="echauffement" th:value="${seance.dureeEchauffement}">
+                                    <input type="hidden" name="corps" th:value="${seance.corps}">
+                                    <input type="hidden" name="cooldown" th:value="${seance.dureeCooldown}">
+                                    <input type="hidden" name="allurePct" th:value="${seance.pourcentageVMA}">
+                                    <input type="hidden" name="vma" th:value="${profil.vma}">
+                                    <button type="submit" class="rg-btn">Exporter .fit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-2"
+                         style="border-top:1px solid var(--stroke); margin-top:.85rem;">
+                        <div class="small-muted">TOTAL SEMAINE</div>
+                        <div style="font-weight:950;"
+                             th:text="${#numbers.formatDecimal(weekTotals[stat.index], 1, 2)} + ' km'"></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="actions no-print">
-            <button class="btn-print" onclick="window.print()">🖨️ Imprimer / PDF</button>
+            <div class="small-muted text-center mt-2">Généré par RunGenius</div>
+            <div class="small-muted text-center mt-1">© 2025 Rodéric NEVEU</div>
+        </div>
+    </div>
+</div>
+
+<div class="rg-actionbar">
+    <div class="container">
+        <div class="wrap">
+            <button class="rg-btn rg-btn-primary" onclick="window.print()">Imprimer / PDF</button>
+
             <form action="/download" method="post" target="_blank" style="display:inline">
                 <input type="hidden" name="raceType" th:value="${raceType}">
                 <input type="hidden" name="niveau" th:value="${profil.niveau}">
@@ -103,8 +157,9 @@
                 <input type="hidden" name="vma" th:value="${profil.vma}">
                 <input type="hidden" name="objectif" th:value="${objectif}">
                 <input type="hidden" name="raceDate" th:value="${raceDate}">
-                <button type="submit" class="btn-download">⬇ Télécharger HTML</button>
+                <button type="submit" class="rg-btn">Télécharger HTML</button>
             </form>
+
             <form action="/fit/export-all" method="post" style="display:inline">
                 <input type="hidden" name="raceType" th:value="${raceType}">
                 <input type="hidden" name="niveau" th:value="${profil.niveau}">
@@ -112,61 +167,15 @@
                 <input type="hidden" name="vma" th:value="${profil.vma}">
                 <input type="hidden" name="objectif" th:value="${objectif}">
                 <input type="hidden" name="raceDate" th:value="${raceDate}">
-                <button type="submit" class="btn-fit">⌚ Exporter vers Garmin (.fit)</button>
+                <button type="submit" class="rg-btn">Exporter pour montre Garmin</button>
             </form>
-            <a href="/" class="btn-print" style="text-decoration:none">🔄 Nouveau</a>
-        </div>
 
-        <div style="margin-top:20px">
-            <h2 style="text-align:center">Planning détaillé</h2>
-
-            <div th:each="semaine, stat : ${programme.semaines}"
-                 th:with="numeroSemaine=${stat.index + 1}, isRecup=${numeroSemaine % 5 == 0}"
-                 th:class="'week card ' + (${isRecup} ? 'recup' : '')">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-                    <div style="font-size:16px;font-weight:700">
-                        Semaine <span th:text="${numeroSemaine}"></span>
-                        <span th:if="${isRecup}"> — RÉCUP</span>
-                    </div>
-                    <div style="color:var(--muted)">Séances: <span th:text="${semaine.length}"></span></div>
-                </div>
-
-                <div th:each="seance, seanceStat : ${semaine}" class="seance">
-                    <div class="left">
-                        <div class="type">
-                            Séance <span th:text="${seanceNumbers[stat.index][seanceStat.index]}"></span> - 
-                            <span th:text="${seance.nom}"></span>
-                        </div>
-                        <div style="color:#374151;margin-top:6px;font-size:14px; white-space:pre-line;" th:text="${seance.getDescription(profil)}"></div>
-                    </div>
-                    <div class="right">
-                        <div class="allure" th:text="${profil.getAllureFormatee(seance.pourcentageVMA)}"></div>
-                        <div class="distance" th:text="${#numbers.formatDecimal(seance.getDistanceKm(profil), 1, 2)} + ' km'"></div>
-
-                        <form th:action="@{/fit/export-single}" method="post" style="margin-top:8px">
-                            <input type="hidden" name="nom" th:value="${seance.nom}">
-                            <input type="hidden" name="type" th:value="${seance.type}">
-                            <input type="hidden" name="echauffement" th:value="${seance.dureeEchauffement}">
-                            <input type="hidden" name="corps" th:value="${seance.corps}">
-                            <input type="hidden" name="cooldown" th:value="${seance.dureeCooldown}">
-                            <input type="hidden" name="allurePct" th:value="${seance.pourcentageVMA}">
-                            <input type="hidden" name="vma" th:value="${profil.vma}">
-                            <button type="submit" class="btn-fit">⌚ Exporter cette séance (.fit)</button>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="week-total">
-                    <div class="label">TOTAL SEMAINE</div>
-                    <div th:text="${#numbers.formatDecimal(weekTotals[stat.index], 1, 2)} + ' km'"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            Généré par RunGenius — <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy')}"></span>
-            <small style="margin-top: 8px; display: block;">© 2025 Rodéric NEVEU</small>
+            <a href="/" class="rg-btn">Nouveau</a>
         </div>
     </div>
+</div>
+
+<script th:src="@{/app.js}"></script>
 </body>
+
 </html>
