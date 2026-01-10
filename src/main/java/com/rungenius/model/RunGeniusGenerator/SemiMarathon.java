@@ -47,9 +47,9 @@ public class SemiMarathon implements Programme {
         String typeAS = getTypeAllureSpecifique();
         
         // exercices AS par difficulté depuis la banque
-        List<CorpsDeSeance> niveau1 = banque.getExercicesParDifficulte(typeAS, 1);
-        List<CorpsDeSeance> niveau2 = banque.getExercicesParDifficulte(typeAS, 2);
-        List<CorpsDeSeance> niveau3 = banque.getExercicesParDifficulte(typeAS, 3);
+        List<CorpsDeSeance> niveau1 = banque.getExercicesParDifficulte(typeAS, 2);
+        List<CorpsDeSeance> niveau2 = banque.getExercicesParDifficulte(typeAS, 4);
+        List<CorpsDeSeance> niveau3 = banque.getExercicesParDifficulte(typeAS, 5);
 
         // Pour débutant: niveau 1 puis niveau 2
         asSequenceDebutant = new ArrayList<>();
@@ -149,19 +149,19 @@ public class SemiMarathon implements Programme {
     }
 
     private int niveauToDifficulte(String niveau) {
-        if (niveau == null) return 2;
+        if (niveau == null) return 4;
         String s = niveau.toLowerCase();
-        if (s.contains("début") || s.contains("debut") || s.contains("debutant")) return 1;
-        if (s.contains("avanc") || s.contains("expert")) return 3;
-        return 2;
+        if (s.contains("début") || s.contains("debut") || s.contains("debutant")) return 2;
+        if (s.contains("avanc") || s.contains("expert")) return 5;
+        return 4;
     }
 
     private int choisirDifficulteFractionne(String niveau) {
         String s = niveau.toLowerCase();
-        if (s.contains("début") || s.contains("debut") || s.contains("debutant") || s.contains("débutant")) return 1;
-        if (s.contains("novice")) return 2;
-        if (s.contains("avanc") || s.contains("expert")) return 3;
-        return 2;
+        if (s.contains("début") || s.contains("debut") || s.contains("debutant") || s.contains("débutant")) return 2;
+        if (s.contains("novice")) return 4;
+        if (s.contains("avanc") || s.contains("expert")) return 5;
+        return 4;
     }
 
     private boolean useFractionneLongNext() {

@@ -44,9 +44,9 @@ public class Prepa5k implements Programme {
     private void initialiserSequencesAS() {
         String typeAS = getTypeAllureSpecifique(); 
 
-        List<CorpsDeSeance> niveau1 = banque.getExercicesParDifficulte(typeAS, 1);
-        List<CorpsDeSeance> niveau2 = banque.getExercicesParDifficulte(typeAS, 2);
-        List<CorpsDeSeance> niveau3 = banque.getExercicesParDifficulte(typeAS, 3);
+        List<CorpsDeSeance> niveau1 = banque.getExercicesParDifficulte(typeAS, 2);
+        List<CorpsDeSeance> niveau2 = banque.getExercicesParDifficulte(typeAS, 4);
+        List<CorpsDeSeance> niveau3 = banque.getExercicesParDifficulte(typeAS, 5);
 
         asSequenceDebutant = new ArrayList<>();
         if (niveau1 != null) asSequenceDebutant.addAll(niveau1);
@@ -132,19 +132,19 @@ public class Prepa5k implements Programme {
     }
 
     private int niveauToDifficulte(String niveau) {
-        if (niveau == null) return 2;
+        if (niveau == null) return 4;
         String s = niveau.toLowerCase();
-        if (s.contains("début") || s.contains("debut") || s.contains("debutant")) return 1;
-        if (s.contains("avanc") || s.contains("expert")) return 3;
-        return 2;
+        if (s.contains("début") || s.contains("debut") || s.contains("debutant")) return 2;
+        if (s.contains("avanc") || s.contains("expert")) return 5;
+        return 4;
     }
 
     private int choisirDifficulteFractionne(String niveau) {
         String s = niveau.toLowerCase();
-        if (s.contains("début") || s.contains("debut") || s.contains("debutant") || s.contains("débutant")) return 1;
-        if (s.contains("novice")) return 2;
-        if (s.contains("avanc") || s.contains("expert")) return 3;
-        return 2;
+        if (s.contains("début") || s.contains("debut") || s.contains("debutant") || s.contains("débutant")) return 2;
+        if (s.contains("novice")) return 4;
+        if (s.contains("avanc") || s.contains("expert")) return 5;
+        return 4;
     }
 
     private boolean useFractionneLongNext() {

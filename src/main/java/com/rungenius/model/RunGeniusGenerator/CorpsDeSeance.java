@@ -20,7 +20,6 @@ public class CorpsDeSeance {
     public int getDifficulte() { return difficulte; }
 
     
-    // Résout le pourcentage VMA correspondant à cet exercice en fonction du profil
     public double resolvePourcentageVMA(Profil profil) {
         if (allureType == AllureType.PERCENT_VMA) {
             return value;
@@ -34,7 +33,6 @@ public class CorpsDeSeance {
         return 0.85;
     }
 
-    // Retourne l'allure formatée (MM:SS min/km) correspondant à cet exercice pour le profil.
     public String getAllureFormatee(Profil profil) {
         if (allureType == AllureType.PERCENT_VMA) {
             return profil.getAllureFormatee(value);
