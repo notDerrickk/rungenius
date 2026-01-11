@@ -96,36 +96,45 @@
                 </div>
 
                 <div class="rg-week-body">
-                    <div th:each="seance, seanceStat : ${semaine}" class="rg-session">
+                    <div th:each="seance, seanceStat : ${semaine}" class="rg-session"
+                         th:attr="data-week=${stat.index + 1}, data-session=${seanceStat.index}">
                         <div class="d-flex justify-content-between align-items-start gap-2">
                             <div style="flex:1;">
                                 <p class="rg-session-title">
                                     Séance <span th:text="${seanceNumbers[stat.index][seanceStat.index]}"></span> —
-                                    <span th:text="${seance.nom}"></span>
+                                    <span class="rg-session-nom" th:text="${seance.nom}"></span>
+                                    <span class="rg-session-adjusted" style="display:none; margin-left:8px; font-size:.78rem; font-weight:800; padding:.25rem .5rem; border-radius:999px; background:rgba(255,255,255,.08); border:1px solid var(--stroke);">
+                                        Ajustée
+                                    </span>
                                 </p>
                                 <div class="rg-session-sub">
-                                    <div><strong>Type:</strong> <span th:text="${seance.type}"></span></div>
-                                    <div><strong>Échauffement:</strong> <span th:text="${seance.dureeEchauffement}"></span> min</div>
-                                    <div><strong>Corps:</strong> <span th:text="${seance.corps}"></span></div>
-                                    <div><strong>Retour au calme:</strong> <span th:text="${seance.dureeCooldown}"></span> min</div>
+                                    <div><strong>Type:</strong> <span class="rg-session-type" th:text="${seance.type}"></span></div>
+                                    <div><strong>Échauffement:</strong> <span class="rg-session-echauffement" th:text="${seance.dureeEchauffement}"></span> min</div>
+                                    <div><strong>Corps:</strong> <span class="rg-session-corps" th:text="${seance.corps}"></span></div>
+                                    <div><strong>Retour au calme:</strong> <span class="rg-session-cooldown" th:text="${seance.dureeCooldown}"></span> min</div>
                                 </div>
                             </div>
 
                             <div class="text-end">
-                                <div class="rg-chip" th:text="${profil.getAllureFormatee(seance.pourcentageVMA)}">—</div>
-                                <div class="mt-2" style="font-weight:900;"
-                                     th:text="${#numbers.formatDecimal(seance.getDistanceKm(profil), 1, 2)} + ' km'">—</div>
+                                <div class="rg-chip rg-allure-chip" th:text="${profil.getAllureFormatee(seance.pourcentageVMA)}">—</div>
+                                  <div class="mt-2 rg-session-distance" style="font-weight:900;"
+                                      th:text="${#numbers.formatDecimal(seance.getDistanceKm(profil), 1, 2)} + ' km'">—</div>
 
                                 <form th:action="@{/fit/export-single}" method="post" style="margin-top:10px">
                                     <input type="hidden" name="nom" th:value="${seance.nom}">
-                                    <input type="hidden" name="type" th:value="${seance.type}">
-                                    <input type="hidden" name="echauffement" th:value="${seance.dureeEchauffement}">
-                                    <input type="hidden" name="corps" th:value="${seance.corps}">
-                                    <input type="hidden" name="cooldown" th:value="${seance.dureeCooldown}">
-                                    <input type="hidden" name="allurePct" th:value="${seance.pourcentageVMA}">
+                                    <input type="hidden" class="rg-hidden-type" name="type" th:value="${seance.type}">
+                                    <input type="hidden" class="rg-hidden-echauffement" name="echauffement" th:value="${seance.dureeEchauffement}">
+                                    <input type="hidden" class="rg-hidden-corps" name="corps" th:value="${seance.corps}">
+                                    <input type="hidden" class="rg-hidden-cooldown" name="cooldown" th:value="${seance.dureeCooldown}">
+                                    <input type="hidden" class="rg-hidden-allurePct" name="allurePct" th:value="${seance.pourcentageVMA}">
                                     <input type="hidden" name="vma" th:value="${profil.vma}">
                                     <button type="submit" class="rg-btn">Exporter .fit</button>
                                 </form>
+                                
+                                <button type="button" class="rg-btn rg-btn-primary rg-btn-feedback" style="margin-top:10px;"
+                                    th:attr="data-week=${stat.index + 1}, data-session=${seanceStat.index}, data-session-type=${seance.type}">
+                                    Séance terminée ✓
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -175,7 +184,197 @@
     </div>
 </div>
 
+<div id="feedbackModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:var(--bg); border-radius:12px; padding:30px; max-width:500px; width:90%; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+        <h3 style="margin-top:0; margin-bottom:20px; color:var(--text);">Comment s'est passée votre séance ?</h3>
+        
+        <div style="margin-bottom:20px;">
+            <label style="display:block; margin-bottom:10px; font-weight:600; color:var(--text);">Ressenti :</label>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <label style="cursor:pointer; padding:12px; border:2px solid var(--stroke); border-radius:8px; display:flex; align-items:center; transition: all 0.2s;">
+                    <input type="radio" name="feeling" value="tooEasy" style="margin-right:10px;">
+                    <span>😊 Très facile - J'aurais pu faire plus</span>
+                </label>
+                <label style="cursor:pointer; padding:12px; border:2px solid var(--stroke); border-radius:8px; display:flex; align-items:center; transition: all 0.2s;">
+                    <input type="radio" name="feeling" value="doable" checked style="margin-right:10px;">
+                    <span>👍 Faisable - Niveau adapté</span>
+                </label>
+                <label style="cursor:pointer; padding:12px; border:2px solid var(--stroke); border-radius:8px; display:flex; align-items:center; transition: all 0.2s;">
+                    <input type="radio" name="feeling" value="tooHard" style="margin-right:10px;">
+                    <span>😓 Trop dur - J'ai eu du mal à finir</span>
+                </label>
+            </div>
+        </div>
+        
+        <div style="margin-bottom:25px;">
+            <label style="cursor:pointer; padding:12px; border:2px solid var(--stroke); border-radius:8px; display:flex; align-items:center; background:var(--card-bg);">
+                <input type="checkbox" id="hasPain" style="margin-right:10px;">
+                <span style="font-weight:600;">⚠️ Je ressens une douleur</span>
+            </label>
+            <small style="display:block; margin-top:5px; color:var(--muted); padding-left:12px;">
+                Si coché, la prochaine séance sera remplacée par une séance de récupération
+            </small>
+        </div>
+        
+        <div style="display:flex; gap:10px;">
+            <button id="submitFeedback" class="rg-btn rg-btn-primary" style="flex:1;">Valider</button>
+            <button id="cancelFeedback" class="rg-btn" style="flex:1;">Annuler</button>
+        </div>
+    </div>
+</div>
+
 <script th:src="@{/app.js}"></script>
+<script>
+    let currentWeek, currentSession, currentSessionType;
+    const raceType = /*[[${raceType}]]*/ '';
+    const niveau = /*[[${profil.niveau}]]*/ '';
+    const sorties = /*[[${profil.sortiesParSemaine}]]*/ 0;
+    const vma = /*[[${profil.vma}]]*/ 0;
+    const objectif = /*[[${objectif}]]*/ '';
+    const raceDate = /*[[${raceDate}]]*/ '';
+    
+    document.querySelectorAll('.rg-btn-feedback').forEach(btn => {
+        btn.addEventListener('click', function() {
+            currentWeek = parseInt(this.dataset.week);
+            currentSession = parseInt(this.dataset.session);
+            currentSessionType = this.dataset.sessionType;
+            
+            document.getElementById('feedbackModal').style.display = 'flex';
+        });
+    });
+    
+    document.getElementById('cancelFeedback').addEventListener('click', function() {
+        document.getElementById('feedbackModal').style.display = 'none';
+        // Réinitialiser le formulaire
+        document.querySelector('input[name="feeling"][value="doable"]').checked = true;
+        document.getElementById('hasPain').checked = false;
+
+        const submitBtn = document.getElementById('submitFeedback');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Valider';
+        }
+    });
+    
+    function showToast(message) {
+        const confirmDiv = document.createElement('div');
+        confirmDiv.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background: linear-gradient(135deg, var(--brand), var(--brand2)); color:white; padding:15px 30px; border-radius:8px; z-index:10000; box-shadow:0 4px 20px rgba(0,0,0,0.3); font-weight:600;';
+        confirmDiv.innerText = message;
+        document.body.appendChild(confirmDiv);
+        setTimeout(() => confirmDiv.remove(), 2200);
+    }
+
+    function updateSessionDOM(week1Based, sessionIndex, data) {
+        const selector = `.rg-session[data-week="${week1Based}"][data-session="${sessionIndex}"]`;
+        const el = document.querySelector(selector);
+        if (!el) return;
+
+        const nomEl = el.querySelector('.rg-session-nom');
+        const typeEl = el.querySelector('.rg-session-type');
+        const corpsEl = el.querySelector('.rg-session-corps');
+        const echEl = el.querySelector('.rg-session-echauffement');
+        const coolEl = el.querySelector('.rg-session-cooldown');
+        const allureEl = el.querySelector('.rg-allure-chip');
+        const distEl = el.querySelector('.rg-session-distance');
+        const badgeEl = el.querySelector('.rg-session-adjusted');
+
+        if (nomEl && data.newNom != null) nomEl.textContent = data.newNom;
+        if (typeEl && data.newType != null) typeEl.textContent = data.newType;
+        if (corpsEl && data.newCorps != null) corpsEl.textContent = data.newCorps;
+        if (echEl && data.newEchauffement != null) echEl.textContent = String(data.newEchauffement);
+        if (coolEl && data.newCooldown != null) coolEl.textContent = String(data.newCooldown);
+        if (allureEl && data.newAllureLabel != null) allureEl.textContent = data.newAllureLabel;
+        if (distEl && data.newDistanceKm != null) {
+            distEl.textContent = `${Number(data.newDistanceKm).toFixed(2)} km`;
+        }
+
+        if (badgeEl) {
+            badgeEl.style.display = 'inline-block';
+        }
+
+        // Mettre à jour les champs cachés pour l'export .fit
+        const hType = el.querySelector('.rg-hidden-type');
+        const hCorps = el.querySelector('.rg-hidden-corps');
+        const hEch = el.querySelector('.rg-hidden-echauffement');
+        const hCool = el.querySelector('.rg-hidden-cooldown');
+        const hPct = el.querySelector('.rg-hidden-allurePct');
+        if (hType && data.newType != null) hType.value = data.newType;
+        if (hCorps && data.newCorps != null) hCorps.value = data.newCorps;
+        if (hEch && data.newEchauffement != null) hEch.value = String(data.newEchauffement);
+        if (hCool && data.newCooldown != null) hCool.value = String(data.newCooldown);
+        if (hPct && data.newAllurePct != null) hPct.value = String(data.newAllurePct);
+    }
+
+    // Soumettre le feedback
+    document.getElementById('submitFeedback').addEventListener('click', async function() {
+        const feeling = document.querySelector('input[name="feeling"]:checked').value;
+        const hasPain = document.getElementById('hasPain').checked;
+        
+        const feedback = {
+            feeling: feeling,
+            hasPain: hasPain,
+            week: currentWeek,
+            sessionIndex: currentSession
+        };
+        
+        this.disabled = true;
+        this.innerText = 'Enregistrement...';
+        
+        try {
+            const response = await fetch('/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(feedback)
+            });
+            
+            const data = await response.json();
+
+            if (response.ok && data && data.ok) {
+                document.getElementById('feedbackModal').style.display = 'none';
+
+                if (data.updatedWeek != null && data.updatedSessionIndex != null) {
+                    updateSessionDOM(data.updatedWeek, data.updatedSessionIndex, data);
+                }
+
+                const btn = document.querySelector(`.rg-btn-feedback[data-week="${currentWeek}"][data-session="${currentSession}"]`);
+                if (btn) {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.7';
+                    btn.textContent = 'Feedback enregistré';
+                }
+
+                showToast(data.message || '✓ Feedback enregistré');
+            } else {
+                alert((data && data.message) ? data.message : 'Erreur lors de l\'enregistrement du feedback');
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            alert('Erreur de communication avec le serveur');
+        } finally {
+            this.disabled = false;
+            this.innerText = 'Valider';
+        }
+        
+        // Réinitialiser le formulaire
+        document.querySelector('input[name="feeling"][value="doable"]').checked = true;
+        document.getElementById('hasPain').checked = false;
+    });
+    
+    document.querySelectorAll('input[name="feeling"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('input[name="feeling"]').forEach(r => {
+                r.parentElement.style.borderColor = 'var(--stroke)';
+                r.parentElement.style.backgroundColor = 'transparent';
+            });
+            if (this.checked) {
+                this.parentElement.style.borderColor = 'var(--brand)';
+                this.parentElement.style.backgroundColor = 'var(--card)';
+            }
+        });
+    });
+</script>
 </body>
 
 </html>
