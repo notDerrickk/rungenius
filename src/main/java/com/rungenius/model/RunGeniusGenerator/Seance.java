@@ -7,6 +7,10 @@ public class Seance {
     private int dureeCooldown;
     private double pourcentageVMA;
 
+
+    private Integer difficulte;
+    private String typeBanque;
+
     public Seance(String nom, String type, int dureeEchauffement, String corps, int dureeCooldown, double pourcentageVMA) {
         this.nom = nom;
         this.type = type;
@@ -14,6 +18,28 @@ public class Seance {
         this.corps = corps;
         this. dureeCooldown = dureeCooldown;
         this.pourcentageVMA = pourcentageVMA;
+        this.difficulte = null;
+        this.typeBanque = null;
+    }
+
+    public Seance(
+            String nom,
+            String type,
+            int dureeEchauffement,
+            String corps,
+            int dureeCooldown,
+            double pourcentageVMA,
+            Integer difficulte,
+            String typeBanque
+    ) {
+        this.nom = nom;
+        this.type = type;
+        this.dureeEchauffement = dureeEchauffement;
+        this.corps = corps;
+        this.dureeCooldown = dureeCooldown;
+        this.pourcentageVMA = pourcentageVMA;
+        this.difficulte = difficulte;
+        this.typeBanque = typeBanque;
     }
 
     public String getNom() {
@@ -22,6 +48,10 @@ public class Seance {
 
     public String getType() {
         return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getDescription(Profil profil) {
@@ -49,6 +79,10 @@ public class Seance {
 
     public double getPourcentageVMA() {
         return pourcentageVMA;
+    }
+
+    public void setPourcentageVMA(double pourcentageVMA) {
+        this.pourcentageVMA = pourcentageVMA;
     }
 
     public double getDistanceKm(Profil profil) {
@@ -314,11 +348,39 @@ public class Seance {
         return corps;
     }
 
+    public void setCorps(String corps) {
+        this.corps = corps;
+    }
+
     public int getDureeEchauffement() {
         return dureeEchauffement;
     }
 
+    public void setDureeEchauffement(int dureeEchauffement) {
+        this.dureeEchauffement = dureeEchauffement;
+    }
+
     public int getDureeCooldown() {
         return dureeCooldown;
+    }
+
+    public void setDureeCooldown(int dureeCooldown) {
+        this.dureeCooldown = dureeCooldown;
+    }
+
+    public Integer getDifficulte() {
+        return difficulte;
+    }
+
+    public void setDifficulte(Integer difficulte) {
+        this.difficulte = difficulte;
+    }
+
+    public String getTypeBanque() {
+        return typeBanque;
+    }
+
+    public void setTypeBanque(String typeBanque) {
+        this.typeBanque = typeBanque;
     }
 }

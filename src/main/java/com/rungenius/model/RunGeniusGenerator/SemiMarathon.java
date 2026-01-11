@@ -145,7 +145,8 @@ public class SemiMarathon implements Programme {
         }
 
         String nom = "Séance " + (jour + 1) + " - Tempo confortable";
-        return new Seance(nom, "Tempo", 10, corps, 5, pSeuil);
+        Integer diff = (ex != null) ? ex.getDifficulte() : difficulte;
+        return new Seance(nom, "Tempo", 10, corps, 5, pSeuil, diff, "Tempo");
     }
 
     private int niveauToDifficulte(String niveau) {
@@ -196,7 +197,8 @@ public class SemiMarathon implements Programme {
                 corps = "8 x 400m récup 1min";
                 pourcentageFractionne = 0.95;
             }
-            return new Seance(nom, typeFrac, 15, corps, 10, pourcentageFractionne);
+            Integer diff = (ex != null) ? ex.getDifficulte() : difficulteFrac;
+            return new Seance(nom, typeFrac, 15, corps, 10, pourcentageFractionne, diff, typeFrac);
 
         } else {
             // À partir de 3 sorties/semaine : alterner Endurance (séances paires) et AS (séances impaires)
@@ -236,7 +238,8 @@ public class SemiMarathon implements Programme {
                 kmAS = calculerDistanceProgressiveKm(30, semaine, pourcentageAS);
             }
 
-            return new Seance(nom, "Allure Spécifique", 15, corpsAS, 10, pourcentageAS);
+            Integer diff = (exAS != null) ? exAS.getDifficulte() : null;
+            return new Seance(nom, "Allure Spécifique", 15, corpsAS, 10, pourcentageAS, diff, getTypeAllureSpecifique());
         }
     }
 
