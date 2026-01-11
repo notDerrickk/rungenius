@@ -131,6 +131,10 @@ public class SemiMarathon implements Programme {
 
         CorpsDeSeance ex = banque.getExerciceAleatoire("Tempo", difficulte);
 
+        if (ex == null) {
+            ex = banque.getExerciceAleatoire("Tempo");
+        }
+
         double pSeuil;
         String corps;
 

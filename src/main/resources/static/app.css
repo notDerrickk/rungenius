@@ -40,6 +40,19 @@
 
 * { box-sizing: border-box; }
 html, body { height: 100%; width: 100%; min-width: 100vw; min-height: 100vh; overflow-x: hidden; }
+
+/* Prévention du zoom non désiré sur iOS */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="email"],
+input[type="tel"],
+select,
+textarea {
+  font-size: 16px;
+}
+
 body {
   max-width: 100vw;
   overflow-x: hidden;
@@ -68,11 +81,20 @@ a { color: inherit; }
 .small-muted { color: var(--muted); font-weight: 600; }
 
 .rg-topbar{
-  position: static; 
+  position: sticky;
+  top: 0;
+  z-index: 100;
   background: color-mix(in srgb, var(--bg) 72%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--stroke);
+}
+
+@media (max-width: 576px) {
+  .rg-topbar .container {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
 }
 .rg-brand{
   font-weight: 900;
@@ -100,9 +122,15 @@ a { color: inherit; }
   display: block;
 }
 
+@media (max-width: 768px) {
+  .rg-brand .rg-logo{
+    width: 110px;
+  }
+}
+
 @media (max-width: 576px) {
   .rg-brand .rg-logo{
-    width: 72px;
+    width: 90px;
   }
 }
 
@@ -117,20 +145,27 @@ a { color: inherit; }
 }
 
 .rg-hero{
-  padding: 3.5rem 0 1.25rem 0;
+  padding: 2rem 0 1rem 0;
 }
 .rg-hero h1{
   font-weight: 950;
   letter-spacing: -0.045em;
-  line-height: 1.03;
-  font-size: clamp(2.2rem, 4.2vw, 3.6rem);
+  line-height: 1.1;
+  font-size: clamp(1.6rem, 5vw, 3.6rem);
   margin: 0 0 .85rem 0;
 }
 .rg-hero p{
   margin: 0;
   color: var(--muted);
-  font-size: 1.1rem;
+  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
   font-weight: 600;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .rg-hero {
+    padding: 1.5rem 0 1rem 0;
+  }
 }
 
 .rg-btn{
@@ -141,6 +176,12 @@ a { color: inherit; }
   background: transparent;
   color: var(--text);
   text-decoration: none;
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  white-space: nowrap;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .rg-btn:hover{
   background: color-mix(in srgb, var(--chip) 70%, transparent);
@@ -151,6 +192,13 @@ a { color: inherit; }
   color: #06101f;
 }
 .rg-btn-primary:hover{ filter: brightness(1.05); transform: translateY(-1px); }
+
+@media (max-width: 576px) {
+  .rg-btn {
+    padding: .75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
 
 .rg-btn-white{
   background: var(--card);
@@ -174,6 +222,14 @@ a { color: inherit; }
   background: color-mix(in srgb, var(--bg2) 70%, transparent) !important;
   color: var(--text) !important;
   padding: .8rem 1rem !important;
+  font-size: 16px !important;
+  min-height: 48px;
+}
+
+@media (max-width: 576px) {
+  .rg-input, .rg-select, .rg-textarea {
+    padding: 0.9rem 1rem !important;
+  }
 }
 :root[data-theme="dark"] .rg-input,
 :root[data-theme="dark"] .rg-select,
@@ -218,16 +274,17 @@ a { color: inherit; }
 }
 
 .segmented-control{
-  display: inline-flex;
+  display: flex;
   gap: 6px;
   align-items: center;
   background: transparent;
+  width: 100%;
 }
 .segmented-control input[type="radio"]{
   display: none;
 }
 .segmented-control label{
-  padding: .55rem .9rem;
+  padding: .65rem .9rem;
   border-radius: 12px;
   border: 1px solid var(--stroke);
   background: color-mix(in srgb, var(--bg2) 85%, transparent);
@@ -236,6 +293,12 @@ a { color: inherit; }
   color: var(--text);
   transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
   user-select: none;
+  flex: 1;
+  text-align: center;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .segmented-control label:hover{
   transform: translateY(-2px);
@@ -250,6 +313,16 @@ a { color: inherit; }
   outline: 3px solid color-mix(in srgb, var(--brand) 22%, transparent);
   outline-offset: 2px;
 }
+
+@media (max-width: 576px) {
+  .segmented-control {
+    gap: 8px;
+  }
+  .segmented-control label {
+    padding: .75rem .6rem;
+    font-size: 0.9rem;
+  }
+}
 @media (max-width: 992px){
   .rg-pace-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -262,9 +335,18 @@ a { color: inherit; }
   border: 1px solid rgba(255,255,255,0.12);
   box-shadow: 0 10px 28px rgba(0,0,0,0.10);
   color: white;
+  text-align: center;
 }
 .rg-pace-card .label{ font-size: .88rem; opacity: .92; font-weight: 800; }
 .rg-pace-card .value{ font-size: 1.35rem; font-weight: 950; margin-top: .45rem; }
+
+@media (max-width: 576px) {
+  .rg-pace-card {
+    padding: 1.2rem 1rem;
+  }
+  .rg-pace-card .label { font-size: 0.9rem; }
+  .rg-pace-card .value { font-size: 1.5rem; margin-top: .6rem; }
+}
 .rg-pace-ef{ background: linear-gradient(135deg, color-mix(in srgb, var(--ef) 88%, #000), var(--ef)); }
 .rg-pace-as{ background: linear-gradient(135deg, color-mix(in srgb, var(--as) 88%, #000), var(--as)); }
 .rg-pace-seuil{ background: linear-gradient(135deg, color-mix(in srgb, var(--seuil) 88%, #000), var(--seuil)); }
@@ -295,6 +377,23 @@ a { color: inherit; }
 }
 .rg-week-body{ padding: 1rem 1.1rem; }
 
+/* Styles pour semaines de récupération (semaines 5,10,...) */
+.rg-week.rg-week-recup{
+  border-color: color-mix(in srgb, var(--ef) 28%, var(--stroke));
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--ef) 10%, transparent);
+}
+.rg-week.rg-week-recup .rg-week-head{
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--ef) 18%, transparent),
+    color-mix(in srgb, var(--brand2) 6%, transparent));
+  border-bottom-color: color-mix(in srgb, var(--ef) 22%, var(--stroke));
+}
+.rg-week.rg-week-recup .rg-chip{
+  background: color-mix(in srgb, var(--ef) 12%, transparent);
+  border-color: color-mix(in srgb, var(--ef) 22%, var(--stroke));
+  color: color-mix(in srgb, #06101f 88%, transparent);
+}
+
 .rg-session{
   background: var(--card);
   border: 1px solid var(--stroke);
@@ -306,12 +405,26 @@ a { color: inherit; }
   margin: 0;
   font-weight: 900;
   letter-spacing: -0.01em;
+  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
 }
 .rg-session-sub{
-  margin-top: .2rem;
+  margin-top: .5rem;
   color: var(--muted);
   font-weight: 650;
   font-size: .92rem;
+}
+.rg-session-sub > div {
+  margin-bottom: 0.3rem;
+}
+
+@media (max-width: 768px) {
+  .rg-session {
+    padding: 1.2rem;
+  }
+  .rg-session-sub {
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
 }
 
 .rg-actionbar{
@@ -322,7 +435,8 @@ a { color: inherit; }
   background: color-mix(in srgb, var(--bg) 75%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  overflow-x: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 .rg-actionbar .wrap{
   padding: .9rem 0;
@@ -341,6 +455,183 @@ a { color: inherit; }
   padding-right: 1rem;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
 .rg-card, .rg-week, .rg-session { margin-left: auto; margin-right: auto; }
 
+@media (max-width: 576px) {
+  .rg-actionbar .wrap {
+    padding: 0.75rem 0;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  .rg-actionbar .wrap .rg-btn {
+    flex: 1 1 auto;
+    min-width: 100px;
+    font-size: 0.8rem;
+    padding: 0.7rem 0.7rem;
+    white-space: normal;
+    line-height: 1.3;
+    text-align: center;
+  }
+  
+  .rg-actionbar .wrap form {
+    flex: 1 1 auto;
+    display: flex;
+  }
+  
+  .rg-actionbar .wrap form button {
+    width: 100%;
+  }
+}
+
 img{ max-width: 100%; height: auto; display: block; }
+
+.form-label {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+  font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+/* Styles responsive pour tablettes */
+@media (max-width: 992px) {
+  .rg-hero {
+    text-align: left;
+  }
+  
+  .rg-hero h1 {
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+  }
+}
+
+/* Styles responsive pour mobile */
+@media (max-width: 576px) {
+  .rg-card-inner {
+    padding: 1rem;
+  }
+  
+  .rg-section-title {
+    font-size: clamp(1.1rem, 4vw, 1.3rem);
+  }
+  
+  .rg-chip {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.65rem;
+  }
+  
+  .rg-week-head {
+    padding: 0.8rem 0.9rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .rg-week-body {
+    padding: 0.8rem 0.9rem;
+  }
+  
+  .small-muted {
+    font-size: 0.85rem;
+  }
+  
+  /* Amélioration des boutons sur mobile */
+  .d-grid .rg-btn,
+  .w-100.rg-btn {
+    font-size: 1rem;
+    padding: 0.85rem 1.2rem;
+  }
+  
+  /* Réduction des marges générales */
+  .my-4 {
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .mt-3, .my-3 {
+    margin-top: 1rem !important;
+  }
+  
+  .mb-3, .my-3 {
+    margin-bottom: 1rem !important;
+  }
+  
+  /* Amélioration du padding bottom pour éviter que le contenu soit caché sous la barre d'action */
+  body [style*="padding-bottom: 90px"] {
+    padding-bottom: 110px !important;
+  }
+}
+
+/* Styles pour très petits écrans */
+@media (max-width: 400px) {
+  .rg-topbar .d-flex.gap-2 {
+    gap: 0.5rem !important;
+  }
+  
+  .rg-btn {
+    padding: 0.65rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .rg-hero h1 {
+    font-size: 1.5rem;
+  }
+  
+  .rg-hero p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Amélioration des interactions tactiles */
+@media (hover: none) and (pointer: coarse) {
+  /* Appareils tactiles */
+  .rg-btn,
+  .segmented-control label,
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .rg-btn:active {
+    transform: scale(0.97);
+  }
+  
+  .segmented-control label:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Scroll smooth pour toute l'application */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Améliorer la lisibilité sur petits écrans */
+@media (max-width: 576px) {
+  body {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  
+  button,
+  .rg-btn,
+  input[type="submit"],
+  a.rg-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Améliorer les formulaires */
+  select,
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  textarea {
+    font-size: 16px !important; 
+  }
+}

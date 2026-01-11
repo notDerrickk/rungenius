@@ -20,7 +20,8 @@
                 <img src="/logo.png" alt="RunGenius" class="rg-logo">
             </a>
             <div class="d-flex align-items-center gap-2">
-                <button class="rg-btn" type="button" data-theme-toggle aria-pressed="false">Light</button>
+                <button class="rg-btn d-none d-sm-inline-flex" type="button" data-theme-toggle aria-pressed="false">Light</button>
+                <button class="rg-btn d-inline-flex d-sm-none" type="button" data-theme-toggle aria-pressed="false">🌓</button>
                 <a class="rg-btn" href="/">Générateur</a>
             </div>
         </div>
@@ -109,20 +110,20 @@
             <div class="rg-divider"></div>
 
 
-            <div class="row g-3 mt-3">
-                <div class="col-md-3">
+            <div class="row g-3 mt-2">
+                <div class="col-sm-6 col-md-3">
                     <label class="form-label">Allure EF (min/km)</label>
                     <input type="text" id="allureEF" class="form-control rg-input" value="6:00">
                 </div>
-                <div class="col-md-3">
+                <div class="col-sm-6 col-md-3">
                     <label class="form-label">Allure Objectif (min/km)</label>
                     <input type="text" id="allureObjectif" class="form-control rg-input" value="5:00">
                 </div>
-                <div class="col-md-3">
+                <div class="col-sm-6 col-md-3">
                     <label class="form-label">Allure Seuil (min/km)</label>
                     <input type="text" id="allureSeuil" class="form-control rg-input" value="4:42">
                 </div>
-                <div class="col-md-3">
+                <div class="col-sm-6 col-md-3">
                     <label class="form-label">Allure VMA (min/km)</label>
                     <input type="text" id="allureVMA" class="form-control rg-input" value="4:00">
                 </div>
@@ -146,8 +147,8 @@
 
             <div class="rg-divider"></div>
 
-            <div class="d-flex justify-content-end">
-                <button class="rg-btn rg-btn-primary btn-lg" type="button" onclick="generateHTMLInSameWindow()">
+            <div class="d-flex justify-content-stretch justify-content-md-end">
+                <button class="rg-btn rg-btn-primary btn-lg w-100 w-md-auto" type="button" onclick="generateHTMLInSameWindow()">
                     Générer le programme
                 </button>
             </div>
@@ -161,8 +162,8 @@
 
 <div class="rg-actionbar" id="actionBar" style="display:none;">
     <div class="container">
-        <div class="wrap">
-            <button class="rg-btn rg-btn-primary" type="button" onclick="generateHTMLInSameWindow()">Générer le programme</button>
+        <div class="wrap" style="justify-content: center;">
+            <button class="rg-btn rg-btn-primary w-100 w-sm-auto" type="button" onclick="generateHTMLInSameWindow()" style="max-width: 400px;">Générer le programme</button>
         </div>
     </div>
 </div>

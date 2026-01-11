@@ -114,6 +114,10 @@ public class Prepa5k implements Programme {
 
         CorpsDeSeance ex = banque.getExerciceAleatoire("Tempo", difficulte);
 
+        if (ex == null) {
+            ex = banque.getExerciceAleatoire("Tempo");
+        }
+
         double pSeuil;
         String corps;
 

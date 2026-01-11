@@ -18,7 +18,8 @@
                     <img src="/logo.png" alt="RunGenius" class="rg-logo">
                 </a>
             <div class="d-flex align-items-center gap-2">
-                <button class="rg-btn" type="button" data-theme-toggle aria-pressed="false">Light</button>
+                <button class="rg-btn d-none d-sm-inline-flex" type="button" data-theme-toggle aria-pressed="false">Light</button>
+                <button class="rg-btn d-inline-flex d-sm-none" type="button" data-theme-toggle aria-pressed="false">🌓</button>
                 <a class="rg-btn" href="/editor">Éditer</a>
             </div>
         </div>
@@ -77,9 +78,9 @@
             <div class="rg-section-title">Planning détaillé</div>
             <div class="rg-divider"></div>
 
-            <div th:each="semaine, stat : ${programme.semaines}"
-                 th:with="numeroSemaine=${stat.index + 1}, isRecup=${numeroSemaine % 5 == 0}"
-                 class="rg-week">
+              <div th:each="semaine, stat : ${programme.semaines}"
+                  th:with="numeroSemaine=${stat.index + 1}, isRecup=${numeroSemaine % 5 == 0}"
+                  class="rg-week" th:classappend="${isRecup} ? ' rg-week-recup' : ''">
 
                 <div class="rg-week-head">
                     <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -184,41 +185,41 @@
     </div>
 </div>
 
-<div id="feedbackModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
-    <div style="background:var(--bg); border-radius:12px; padding:30px; max-width:500px; width:90%; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
-        <h3 style="margin-top:0; margin-bottom:20px; color:var(--text);">Comment s'est passée votre séance ?</h3>
+<div id="feedbackModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center; padding: 1rem;">
+    <div style="background:var(--bg); border-radius:12px; padding:1.5rem; max-width:500px; width:100%; max-height:90vh; overflow-y:auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+        <h3 style="margin-top:0; margin-bottom:1.25rem; color:var(--text); font-size: clamp(1.1rem, 4vw, 1.3rem);">Comment s'est passée votre séance ?</h3>
         
-        <div style="margin-bottom:20px;">
-            <label style="display:block; margin-bottom:10px; font-weight:600; color:var(--text);">Ressenti :</label>
-            <div style="display:flex; flex-direction:column; gap:10px;">
-                <label style="cursor:pointer; padding:12px; border:2px solid var(--stroke); border-radius:8px; display:flex; align-items:center; transition: all 0.2s;">
-                    <input type="radio" name="feeling" value="tooEasy" style="margin-right:10px;">
+        <div style="margin-bottom:1.25rem;">
+            <label style="display:block; margin-bottom:0.75rem; font-weight:600; color:var(--text); font-size: 0.95rem;">Ressenti :</label>
+            <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                <label style="cursor:pointer; padding:0.9rem 1rem; border:2px solid var(--stroke); border-radius:10px; display:flex; align-items:center; transition: all 0.2s; font-size: 0.9rem;">
+                    <input type="radio" name="feeling" value="tooEasy" style="margin-right:0.75rem; min-width: 18px; min-height: 18px;">
                     <span>😊 Très facile - J'aurais pu faire plus</span>
                 </label>
-                <label style="cursor:pointer; padding:12px; border:2px solid var(--stroke); border-radius:8px; display:flex; align-items:center; transition: all 0.2s;">
-                    <input type="radio" name="feeling" value="doable" checked style="margin-right:10px;">
+                <label style="cursor:pointer; padding:0.9rem 1rem; border:2px solid var(--stroke); border-radius:10px; display:flex; align-items:center; transition: all 0.2s; font-size: 0.9rem;">
+                    <input type="radio" name="feeling" value="doable" checked style="margin-right:0.75rem; min-width: 18px; min-height: 18px;">
                     <span>👍 Faisable - Niveau adapté</span>
                 </label>
-                <label style="cursor:pointer; padding:12px; border:2px solid var(--stroke); border-radius:8px; display:flex; align-items:center; transition: all 0.2s;">
-                    <input type="radio" name="feeling" value="tooHard" style="margin-right:10px;">
+                <label style="cursor:pointer; padding:0.9rem 1rem; border:2px solid var(--stroke); border-radius:10px; display:flex; align-items:center; transition: all 0.2s; font-size: 0.9rem;">
+                    <input type="radio" name="feeling" value="tooHard" style="margin-right:0.75rem; min-width: 18px; min-height: 18px;">
                     <span>😓 Trop dur - J'ai eu du mal à finir</span>
                 </label>
             </div>
         </div>
         
-        <div style="margin-bottom:25px;">
-            <label style="cursor:pointer; padding:12px; border:2px solid var(--stroke); border-radius:8px; display:flex; align-items:center; background:var(--card-bg);">
-                <input type="checkbox" id="hasPain" style="margin-right:10px;">
+        <div style="margin-bottom:1.5rem;">
+            <label style="cursor:pointer; padding:0.9rem 1rem; border:2px solid var(--stroke); border-radius:10px; display:flex; align-items:center; background:var(--card-bg); font-size: 0.9rem;">
+                <input type="checkbox" id="hasPain" style="margin-right:0.75rem; min-width: 18px; min-height: 18px;">
                 <span style="font-weight:600;">⚠️ Je ressens une douleur</span>
             </label>
-            <small style="display:block; margin-top:5px; color:var(--muted); padding-left:12px;">
+            <small style="display:block; margin-top:0.5rem; color:var(--muted); padding-left:0.75rem; font-size: 0.85rem; line-height: 1.4;">
                 Si coché, la prochaine séance sera remplacée par une séance de récupération
             </small>
         </div>
         
-        <div style="display:flex; gap:10px;">
-            <button id="submitFeedback" class="rg-btn rg-btn-primary" style="flex:1;">Valider</button>
-            <button id="cancelFeedback" class="rg-btn" style="flex:1;">Annuler</button>
+        <div style="display:flex; flex-direction: column; gap:0.75rem;">
+            <button id="submitFeedback" class="rg-btn rg-btn-primary" style="width: 100%;">Valider</button>
+            <button id="cancelFeedback" class="rg-btn" style="width: 100%;">Annuler</button>
         </div>
     </div>
 </div>
