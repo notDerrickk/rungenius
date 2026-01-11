@@ -11,11 +11,12 @@
 
   function applyTheme(theme) {
     document.documentElement.dataset.theme = theme;
-    const btn = document.querySelector("[data-theme-toggle]");
-    if (btn) {
+    const btns = document.querySelectorAll("[data-theme-toggle]");
+    btns.forEach(btn => {
       btn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+      // Mettre un libellé clair sur tous les boutons (remplace l'emoji si présent)
       btn.innerText = theme === "dark" ? "Thème Clair" : "Thème Sombre";
-    }
+    });
   }
 
   function toggleTheme() {
@@ -28,8 +29,8 @@
   applyTheme(getPreferredTheme());
 
   window.addEventListener("DOMContentLoaded", () => {
-    const btn = document.querySelector("[data-theme-toggle]");
-    if (btn) btn.addEventListener("click", toggleTheme);
+    const btns = document.querySelectorAll("[data-theme-toggle]");
+    btns.forEach(btn => btn.addEventListener("click", toggleTheme));
   });
 
   window.RunGeniusTheme = { applyTheme, toggleTheme };
