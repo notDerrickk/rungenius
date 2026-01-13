@@ -168,11 +168,12 @@ public class BanqueExercices {
         allureSpecAS21.add(new CorpsDeSeance("3 x 1km à allure semi récup 2min", CorpsDeSeance.AllureType.AS, 21.1, 2));
         allureSpecAS21.add(new CorpsDeSeance("4 x 1km à allure semi récup 2min", CorpsDeSeance.AllureType.AS, 21.1, 2));
         allureSpecAS21.add(new CorpsDeSeance("5 x 1km à allure semi récup 90sec", CorpsDeSeance.AllureType.AS, 21.1, 2));
-        allureSpecAS21.add(new CorpsDeSeance("2 x 2km à allure semi récup 2min", CorpsDeSeance.AllureType.AS, 21.1, 2));
         allureSpecAS21.add(new CorpsDeSeance("3 x 2km à allure semi récup 2min", CorpsDeSeance.AllureType.AS, 21.1, 2));
         allureSpecAS21.add(new CorpsDeSeance("4 x 2km à allure semi récup 2min", CorpsDeSeance.AllureType.AS, 21.1, 2));
-        allureSpecAS21.add(new CorpsDeSeance("2 x 3km à allure semi récup 3min", CorpsDeSeance.AllureType.AS, 21.1, 2));
         allureSpecAS21.add(new CorpsDeSeance("3 x 3km à allure semi récup 2min", CorpsDeSeance.AllureType.AS, 21.1, 2));
+        allureSpecAS21.add(new CorpsDeSeance("5 x 2km à allure semi récup 3min", CorpsDeSeance.AllureType.AS, 21.1, 2));        
+        allureSpecAS21.add(new CorpsDeSeance("4 x 3km à allure semi récup 3min", CorpsDeSeance.AllureType.AS, 21.1, 2));
+        allureSpecAS21.add(new CorpsDeSeance("5 x 3km à allure semi récup 2min", CorpsDeSeance.AllureType.AS, 21.1, 2));
         allureSpecAS21.add(new CorpsDeSeance("2 x 4km à allure semi récup 3min", CorpsDeSeance.AllureType.AS, 21.1, 2));
         allureSpecAS21.add(new CorpsDeSeance("6km en continu à allure semi", CorpsDeSeance.AllureType.AS, 21.1, 2));
         allureSpecAS21.add(new CorpsDeSeance("8km en continu à allure semi", CorpsDeSeance.AllureType.AS, 21.1, 2));
