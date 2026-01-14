@@ -4,6 +4,9 @@ import com.rungenius.model.RunGeniusGenerator.*;
 import com.rungenius.model.RunGeniusEditor.ProgrammeCustom;
 import com.rungenius.model.dto.ProgramDataDTO;
 import com.rungenius.service.FitExportService;
+import com.rungenius.service.TrainingProgramService;
+import com.rungenius.model.entity.TrainingProgram;
+import com.rungenius.model.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.rungenius.service.UserService;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +23,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -38,14 +43,27 @@ public class ProgramController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private TrainingProgramService trainingProgramService;
 
     @GetMapping("/")
     public String index(Model model) {
-        if (userService.getCurrentUser() == null) {
-            return "redirect:/register";
-        }
         model.addAttribute("today", LocalDate.now());
         return "index";
+    }
+    
+    @GetMapping("/dashboard")
+    public String dashboard(Model model) {
+        User currentUser = userService.getCurrentUser();
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+        
+        List<TrainingProgram> programs = trainingProgramService.getUserPrograms(currentUser);
+        model.addAttribute("programs", programs);
+        model.addAttribute("today", LocalDate.now());
+        return "dashboard";
     }
 
     @GetMapping("/editor")
@@ -253,8 +271,14 @@ public class ProgramController {
             session.setAttribute(SESSION_OBJECTIF, objectifStr);
             session.setAttribute(SESSION_RACEDATE, raceDateStr);
             session.setAttribute(SESSION_DISTANCEKM, distanceKm);
-
-            // Calculs et affichage effectués dans /programme après le redirect
+            
+            User currentUser = userService.getCurrentUser();
+            if (currentUser != null) {
+                TrainingProgram saved = trainingProgramService.saveProgram(
+                    currentUser, programme, profil, raceType, objectifStr, raceDate
+                );
+                session.setAttribute("rg.programId", saved.getId());
+            }
 
             return "redirect:/programme";
 
@@ -324,6 +348,35 @@ public class ProgramController {
         model.addAttribute("seanceNumbers", seanceNumbers);
 
         return "result";
+    }
+    
+    @GetMapping("/programme/{id}")
+    public String loadProgramById(@PathVariable Long id, Model model, HttpSession session) {
+        User currentUser = userService.getCurrentUser();
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+        
+        Optional<TrainingProgram> optTp = trainingProgramService.getUserProgram(id, currentUser);
+        if (optTp.isEmpty()) {
+            return "redirect:/dashboard";
+        }
+        
+        TrainingProgram tp = optTp.get();
+        Map<String, Object> data = trainingProgramService.loadProgramData(tp);
+        
+        Programme programme = (Programme) data.get("programme");
+        Profil profil = (Profil) data.get("profil");
+        
+        session.setAttribute(SESSION_PROGRAMME, programme);
+        session.setAttribute(SESSION_PROFIL, profil);
+        session.setAttribute(SESSION_RACETYPE, tp.getRaceType());
+        session.setAttribute(SESSION_OBJECTIF, tp.getObjectif() != null ? tp.getObjectif() : "");
+        session.setAttribute(SESSION_RACEDATE, tp.getRaceDate() != null ? tp.getRaceDate().toString() : "");
+        session.setAttribute(SESSION_DISTANCEKM, tp.getDistanceKm());
+        session.setAttribute("rg.programId", tp.getId());
+        
+        return "redirect:/programme";
     }
 
     public static class FeedbackRequest {

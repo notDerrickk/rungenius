@@ -27,6 +27,7 @@
                     <button class="rg-btn d-inline-flex d-sm-none" type="button" data-theme-toggle aria-pressed="false" title="Basculer thème">
                         Clair
                     </button>
+                    <a class="rg-btn" href="/dashboard">Mes programmes</a>
                     <a class="rg-btn" href="/editor">Éditeur</a>
                 </div>
             </div>
@@ -61,7 +62,7 @@
 
                             <div class="rg-divider"></div>
 
-                            <form action="/generate" method="post">
+                            <form th:action="@{/generate}" method="post">
                                 <div class="mb-3">
                                     <label class="form-label">Type de course</label>
 

@@ -13,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Configuration
 @EnableWebSecurity
@@ -41,10 +44,19 @@ public class SecurityConfig {
     }
     
     @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        return mapper;
+    }
+    
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/", "/login", "/register", "/error").permitAll()
+                .requestMatchers("/login", "/register", "/error").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**",
                                 "/webjars/**", "/favicon.ico", "/app.css", "/app.js").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
@@ -53,7 +65,7 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
+                .defaultSuccessUrl("/dashboard", true)
                 .failureUrl("/login?error=true")
                 .permitAll()
             )
