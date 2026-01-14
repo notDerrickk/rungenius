@@ -5,6 +5,7 @@ import com.rungenius.model.RunGeniusEditor.ProgrammeCustom;
 import com.rungenius.model.dto.ProgramDataDTO;
 import com.rungenius.service.FitExportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.rungenius.service.UserService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,8 +36,14 @@ public class ProgramController {
     @Autowired
     private FitExportService fitExportService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/")
     public String index(Model model) {
+        if (userService.getCurrentUser() == null) {
+            return "redirect:/register";
+        }
         model.addAttribute("today", LocalDate.now());
         return "index";
     }
@@ -247,33 +254,7 @@ public class ProgramController {
             session.setAttribute(SESSION_RACEDATE, raceDateStr);
             session.setAttribute(SESSION_DISTANCEKM, distanceKm);
 
-            // Calcul kilométrage total
-            double totalKm = estimerKilometragePrecis(programme, profil);
-            
-            String[] allures = profil.getAlluresPrincipales(distanceKm);
-            
-            // label de distance
-            String distanceLabel = (Math.abs(distanceKm - Math.round(distanceKm)) < 1e-6)
-                    ? String.format(Locale.US, "%d", (int)Math.round(distanceKm))
-                    : String.format(Locale.US, "%.1f", distanceKm);
-            
-            List<Seance[]> semaines = programme.getSemaines();
-            double[] weekTotals = new double[semaines.size()];
-            int[][] seanceNumbers = new int[semaines.size()][];
-            int globalSeanceNumber = 1;
-            
-            for (int i = 0; i < semaines.size(); i++) {
-                Seance[] semaine = semaines.get(i);
-                seanceNumbers[i] = new int[semaine.length];
-                double weekTotal = 0.0;
-                
-                for (int j = 0; j < semaine.length; j++) {
-                    seanceNumbers[i][j] = globalSeanceNumber++;
-                    weekTotal += semaine[j].getDistanceKm(profil);
-                }
-                
-                weekTotals[i] = weekTotal;
-            }
+            // Calculs et affichage effectués dans /programme après le redirect
 
             return "redirect:/programme";
 
@@ -485,8 +466,8 @@ public class ProgramController {
         for (int w = fromWeek; w < semaines.size(); w++) {
             Seance[] week = semaines.get(w);
             int start = (w == fromWeek) ? fromSession + 1 : 0;
-            for (int i = start; i < week.length; i++) {
-                return new Location(w, i);
+            if (start < week.length) {
+                return new Location(w, start);
             }
         }
         return null;
