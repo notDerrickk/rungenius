@@ -76,7 +76,7 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)
                 .permitAll()
             )
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/feedback"))
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/feedback", "/fit/export-single", "/fit/export-all"))
             .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
             .exceptionHandling(exception -> exception.accessDeniedPage("/login"));
         
