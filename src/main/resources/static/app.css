@@ -635,3 +635,234 @@ html {
     font-size: 16px !important; 
   }
 }
+
+/* ===== Styles pour pages login/register ===== */
+body.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.login-container,
+.register-container {
+  background: var(--card);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--stroke);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 420px;
+}
+
+.register-container {
+  max-width: 450px;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logo h1 {
+  color: var(--text);
+  font-size: 2em;
+  font-weight: 950;
+  letter-spacing: -0.045em;
+  margin-bottom: 0.5rem;
+}
+
+.logo p {
+  color: var(--muted);
+  font-size: 0.95em;
+  font-weight: 600;
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.25rem;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.alert-error {
+  background-color: color-mix(in srgb, #ef4444 15%, transparent);
+  color: #ef4444;
+  border: 1px solid color-mix(in srgb, #ef4444 30%, transparent);
+}
+
+.alert-success {
+  background-color: color-mix(in srgb, #22c55e 15%, transparent);
+  color: #22c55e;
+  border: 1px solid color-mix(in srgb, #22c55e 30%, transparent);
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 0.85em;
+  margin-top: 0.35rem;
+  font-weight: 600;
+}
+
+.login-container .form-group,
+.register-container .form-group:not(:last-of-type) {
+  margin-bottom: 1.25rem;
+}
+
+.register-container .form-group {
+  margin-bottom: 1.1rem;
+}
+
+.login-container label,
+.register-container label {
+  display: block;
+  color: var(--text);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-size: 0.95em;
+}
+
+.login-container input[type="email"],
+.login-container input[type="password"],
+.register-container input[type="email"],
+.register-container input[type="password"],
+.register-container input[type="text"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--stroke);
+  background: var(--card2);
+  color: var(--text);
+  border-radius: 12px;
+  font-size: 1em;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.login-container input:focus,
+.register-container input:focus {
+  outline: none;
+  border-color: var(--brand);
+  background: var(--card);
+}
+
+.separator {
+  text-align: center;
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.separator span {
+  background: var(--card);
+  padding: 0 1rem;
+  color: var(--muted);
+  position: relative;
+  z-index: 1;
+  font-weight: 600;
+}
+
+.separator::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--stroke);
+}
+
+.register-link,
+.login-link {
+  text-align: center;
+  margin-top: 1.25rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.register-link a,
+.login-link a {
+  color: var(--brand);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.register-link a:hover,
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* ===== Styles pour dashboard ===== */
+.programs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.program-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--stroke);
+  transition: all 0.3s;
+}
+
+.program-card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.program-card h3 {
+  color: var(--text);
+  margin-bottom: 1rem;
+  font-size: 1.3em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.program-info {
+  color: var(--muted);
+  font-size: 0.9em;
+  margin: 0.5rem 0;
+  font-weight: 600;
+}
+
+.program-info strong {
+  color: var(--text);
+}
+
+.program-meta {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.program-date {
+  color: var(--muted);
+  font-size: 0.85em;
+  margin-top: 0.75rem;
+  font-weight: 600;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.25rem;
+  color: var(--muted);
+}
+
+.empty-state h3 {
+  font-size: 1.5em;
+  margin-bottom: 1rem;
+  color: var(--text);
+  font-weight: 900;
+}
+
+.empty-state p {
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}

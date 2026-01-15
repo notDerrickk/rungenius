@@ -18,9 +18,10 @@
                     <img src="/logo.png" alt="RunGenius" class="rg-logo">
                 </a>
             <div class="d-flex align-items-center gap-2">
-                <button class="rg-btn d-none d-sm-inline-flex" type="button" data-theme-toggle aria-pressed="false">Light</button>
+                <button class="rg-btn d-none d-sm-inline-flex" type="button" data-theme-toggle aria-pressed="false">Clair</button>
                 <button class="rg-btn d-inline-flex d-sm-none" type="button" data-theme-toggle aria-pressed="false">Clair</button>
-                <a class="rg-btn" href="/editor">Éditer</a>
+                <a class="rg-btn" href="/dashboard">Mes programmes</a>
+                <a class="rg-btn" href="/editor">Éditeur</a>
             </div>
         </div>
     </div>
@@ -225,157 +226,6 @@
 </div>
 
 <script th:src="@{/app.js}"></script>
-<script>
-    let currentWeek, currentSession, currentSessionType;
-    const raceType = /*[[${raceType}]]*/ '';
-    const niveau = /*[[${profil.niveau}]]*/ '';
-    const sorties = /*[[${profil.sortiesParSemaine}]]*/ 0;
-    const vma = /*[[${profil.vma}]]*/ 0;
-    const objectif = /*[[${objectif}]]*/ '';
-    const raceDate = /*[[${raceDate}]]*/ '';
-    
-    document.querySelectorAll('.rg-btn-feedback').forEach(btn => {
-        btn.addEventListener('click', function() {
-            currentWeek = parseInt(this.dataset.week);
-            currentSession = parseInt(this.dataset.session);
-            currentSessionType = this.dataset.sessionType;
-            
-            document.getElementById('feedbackModal').style.display = 'flex';
-        });
-    });
-    
-    document.getElementById('cancelFeedback').addEventListener('click', function() {
-        document.getElementById('feedbackModal').style.display = 'none';
-        // Réinitialiser le formulaire
-        document.querySelector('input[name="feeling"][value="doable"]').checked = true;
-        document.getElementById('hasPain').checked = false;
-
-        const submitBtn = document.getElementById('submitFeedback');
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerText = 'Valider';
-        }
-    });
-    
-    function showToast(message) {
-        const confirmDiv = document.createElement('div');
-        confirmDiv.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background: linear-gradient(135deg, var(--brand), var(--brand2)); color:white; padding:15px 30px; border-radius:8px; z-index:10000; box-shadow:0 4px 20px rgba(0,0,0,0.3); font-weight:600;';
-        confirmDiv.innerText = message;
-        document.body.appendChild(confirmDiv);
-        setTimeout(() => confirmDiv.remove(), 2200);
-    }
-
-    function updateSessionDOM(week1Based, sessionIndex, data) {
-        const selector = `.rg-session[data-week="${week1Based}"][data-session="${sessionIndex}"]`;
-        const el = document.querySelector(selector);
-        if (!el) return;
-
-        const nomEl = el.querySelector('.rg-session-nom');
-        const typeEl = el.querySelector('.rg-session-type');
-        const corpsEl = el.querySelector('.rg-session-corps');
-        const echEl = el.querySelector('.rg-session-echauffement');
-        const coolEl = el.querySelector('.rg-session-cooldown');
-        const allureEl = el.querySelector('.rg-allure-chip');
-        const distEl = el.querySelector('.rg-session-distance');
-        const badgeEl = el.querySelector('.rg-session-adjusted');
-
-        if (nomEl && data.newNom != null) nomEl.textContent = data.newNom;
-        if (typeEl && data.newType != null) typeEl.textContent = data.newType;
-        if (corpsEl && data.newCorps != null) corpsEl.textContent = data.newCorps;
-        if (echEl && data.newEchauffement != null) echEl.textContent = String(data.newEchauffement);
-        if (coolEl && data.newCooldown != null) coolEl.textContent = String(data.newCooldown);
-        if (allureEl && data.newAllureLabel != null) allureEl.textContent = data.newAllureLabel;
-        if (distEl && data.newDistanceKm != null) {
-            distEl.textContent = `${Number(data.newDistanceKm).toFixed(2)} km`;
-        }
-
-        if (badgeEl) {
-            badgeEl.style.display = 'inline-block';
-        }
-
-        // Mettre à jour les champs cachés pour l'export .fit
-        const hType = el.querySelector('.rg-hidden-type');
-        const hCorps = el.querySelector('.rg-hidden-corps');
-        const hEch = el.querySelector('.rg-hidden-echauffement');
-        const hCool = el.querySelector('.rg-hidden-cooldown');
-        const hPct = el.querySelector('.rg-hidden-allurePct');
-        if (hType && data.newType != null) hType.value = data.newType;
-        if (hCorps && data.newCorps != null) hCorps.value = data.newCorps;
-        if (hEch && data.newEchauffement != null) hEch.value = String(data.newEchauffement);
-        if (hCool && data.newCooldown != null) hCool.value = String(data.newCooldown);
-        if (hPct && data.newAllurePct != null) hPct.value = String(data.newAllurePct);
-    }
-
-    // Soumettre le feedback
-    document.getElementById('submitFeedback').addEventListener('click', async function() {
-        const feeling = document.querySelector('input[name="feeling"]:checked').value;
-        const hasPain = document.getElementById('hasPain').checked;
-        
-        const feedback = {
-            feeling: feeling,
-            hasPain: hasPain,
-            week: currentWeek,
-            sessionIndex: currentSession
-        };
-        
-        this.disabled = true;
-        this.innerText = 'Enregistrement...';
-        
-        try {
-            const response = await fetch('/feedback', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(feedback)
-            });
-            
-            const data = await response.json();
-
-            if (response.ok && data && data.ok) {
-                document.getElementById('feedbackModal').style.display = 'none';
-
-                if (data.updatedWeek != null && data.updatedSessionIndex != null) {
-                    updateSessionDOM(data.updatedWeek, data.updatedSessionIndex, data);
-                }
-
-                const btn = document.querySelector(`.rg-btn-feedback[data-week="${currentWeek}"][data-session="${currentSession}"]`);
-                if (btn) {
-                    btn.disabled = true;
-                    btn.style.opacity = '0.7';
-                    btn.textContent = 'Feedback enregistré';
-                }
-
-                showToast(data.message || '✓ Feedback enregistré');
-            } else {
-                alert((data && data.message) ? data.message : 'Erreur lors de l\'enregistrement du feedback');
-            }
-        } catch (error) {
-            console.error('Erreur:', error);
-            alert('Erreur de communication avec le serveur');
-        } finally {
-            this.disabled = false;
-            this.innerText = 'Valider';
-        }
-        
-        // Réinitialiser le formulaire
-        document.querySelector('input[name="feeling"][value="doable"]').checked = true;
-        document.getElementById('hasPain').checked = false;
-    });
-    
-    document.querySelectorAll('input[name="feeling"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            document.querySelectorAll('input[name="feeling"]').forEach(r => {
-                r.parentElement.style.borderColor = 'var(--stroke)';
-                r.parentElement.style.backgroundColor = 'transparent';
-            });
-            if (this.checked) {
-                this.parentElement.style.borderColor = 'var(--brand)';
-                this.parentElement.style.backgroundColor = 'var(--card)';
-            }
-        });
-    });
-</script>
 </body>
 
 </html>
