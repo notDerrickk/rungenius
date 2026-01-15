@@ -54,6 +54,31 @@ public class TrainingProgramService {
         }
     }
     
+    @Transactional
+    public TrainingProgram saveCustomProgram(User user, ProgrammeCustom programme, Profil profil,
+                                             String objectif, LocalDate raceDate) {
+        try {
+            TrainingProgram tp = new TrainingProgram();
+            tp.setUser(user);
+            tp.setTitle(programme.getTitle());
+            tp.setRaceType("custom");
+            tp.setDistanceKm(programme.getDistanceKm());
+            tp.setNiveau(profil.getNiveau());
+            tp.setSorties(profil.getSortiesParSemaine());
+            tp.setVma(profil.getVma());
+            tp.setObjectif(objectif != null ? objectif : "");
+            tp.setRaceDate(raceDate);
+            
+            ProgrammeStorageDTO dto = ProgrammeStorageDTO.from(programme, profil);
+            String json = objectMapper.writeValueAsString(dto);
+            tp.setProgramData(json);
+            
+            return trainingProgramRepository.save(tp);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la sauvegarde du programme personnalisé", e);
+        }
+    }
+    
     public List<TrainingProgram> getUserPrograms(User user) {
         return trainingProgramRepository.findByUserOrderByCreatedAtDesc(user);
     }

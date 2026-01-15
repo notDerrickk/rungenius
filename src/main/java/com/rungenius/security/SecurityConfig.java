@@ -58,7 +58,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/login", "/register", "/error").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**",
-                                "/webjars/**", "/favicon.ico", "/app.css", "/app.js").permitAll()
+                                "/webjars/**", "/favicon.ico", "/favicon.svg", 
+                                "/app.css", "/app.js", "/logo.png", "/*.png", "/*.svg").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             )
@@ -76,7 +77,8 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)
                 .permitAll()
             )
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/feedback", "/fit/export-single", "/fit/export-all"))
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/feedback", "/fit/export-single", "/fit/export-all", 
+                                                       "/editor/generate", "/editor/download", "/generate", "/download"))
             .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
             .exceptionHandling(exception -> exception.accessDeniedPage("/login"));
         

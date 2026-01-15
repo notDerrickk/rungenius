@@ -133,10 +133,11 @@
                                     <button type="submit" class="rg-btn">Exporter .fit</button>
                                 </form>
                                 
-                                <button type="button" class="rg-btn rg-btn-primary rg-btn-feedback" style="margin-top:10px;"
-                                    th:attr="data-week=${stat.index + 1}, data-session=${seanceStat.index}, data-session-type=${seance.type}">
-                                    Séance terminée ✓
-                                </button>
+                                    <button type="button" class="rg-btn rg-btn-primary rg-btn-feedback" style="margin-top:10px;"
+                                        th:attr="data-week=${stat.index + 1}, data-session=${seanceStat.index}, data-session-type=${seance.type}"
+                                        th:onclick="'openFeedbackModal(' + ${numeroSemaine} + ',' + ${seanceStat.index} + ')'">
+                                        Séance terminée ✓
+                                    </button>
                             </div>
                         </div>
                     </div>
@@ -190,7 +191,7 @@
     <div style="background:var(--bg); border-radius:12px; padding:1.5rem; max-width:500px; width:100%; max-height:90vh; overflow-y:auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
         <h3 style="margin-top:0; margin-bottom:1.25rem; color:var(--text); font-size: clamp(1.1rem, 4vw, 1.3rem);">Comment s'est passée votre séance ?</h3>
         
-        <div style="margin-bottom:1.25rem;">
+        <div id="feedbackStandard" style="margin-bottom:1.25rem;">
             <label style="display:block; margin-bottom:0.75rem; font-weight:600; color:var(--text); font-size: 0.95rem;">Ressenti :</label>
             <div style="display:flex; flex-direction:column; gap:0.75rem;">
                 <label style="cursor:pointer; padding:0.9rem 1rem; border:2px solid var(--stroke); border-radius:10px; display:flex; align-items:center; transition: all 0.2s; font-size: 0.9rem;">
@@ -208,7 +209,17 @@
             </div>
         </div>
         
-        <div style="margin-bottom:1.5rem;">
+        <div id="feedbackCustom" style="display:none; margin-bottom:1.25rem;">
+            <div style="display:block; margin-bottom:0.75rem; font-weight:600; color:var(--text); font-size: 1.1rem; text-align:center;">Séance personnalisée terminée</div>
+            <div style="margin-top:1.25rem; display:flex; flex-direction:column; align-items:center; gap:0.75rem;">
+                <label style="cursor:pointer; padding:0.9rem 1rem; border:2px solid #ef4444; border-radius:10px; display:flex; align-items:center; background:rgba(239,68,68,0.05); font-size: 0.98rem;">
+                    <input type="checkbox" id="customHasPain" style="margin-right:0.75rem; min-width: 18px; min-height: 18px;">
+                    <span style="font-weight:600;">⚠️ Douleur signalée (remplace la prochaine séance par 20min EF)</span>
+                </label>
+            </div>
+        </div>
+        
+        <div id="painCheckbox" style="margin-bottom:1.5rem;">
             <label style="cursor:pointer; padding:0.9rem 1rem; border:2px solid var(--stroke); border-radius:10px; display:flex; align-items:center; background:var(--card-bg); font-size: 0.9rem;">
                 <input type="checkbox" id="hasPain" style="margin-right:0.75rem; min-width: 18px; min-height: 18px;">
                 <span style="font-weight:600;">⚠️ Je ressens une douleur</span>
@@ -225,7 +236,102 @@
     </div>
 </div>
 
+<script th:inline="javascript">
+    var raceType = '';
+    try {
+        raceType = /*[[${raceType}]]*/ '';
+    } catch(e) {
+        raceType = document.querySelector('input[name="raceType"]')?.value || '';
+    }
+    window.isCustomProgram = raceType === 'custom';
+</script>
+
 <script th:src="@{/app.js}"></script>
+
+<script>
+(function() {
+    const modal = document.getElementById('feedbackModal');
+    const submitBtn = document.getElementById('submitFeedback');
+    const cancelBtn = document.getElementById('cancelFeedback');
+    
+    const feedbackStandard = document.getElementById('feedbackStandard');
+    const feedbackCustom = document.getElementById('feedbackCustom');
+    const painCheckbox = document.getElementById('painCheckbox');
+    
+    let currentWeek, currentSessionIndex;
+    
+    // Configurer l'affichage selon le type de programme
+    if (window.isCustomProgram) {
+        feedbackStandard.style.display = 'none';
+        painCheckbox.style.display = 'none';
+        feedbackCustom.style.display = 'block';
+    } else {
+        feedbackStandard.style.display = 'block';
+        painCheckbox.style.display = 'block';
+        feedbackCustom.style.display = 'none';
+    }
+    
+    window.openFeedbackModal = function(week, sessionIndex) {
+        currentWeek = week;
+        currentSessionIndex = sessionIndex;
+        modal.style.display = 'flex';
+    };
+    
+    cancelBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+    
+    submitBtn.addEventListener('click', async () => {
+        let hasPain = false;
+        let feeling = 'doable';
+        
+        if (window.isCustomProgram) {
+            hasPain = document.getElementById('customHasPain')?.checked || false;
+        } else {
+            const selectedFeeling = document.querySelector('input[name="feeling"]:checked');
+            feeling = selectedFeeling ? selectedFeeling.value : 'doable';
+            hasPain = document.getElementById('hasPain').checked;
+        }
+        
+        const payload = {
+            week: currentWeek,
+            sessionIndex: currentSessionIndex,
+            feeling: feeling,
+            hasPain: hasPain
+        };
+        
+        try {
+            const response = await fetch('/feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await response.json();
+            
+            if (data.ok) {
+                alert(data.message || 'Feedback enregistré');
+                if (data.updatedWeek && data.updatedSessionIndex !== undefined) {
+                    location.reload();
+                }
+            } else {
+                alert(data.message || 'Erreur lors du feedback');
+            }
+            
+            modal.style.display = 'none';
+        } catch (err) {
+            alert('Erreur réseau: ' + err.message);
+        }
+    });
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+})();
+</script>
+
 </body>
 
 </html>

@@ -221,10 +221,22 @@ function getPourcentageFromAllure(vma, minutesPerKm) {
 }
 
 function updatePaceCards(){
-    document.getElementById('paceEFCard').textContent = document.getElementById('allureEF').value || '—';
-    document.getElementById('paceObjCard').textContent = document.getElementById('allureObjectif').value || '—';
-    document.getElementById('paceSeuilCard').textContent = document.getElementById('allureSeuil').value || '—';
-    document.getElementById('paceVMACard').textContent = document.getElementById('allureVMA').value || '—';
+    // Les IDs pace*Card peuvent ne pas exister selon le template (UI simplifiée).
+    // On protège pour éviter une exception JS qui casse tout le reste de l'éditeur.
+    const setTextIfPresent = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+    };
+    const valueOrDash = (inputId) => {
+        const input = document.getElementById(inputId);
+        if (!input) return '—';
+        const value = input.value;
+        return (value && String(value).trim().length > 0) ? value : '—';
+    };
+    setTextIfPresent('paceEFCard', valueOrDash('allureEF'));
+    setTextIfPresent('paceObjCard', valueOrDash('allureObjectif'));
+    setTextIfPresent('paceSeuilCard', valueOrDash('allureSeuil'));
+    setTextIfPresent('paceVMACard', valueOrDash('allureVMA'));
 }
 
 function calculerAlluresAuto() {

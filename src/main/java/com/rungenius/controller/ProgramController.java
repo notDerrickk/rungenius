@@ -83,6 +83,7 @@ public class ProgramController {
             double distanceKm = programData.getDistance();
             double vma = programData.getVma();
             String raceDate = programData.getRaceDate();
+            String objectifTemps = programData.getObjectifTemps();
             
             ProgrammeCustom programme = new ProgrammeCustom(title, distanceKm);
             
@@ -109,7 +110,25 @@ public class ProgramController {
             }
             
             // Créer un profil basique
-            Profil profil = new Profil("Novice", programData.getNbSessions(), vma, null);
+            Profil profil = new Profil("Personnalisé", programData.getNbSessions(), vma, null);
+            
+            // Sauvegarder le programme pour l'utilisateur connecté
+            User currentUser = userService.getCurrentUser();
+            if (currentUser != null) {
+                LocalDate raceDateParsed = null;
+                if (raceDate != null && !raceDate.isEmpty()) {
+                    try {
+                        raceDateParsed = LocalDate.parse(raceDate);
+                    } catch (Exception e) {
+                        // Ignorer si date invalide
+                    }
+                }
+                
+                TrainingProgram saved = trainingProgramService.saveCustomProgram(
+                    currentUser, programme, profil, objectifTemps, raceDateParsed
+                );
+                session.setAttribute("rg.programId", saved.getId());
+            }
             
             double totalKm = estimerKilometragePrecis(programme, profil);
             String[] allures = profil.getAlluresPrincipales(distanceKm);
@@ -421,6 +440,7 @@ public class ProgramController {
         Profil profil = (Profil) profilObj;
         String raceType = raceTypeObj instanceof String ? (String) raceTypeObj : "";
         double distanceKm = distanceKmObj instanceof Double ? (Double) distanceKmObj : programme.getDistanceKm();
+        boolean isCustomProgram = "custom".equals(raceType);
 
         List<Seance[]> semaines = programme.getSemaines();
         int w = req.week - 1;
@@ -433,7 +453,31 @@ public class ProgramController {
 
         Seance current = semaines.get(w)[i];
 
-        //Déterminer la séance à modifier
+        // Pour les programmes custom : logique simplifiée
+        if (isCustomProgram) {
+            if (req.hasPain) {
+                // Option "Douleur" : remplacer la prochaine séance par 20min EF
+                Location target = findNextGlobal(semaines, w, i);
+                if (target == null) {
+                    resp.ok = true;
+                    resp.message = "Douleur signalée. C'était votre dernière séance.";
+                    return resp;
+                }
+                Seance ef = createSimpleEFReplacement(semaines.get(target.weekIndex)[target.sessionIndex].getNom());
+                semaines.get(target.weekIndex)[target.sessionIndex] = ef;
+                resp.ok = true;
+                resp.message = "Douleur signalée : prochaine séance remplacée par 20min EF";
+                fillResponseWithUpdatedSeance(resp, ef, profil, target);
+                return resp;
+            } else {
+                // Option "Séance bien passée" : rien à faire
+                resp.ok = true;
+                resp.message = "Parfait ! Continuez comme ça !";
+                return resp;
+            }
+        }
+
+        //Déterminer la séance à modifier (programmes classiques)
         Location target;
         if (req.hasPain) {
             target = findNextGlobal(semaines, w, i);

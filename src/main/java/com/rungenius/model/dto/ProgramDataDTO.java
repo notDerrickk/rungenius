@@ -1,6 +1,7 @@
 package com.rungenius.model.dto;
 
 import java.util.List;
+import java.util.Map;
 
 public class ProgramDataDTO {
     private String title;
@@ -10,7 +11,11 @@ public class ProgramDataDTO {
     private int nbSessions;
     private AlluresDTO allures;
     private String raceDate;
+    private String objectifTemps;
     private List<List<SeanceDTO>> weeks;
+    // Envoyé par l'éditeur comme objet (ex: {ef:0.65,seuil:0.85,...}).
+    // Le backend n'en a pas besoin pour générer, mais on le mappe pour éviter une erreur Jackson.
+    private Map<String, Double> _allurePct;
 
     // Getters et Setters
     public String getTitle() { return title; }
@@ -34,8 +39,14 @@ public class ProgramDataDTO {
     public String getRaceDate() { return raceDate; }
     public void setRaceDate(String raceDate) { this.raceDate = raceDate; }
 
+    public String getObjectifTemps() { return objectifTemps; }
+    public void setObjectifTemps(String objectifTemps) { this.objectifTemps = objectifTemps; }
+
     public List<List<SeanceDTO>> getWeeks() { return weeks; }
     public void setWeeks(List<List<SeanceDTO>> weeks) { this.weeks = weeks; }
+
+    public Map<String, Double> get_allurePct() { return _allurePct; }
+    public void set_allurePct(Map<String, Double> _allurePct) { this._allurePct = _allurePct; }
 
     public static class AlluresDTO {
         private String ef;
