@@ -34,4 +34,31 @@
   });
 
   window.RunGeniusTheme = { applyTheme, toggleTheme };
+  // Menu hamburger mobile
+  window.addEventListener("DOMContentLoaded", () => {
+    const hamburger = document.querySelector('.rg-hamburger');
+    const mobileMenu = document.getElementById('rg-mobile-menu');
+    const closeBtn = document.querySelector('.rg-mobile-menu-close');
+    if (hamburger && mobileMenu) {
+      hamburger.addEventListener('click', () => {
+        mobileMenu.setAttribute('aria-hidden', 'false');
+        hamburger.setAttribute('aria-expanded', 'true');
+      });
+    }
+    if (closeBtn && mobileMenu && hamburger) {
+      closeBtn.addEventListener('click', () => {
+        mobileMenu.setAttribute('aria-hidden', 'true');
+        hamburger.setAttribute('aria-expanded', 'false');
+      });
+    }
+    // Fermer le menu mobile si on clique en dehors
+    document.addEventListener('click', (e) => {
+      if (mobileMenu && hamburger && mobileMenu.getAttribute('aria-hidden') === 'false') {
+        if (!mobileMenu.contains(e.target) && !hamburger.contains(e.target)) {
+          mobileMenu.setAttribute('aria-hidden', 'true');
+          hamburger.setAttribute('aria-expanded', 'false');
+        }
+      }
+    });
+  });
 })();

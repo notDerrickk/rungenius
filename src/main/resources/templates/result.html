@@ -13,18 +13,31 @@
 <body>
 <div class="rg-topbar">
     <div class="container py-3">
-            <div class="d-flex align-items-center justify-content-between gap-2">
-                <a class="rg-brand" href="/">
-                    <img src="/logo.png" alt="RunGenius" class="rg-logo">
-                </a>
-            <div class="d-flex align-items-center gap-2">
-                <button class="rg-btn d-none d-sm-inline-flex" type="button" data-theme-toggle aria-pressed="false">Clair</button>
-                <button class="rg-btn d-inline-flex d-sm-none" type="button" data-theme-toggle aria-pressed="false">Clair</button>
+        <div class="d-flex align-items-center justify-content-between gap-2">
+            <a class="rg-brand" href="/">
+                <img src="/logo.png" alt="RunGenius" class="rg-logo">
+            </a>
+            <!-- Menu desktop -->
+            <div class="d-none d-sm-flex align-items-center gap-2 rg-menu-desktop">
+                <button class="rg-btn" type="button" data-theme-toggle aria-pressed="false">Clair</button>
                 <a class="rg-btn" href="/dashboard">Mes programmes</a>
                 <a class="rg-btn" href="/editor">Éditeur</a>
             </div>
+            <!-- Hamburger pour mobile -->
+            <button class="rg-hamburger d-inline-flex d-sm-none" aria-label="Ouvrir le menu" aria-controls="rg-mobile-menu" aria-expanded="false">
+                <span class="rg-hamburger-bar"></span>
+                <span class="rg-hamburger-bar"></span>
+                <span class="rg-hamburger-bar"></span>
+            </button>
         </div>
     </div>
+    <!-- Menu mobile masqué par défaut -->
+    <nav id="rg-mobile-menu" class="rg-mobile-menu" aria-hidden="true">
+        <button class="rg-mobile-menu-close" aria-label="Fermer le menu">&times;</button>
+        <a class="rg-btn" href="/dashboard">Mes programmes</a>
+        <a class="rg-btn" href="/editor">Éditeur</a>
+        <button class="rg-btn" type="button" data-theme-toggle aria-pressed="false" title="Basculer thème">Clair</button>
+    </nav>
 </div>
 
 <div class="container my-4" style="padding-bottom: 90px;">
@@ -310,8 +323,13 @@
             const data = await response.json();
             
             if (data.ok) {
-                alert(data.message || 'Feedback enregistré');
+                markSessionAsCompleted(currentWeek, currentSessionIndex);
+                
+                alert(data.message || 'Feedback enregistré - Séance marquée comme terminée !');
                 if (data.updatedWeek && data.updatedSessionIndex !== undefined) {
+                    location.reload();
+                } else {
+                    modal.style.display = 'none';
                     location.reload();
                 }
             } else {
@@ -329,6 +347,54 @@
             modal.style.display = 'none';
         }
     });
+    
+    // Fonctions pour gérer les séances terminées
+    function getStorageKey() {
+        const raceTypeEl = document.querySelector('input[name="raceType"]');
+        const niveauEl = document.querySelector('input[name="niveau"]');
+        const raceType = raceTypeEl ? raceTypeEl.value : 'unknown';
+        const niveau = niveauEl ? niveauEl.value : 'unknown';
+        return `rg-completed-sessions-${raceType}-${niveau}`;
+    }
+    
+    function markSessionAsCompleted(week, sessionIndex) {
+        const key = getStorageKey();
+        let completed = JSON.parse(sessionStorage.getItem(key) || '{}');
+        if (!completed[week]) completed[week] = [];
+        if (!completed[week].includes(sessionIndex)) {
+            completed[week].push(sessionIndex);
+        }
+        sessionStorage.setItem(key, JSON.stringify(completed));
+        
+        applyCompletedStyle(week, sessionIndex);
+    }
+    
+    function applyCompletedStyle(week, sessionIndex) {
+        const sessionEl = document.querySelector(`.rg-session[data-week="${week}"][data-session="${sessionIndex}"]`);
+        if (sessionEl) {
+            sessionEl.classList.add('rg-session-completed');
+            const feedbackBtn = sessionEl.querySelector('.rg-btn-feedback');
+            if (feedbackBtn) {
+                feedbackBtn.textContent = 'Effectuée ✓';
+                feedbackBtn.style.opacity = '0.7';
+            }
+        }
+    }
+    
+    function loadCompletedSessions() {
+        const key = getStorageKey();
+        const completed = JSON.parse(sessionStorage.getItem(key) || '{}');
+        
+        for (const week in completed) {
+            for (const sessionIndex of completed[week]) {
+                applyCompletedStyle(parseInt(week), sessionIndex);
+            }
+        }
+    }
+    
+    window.markSessionAsCompleted = markSessionAsCompleted;
+    
+    loadCompletedSessions();
 })();
 </script>
 

@@ -19,19 +19,27 @@
                 <a class="rg-brand" href="/">
                     <img src="/logo.png" alt="RunGenius" class="rg-logo">
                 </a>
-
-                <div class="d-flex align-items-center gap-2">
-                    <button class="rg-btn d-none d-sm-inline-flex" type="button" data-theme-toggle aria-pressed="false" title="Basculer thème">
-                        Clair
-                    </button>
-                    <button class="rg-btn d-inline-flex d-sm-none" type="button" data-theme-toggle aria-pressed="false" title="Basculer thème">
-                        Clair
-                    </button>
+                <!-- Menu desktop -->
+                <div class="d-none d-sm-flex align-items-center gap-2 rg-menu-desktop">
+                    <button class="rg-btn" type="button" data-theme-toggle aria-pressed="false" title="Basculer thème">Clair</button>
                     <a class="rg-btn" href="/">Accueil</a>
                     <a class="rg-btn" href="/login">Connexion</a>
                 </div>
+                <!-- Hamburger pour mobile -->
+                <button class="rg-hamburger d-inline-flex d-sm-none" aria-label="Ouvrir le menu" aria-controls="rg-mobile-menu" aria-expanded="false">
+                    <span class="rg-hamburger-bar"></span>
+                    <span class="rg-hamburger-bar"></span>
+                    <span class="rg-hamburger-bar"></span>
+                </button>
             </div>
         </div>
+        <!-- Menu mobile masqué par défaut -->
+        <nav id="rg-mobile-menu" class="rg-mobile-menu" aria-hidden="true">
+            <button class="rg-mobile-menu-close" aria-label="Fermer le menu">&times;</button>
+            <a class="rg-btn" href="/">Accueil</a>
+            <a class="rg-btn" href="/login">Connexion</a>
+            <button class="rg-btn" type="button" data-theme-toggle aria-pressed="false" title="Basculer thème">Clair</button>
+        </nav>
     </div>
 
     <div class="register-container">
