@@ -43,9 +43,7 @@ public class ProgrammeStorageDTO {
         private String typeBanque;
     }
     
-    /**
-     * Crée un DTO à partir d'un Programme et d'un Profil
-     */
+
     public static ProgrammeStorageDTO from(com.rungenius.model.RunGeniusGenerator.Programme programme, Profil profil) {
         ProgrammeStorageDTO dto = new ProgrammeStorageDTO();
         dto.setTitle(programme.getTitle());
@@ -80,11 +78,8 @@ public class ProgrammeStorageDTO {
         return dto;
     }
     
-    /**
-     * Reconstruit un Programme et un Profil à partir du DTO
-     */
+
     public Object[] toProgrammeAndProfil() {
-        // Reconstruire le Profil
         Profil profil = new Profil(
             this.niveau,
             this.sortiesParSemaine,
