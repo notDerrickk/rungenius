@@ -146,7 +146,7 @@
                                     <button type="submit" class="rg-btn">Exporter .fit</button>
                                 </form>
                                 
-                                <button type="button" class="rg-btn rg-edit-session-btn" style="margin-top:10px; width:100%;"
+                                <button type="button" class="rg-btn rg-edit-session-btn" style="margin-top:10px;"
                                     th:attr="data-week=${stat.index + 1}, 
                                              data-session=${seanceStat.index},
                                              data-nom=${seance.nom},
@@ -433,6 +433,20 @@
         const sessionEl = document.querySelector(`.rg-session[data-week="${week}"][data-session="${sessionIndex}"]`);
         if (sessionEl) {
             sessionEl.classList.add('rg-session-completed');
+
+            const rightCol = sessionEl.querySelector('.text-end');
+            if (rightCol) {
+                if (!rightCol.querySelector('.rg-session-completed-badge')) {
+                    const badge = document.createElement('span');
+                    badge.className = 'rg-session-completed-badge';
+                    badge.textContent = '✓';
+
+                    const chip = rightCol.querySelector('.rg-chip');
+                    if (chip) rightCol.insertBefore(badge, chip);
+                    else rightCol.prepend(badge);
+                }
+            }
+
             const feedbackBtn = sessionEl.querySelector('.rg-btn-feedback');
             if (feedbackBtn) {
                 feedbackBtn.textContent = 'Effectuée ✓';

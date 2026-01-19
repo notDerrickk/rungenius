@@ -469,21 +469,31 @@ a { color: inherit; }
   opacity: 0.85;
 }
 .rg-session.rg-session-completed::after{
-  content: '✓';
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 2rem;
+  display: none;
+}
+
+.rg-session .rg-session-completed-badge{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
   height: 2rem;
   background: linear-gradient(135deg, var(--ef), color-mix(in srgb, var(--ef) 88%, #000));
   color: white;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-weight: 900;
-  font-size: 1.2rem;
+  font-size: 1.05rem;
+  margin-right: 0.6rem;
   box-shadow: 0 4px 12px color-mix(in srgb, var(--ef) 35%, transparent);
+}
+
+@media (max-width: 768px) {
+  .rg-session .rg-session-completed-badge{
+    min-width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+  }
 }
 .rg-session-title{
   margin: 0;
