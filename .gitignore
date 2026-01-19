@@ -16,5 +16,5 @@ Thumbs.db
 .vscode/
 .idea/
 .jar/
-.pdf/
-.env/
+*.pdf
+*.env

@@ -383,4 +383,8 @@ public class Seance {
     public void setTypeBanque(String typeBanque) {
         this.typeBanque = typeBanque;
     }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
 }

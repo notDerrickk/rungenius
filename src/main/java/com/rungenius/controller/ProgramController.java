@@ -1,8 +1,10 @@
 package com.rungenius.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rungenius.model.RunGeniusGenerator.*;
 import com.rungenius.model.RunGeniusEditor.ProgrammeCustom;
 import com.rungenius.model.dto.ProgramDataDTO;
+import com.rungenius.model.dto.ProgrammeStorageDTO;
 import com.rungenius.service.FitExportService;
 import com.rungenius.service.TrainingProgramService;
 import com.rungenius.model.entity.TrainingProgram;
@@ -46,6 +48,9 @@ public class ProgramController {
     
     @Autowired
     private TrainingProgramService trainingProgramService;
+    
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -456,7 +461,7 @@ public class ProgramController {
         // Pour les programmes custom : logique simplifiée
         if (isCustomProgram) {
             if (req.hasPain) {
-                // Option "Douleur" : remplacer la prochaine séance par 20min EF
+                // remplacer la prochaine séance par 20min EF
                 Location target = findNextGlobal(semaines, w, i);
                 if (target == null) {
                     resp.ok = true;
@@ -468,6 +473,10 @@ public class ProgramController {
                 resp.ok = true;
                 resp.message = "Douleur signalée : prochaine séance remplacée par 20min EF";
                 fillResponseWithUpdatedSeance(resp, ef, profil, target);
+                
+                // Sauvegarder dans la database
+                saveProgramToDatabase(programme, profil, session);
+                
                 return resp;
             } else {
                 // Option "Séance bien passée" : rien à faire
@@ -504,6 +513,9 @@ public class ProgramController {
             resp.ok = true;
             resp.message = "Douleur signalée : prochaine séance remplacée par EF";
             fillResponseWithUpdatedSeance(resp, ef, profil, target);
+            
+            saveProgramToDatabase(programme, profil, session);
+            
             return resp;
         }
 
@@ -546,7 +558,112 @@ public class ProgramController {
         resp.ok = true;
         resp.message = "Programme ajusté";
         fillResponseWithUpdatedSeance(resp, next, profil, target);
+        
+        saveProgramToDatabase(programme, profil, session);
+        
         return resp;
+    }
+    
+    public static class EditSeanceRequest {
+        public int week;
+        public int sessionIndex;
+        public String nom;
+        public String type;
+        public int echauffement;
+        public String corps;
+        public int cooldown;
+        public double allurePct;
+    }
+    
+    public static class EditSeanceResponse {
+        public boolean ok;
+        public String message;
+        public String newNom;
+        public String newType;
+        public String newCorps;
+        public Integer newEchauffement;
+        public Integer newCooldown;
+        public Double newAllurePct;
+        public String newAllureLabel;
+        public Double newDistanceKm;
+    }
+    
+    @PostMapping("/seance/update")
+    @ResponseBody
+    public EditSeanceResponse updateSeance(@RequestBody EditSeanceRequest req, HttpSession session) {
+        EditSeanceResponse resp = new EditSeanceResponse();
+        
+        Object pObj = session.getAttribute(SESSION_PROGRAMME);
+        Object profilObj = session.getAttribute(SESSION_PROFIL);
+        
+        if (!(pObj instanceof Programme) || !(profilObj instanceof Profil)) {
+            resp.ok = false;
+            resp.message = "Programme non trouvé (session expirée)";
+            return resp;
+        }
+        
+        Programme programme = (Programme) pObj;
+        Profil profil = (Profil) profilObj;
+        
+        List<Seance[]> semaines = programme.getSemaines();
+        int w = req.week - 1;
+        int i = req.sessionIndex;
+        
+        if (w < 0 || w >= semaines.size() || i < 0 || i >= semaines.get(w).length) {
+            resp.ok = false;
+            resp.message = "Index séance invalide";
+            return resp;
+        }
+        
+        // Mettre à jour la séance
+        Seance seance = semaines.get(w)[i];
+        seance.setNom(req.nom);
+        seance.setType(req.type);
+        seance.setDureeEchauffement(req.echauffement);
+        seance.setCorps(req.corps);
+        seance.setDureeCooldown(req.cooldown);
+        seance.setPourcentageVMA(req.allurePct);
+        
+        saveProgramToDatabase(programme, profil, session);
+        
+        // Retourner les nouvelles données
+        resp.ok = true;
+        resp.message = "Séance mise à jour avec succès";
+        resp.newNom = seance.getNom();
+        resp.newType = seance.getType();
+        resp.newCorps = seance.getCorps();
+        resp.newEchauffement = seance.getDureeEchauffement();
+        resp.newCooldown = seance.getDureeCooldown();
+        resp.newAllurePct = seance.getPourcentageVMA();
+        resp.newAllureLabel = profil.getAllureFormatee(seance.getPourcentageVMA());
+        resp.newDistanceKm = seance.getDistanceKm(profil);
+        
+        return resp;
+    }
+    
+    private void saveProgramToDatabase(Programme programme, Profil profil, HttpSession session) {
+        try {
+            Object programIdObj = session.getAttribute("rg.programId");
+            if (programIdObj instanceof Long) {
+                Long programId = (Long) programIdObj;
+                User currentUser = userService.getCurrentUser();
+                
+                if (currentUser != null) {
+                    Optional<TrainingProgram> optTp = trainingProgramService.getUserProgram(programId, currentUser);
+                    if (optTp.isPresent()) {
+                        TrainingProgram tp = optTp.get();
+                        
+                        ProgrammeStorageDTO dto = ProgrammeStorageDTO.from(programme, profil);
+                        String json = objectMapper.writeValueAsString(dto);
+                        tp.setProgramData(json);
+                        
+                        trainingProgramService.updateProgram(tp);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static class Location {

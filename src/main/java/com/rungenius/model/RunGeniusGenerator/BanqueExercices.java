@@ -379,22 +379,22 @@ public class BanqueExercices {
         // TEMPO (80-85% VMA)
         List<CorpsDeSeance> tempo = new ArrayList<>();
         // Niveau 1 - Facile
-        tempo.add(new CorpsDeSeance("30min en tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.80, 1));
-        tempo.add(new CorpsDeSeance("2 x 3km récup 5min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.82, 1));
-        tempo.add(new CorpsDeSeance("3 x 2km récup 3min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.82, 1));
-        tempo.add(new CorpsDeSeance("35min en tempo continu", CorpsDeSeance.AllureType.PERCENT_VMA,0.80, 1));
+        tempo.add(new CorpsDeSeance("20min en tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.75, 1));
+        tempo.add(new CorpsDeSeance("2 x 3km récup 5min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.77, 1));
+        tempo.add(new CorpsDeSeance("3 x 2km récup 3min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.77, 1));
+        tempo.add(new CorpsDeSeance("25min en tempo continu", CorpsDeSeance.AllureType.PERCENT_VMA,0.75, 1));
         // Niveau 2 - Moyen
-        tempo.add(new CorpsDeSeance("40min en tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.82, 2));
-        tempo.add(new CorpsDeSeance("2 x 4km récup 5min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.83, 2));
-        tempo.add(new CorpsDeSeance("3 x 3km récup 3min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.83, 2));
-        tempo.add(new CorpsDeSeance("50min en tempo continu", CorpsDeSeance.AllureType.PERCENT_VMA,0.82, 2));
-        tempo.add(new CorpsDeSeance("4 x 2km récup 2min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.84, 2));
+        tempo.add(new CorpsDeSeance("30min en tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.76, 2));
+        tempo.add(new CorpsDeSeance("2 x 4km récup 5min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.77, 2));
+        tempo.add(new CorpsDeSeance("3 x 3km récup 3min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.77, 2));
+        tempo.add(new CorpsDeSeance("40min en tempo continu", CorpsDeSeance.AllureType.PERCENT_VMA,0.76, 2));
+        tempo.add(new CorpsDeSeance("4 x 2km récup 2min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.77, 2));
         // Niveau 3 - Difficile
-        tempo.add(new CorpsDeSeance("60min en tempo continu", CorpsDeSeance.AllureType.PERCENT_VMA,0.82, 3));
-        tempo.add(new CorpsDeSeance("3 x 4km récup 4min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.83, 3));
-        tempo.add(new CorpsDeSeance("2 x 5km récup 5min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.84, 3));
-        tempo.add(new CorpsDeSeance("5 x 2km récup 2min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.84, 3));
-        tempo.add(new CorpsDeSeance("70min en tempo progressif", CorpsDeSeance.AllureType.PERCENT_VMA,0.82, 3));
+        tempo.add(new CorpsDeSeance("50min en tempo continu", CorpsDeSeance.AllureType.PERCENT_VMA,0.78, 3));
+        tempo.add(new CorpsDeSeance("3 x 4km récup 4min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.78, 3));
+        tempo.add(new CorpsDeSeance("2 x 5km récup 5min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.78, 3));
+        tempo.add(new CorpsDeSeance("5 x 2km récup 2min (EF) tempo", CorpsDeSeance.AllureType.PERCENT_VMA,0.78, 3));
+        tempo.add(new CorpsDeSeance("60min en tempo progressif", CorpsDeSeance.AllureType.PERCENT_VMA,0.78, 3));
         exercicesParType.put("Tempo", tempo);
         
 

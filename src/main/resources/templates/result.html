@@ -146,6 +146,19 @@
                                     <button type="submit" class="rg-btn">Exporter .fit</button>
                                 </form>
                                 
+                                <button type="button" class="rg-btn rg-edit-session-btn" style="margin-top:10px; width:100%;"
+                                    th:attr="data-week=${stat.index + 1}, 
+                                             data-session=${seanceStat.index},
+                                             data-nom=${seance.nom},
+                                             data-type=${seance.type},
+                                             data-echauffement=${seance.dureeEchauffement},
+                                             data-corps=${seance.corps},
+                                             data-cooldown=${seance.dureeCooldown},
+                                             data-allurepct=${seance.pourcentageVMA}"
+                                    onclick="openEditSeanceModal(this)">
+                                    Éditer
+                                </button>
+                                
                                     <button type="button" class="rg-btn rg-btn-primary rg-btn-feedback" style="margin-top:10px;"
                                         th:attr="data-week=${stat.index + 1}, data-session=${seanceStat.index}, data-session-type=${seance.type}"
                                         th:onclick="'openFeedbackModal(' + ${numeroSemaine} + ',' + ${seanceStat.index} + ')'">
@@ -197,6 +210,53 @@
 
             <a href="/" class="rg-btn">Nouveau</a>
         </div>
+    </div>
+</div>
+
+<!-- Modal d'édition de séance -->
+<div id="editSeanceModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; justify-content:center; align-items:center; padding: 1rem;">
+    <div style="background:var(--bg); border-radius:12px; padding:1.5rem; max-width:600px; width:100%; max-height:90vh; overflow-y:auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+        <h3 style="margin-top:0; margin-bottom:1.25rem; color:var(--text); font-size: clamp(1.1rem, 4vw, 1.3rem);">Éditer la séance</h3>
+        
+        <form id="editSeanceForm" style="display:flex; flex-direction:column; gap:1rem;">
+            <div>
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Nom de la séance :</label>
+                <input type="text" id="editNom" name="nom" class="form-control" required>
+            </div>
+            
+            <div>
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Type :</label>
+                <input type="text" id="editType" name="type" class="form-control" required>
+            </div>
+            
+            <div>
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Échauffement (min) :</label>
+                <input type="number" id="editEchauffement" name="echauffement" class="form-control" min="0" required>
+            </div>
+            
+            <div>
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Corps de séance :</label>
+                <input type="text" id="editCorps" name="corps" class="form-control" required>
+            </div>
+            
+            <div>
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Retour au calme (min) :</label>
+                <input type="number" id="editCooldown" name="cooldown" class="form-control" min="0" required>
+            </div>
+            
+            <div>
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text);">Allure (% VMA) :</label>
+                <input type="number" id="editAllurePct" name="allurePct" class="form-control" min="0" max="2" step="0.01" required>
+            </div>
+            
+            <input type="hidden" id="editWeek" name="week">
+            <input type="hidden" id="editSessionIndex" name="sessionIndex">
+            
+            <div style="display:flex; gap:0.75rem; margin-top:1rem;">
+                <button type="submit" class="rg-btn rg-btn-primary" style="flex:1;">Sauvegarder</button>
+                <button type="button" id="cancelEditSeance" class="rg-btn" style="flex:1;">Annuler</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -395,6 +455,81 @@
     window.markSessionAsCompleted = markSessionAsCompleted;
     
     loadCompletedSessions();
+})();
+
+// Gestion de l'édition de séance
+(function() {
+    const editModal = document.getElementById('editSeanceModal');
+    const editForm = document.getElementById('editSeanceForm');
+    const cancelEditBtn = document.getElementById('cancelEditSeance');
+    
+    window.openEditSeanceModal = function(button) {
+        const week = button.getAttribute('data-week');
+        const sessionIndex = button.getAttribute('data-session');
+        const nom = button.getAttribute('data-nom');
+        const type = button.getAttribute('data-type');
+        const echauffement = button.getAttribute('data-echauffement');
+        const corps = button.getAttribute('data-corps');
+        const cooldown = button.getAttribute('data-cooldown');
+        const allurePct = button.getAttribute('data-allurepct');
+        
+        document.getElementById('editWeek').value = week;
+        document.getElementById('editSessionIndex').value = sessionIndex;
+        document.getElementById('editNom').value = nom;
+        document.getElementById('editType').value = type;
+        document.getElementById('editEchauffement').value = echauffement;
+        document.getElementById('editCorps').value = corps;
+        document.getElementById('editCooldown').value = cooldown;
+        document.getElementById('editAllurePct').value = allurePct;
+        
+        editModal.style.display = 'flex';
+    };
+    
+    cancelEditBtn.addEventListener('click', () => {
+        editModal.style.display = 'none';
+    });
+    
+    editModal.addEventListener('click', (e) => {
+        if (e.target === editModal) {
+            editModal.style.display = 'none';
+        }
+    });
+    
+    editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(editForm);
+        const payload = {
+            week: parseInt(formData.get('week')),
+            sessionIndex: parseInt(formData.get('sessionIndex')),
+            nom: formData.get('nom'),
+            type: formData.get('type'),
+            echauffement: parseInt(formData.get('echauffement')),
+            corps: formData.get('corps'),
+            cooldown: parseInt(formData.get('cooldown')),
+            allurePct: parseFloat(formData.get('allurePct'))
+        };
+        
+        try {
+            const response = await fetch('/seance/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await response.json();
+            
+            if (data.ok) {
+                alert(data.message || 'Séance mise à jour avec succès !');
+                editModal.style.display = 'none';
+                location.reload();
+            } else {
+                alert(data.message || 'Erreur lors de la mise à jour');
+            }
+        } catch (err) {
+            alert('Erreur réseau: ' + err.message);
+        }
+    });
 })();
 </script>
 

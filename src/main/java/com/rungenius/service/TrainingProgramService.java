@@ -87,6 +87,11 @@ public class TrainingProgramService {
         return trainingProgramRepository.findByIdAndUser(id, user);
     }
     
+    @Transactional
+    public TrainingProgram updateProgram(TrainingProgram trainingProgram) {
+        return trainingProgramRepository.save(trainingProgram);
+    }
+    
     public Map<String, Object> loadProgramData(TrainingProgram tp) {
         try {
             Map<String, Object> data = new HashMap<>();
