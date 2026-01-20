@@ -101,10 +101,17 @@
                         Créé le <span th:text="${#temporals.format(program.createdAt, 'dd/MM/yyyy à HH:mm')}">14/01/2026 à 10:30</span>
                     </div>
                     
-                    <div style="margin-top: 1rem;">
-                        <a th:href="@{/programme/{id}(id=${program.id})}" class="rg-btn rg-btn-primary" style="width: 100%; text-align: center;">
+                    <div style="display:flex; gap:0.5rem; margin-top: 1rem;">
+                        <a th:href="@{/programme/{id}(id=${program.id})}" class="rg-btn rg-btn-primary" style="flex:1; text-align: center;">
                             Ouvrir le programme
                         </a>
+
+                        <form th:action="@{/programme/{id}/delete(id=${program.id})}" method="post" style="flex:0 0 120px;">
+                            <button type="submit" class="rg-btn" style="width:100%; background:#ef4444; color:white; border:none;" 
+                                    onclick="return confirm('Supprimer ce programme ? Cette action est irréversible.');">
+                                Supprimer
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

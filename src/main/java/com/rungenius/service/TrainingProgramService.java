@@ -91,6 +91,20 @@ public class TrainingProgramService {
     public TrainingProgram updateProgram(TrainingProgram trainingProgram) {
         return trainingProgramRepository.save(trainingProgram);
     }
+
+    @Transactional
+    public boolean deleteProgramForUser(User user, Long programId) {
+        try {
+            Optional<TrainingProgram> opt = trainingProgramRepository.findByIdAndUser(programId, user);
+            if (opt.isPresent()) {
+                trainingProgramRepository.delete(opt.get());
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la suppression du programme", e);
+        }
+    }
     
     public Map<String, Object> loadProgramData(TrainingProgram tp) {
         try {

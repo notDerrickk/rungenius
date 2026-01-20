@@ -406,6 +406,21 @@ public class ProgramController {
         return "redirect:/programme";
     }
 
+    @PostMapping("/programme/{id}/delete")
+    public String deleteProgram(@PathVariable Long id) {
+        User currentUser = userService.getCurrentUser();
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            boolean ok = trainingProgramService.deleteProgramForUser(currentUser, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/dashboard";
+    }
+
     public static class FeedbackRequest {
         public String feeling; 
         public boolean hasPain;
