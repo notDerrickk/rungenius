@@ -70,6 +70,84 @@ public class Prepa5k implements Programme {
             Seance[] semaine = genererSemaine(i + 1, semaineRepos);
             semaines.add(semaine);
         }
+        // Appliquer l'affûtage sur les 2 dernières semaines
+        appliquerAffutage();
+    }
+
+    private void appliquerAffutage() {
+        if (nbSemaines < 2) return;
+        
+        // S-2 : réduire de 25%
+        int indexS2 = nbSemaines - 2;
+        if (indexS2 >= 0 && indexS2 < semaines.size()) {
+            reduireVolumeSemaine(indexS2, 0.75);
+        }
+        
+        // S-1 : réduire de 50%
+        int indexS1 = nbSemaines - 1;
+        if (indexS1 >= 0 && indexS1 < semaines.size()) {
+            reduireVolumeSemaine(indexS1, 0.50);
+        }
+    }
+
+    private void reduireVolumeSemaine(int indexSemaine, double facteur) {
+        Seance[] semaine = semaines.get(indexSemaine);
+        for (int i = 0; i < semaine.length; i++) {
+            semaine[i] = reduireVolumeSeance(semaine[i], facteur);
+        }
+    }
+
+    private Seance reduireVolumeSeance(Seance seance, double facteur) {
+        String corps = seance.getCorps();
+        if (corps == null) return seance;
+        
+        String corpsReduit = reduireVolumeCorps(corps, facteur);
+        
+        return new Seance(
+            seance.getNom(),
+            seance.getType(),
+            seance.getDureeEchauffement(),
+            corpsReduit,
+            seance.getDureeCooldown(),
+            seance.getPourcentageVMA(),
+            seance.getDifficulte(),
+            seance.getTypeBanque()
+        );
+    }
+
+    private String reduireVolumeCorps(String corps, double facteur) {
+        Pattern pReps = Pattern.compile("(\\d+)\\s*[x×]");
+        Matcher m = pReps.matcher(corps);
+        if (m.find()) {
+            try {
+                int reps = Integer.parseInt(m.group(1));
+                int newReps = Math.max(1, (int)(reps * facteur));
+                return corps.replaceFirst("\\d+\\s*[x×]", newReps + " x");
+            } catch (Exception ignored) {}
+        }
+        
+        Pattern pKm = Pattern.compile("(\\d+(?:[.,]\\d+)?)\\s*km");
+        Matcher m2 = pKm.matcher(corps);
+        if (m2.find()) {
+            try {
+                double km = Double.parseDouble(m2.group(1).replace(',', '.'));
+                double newKm = km * facteur;
+                String formatted = formatKmValue(newKm);
+                return corps.replaceFirst("\\d+(?:[.,]\\d+)?\\s*km", formatted + "km");
+            } catch (Exception ignored) {}
+        }
+        
+        Pattern pMin = Pattern.compile("(\\d+)\\s*min");
+        Matcher m3 = pMin.matcher(corps);
+        if (m3.find()) {
+            try {
+                int min = Integer.parseInt(m3.group(1));
+                int newMin = Math.max(10, (int)(min * facteur));
+                return corps.replaceFirst("\\d+\\s*min", newMin + "min");
+            } catch (Exception ignored) {}
+        }
+        
+        return corps;
     }
 
     private Seance[] genererSemaine(int numeroSemaine, boolean repos) {
