@@ -10,7 +10,7 @@
     <link rel="stylesheet" th:href="@{/app.css}">
 </head>
 
-<body>
+<body th:attr="data-program-id=${programId}">
 <div class="rg-topbar">
     <div class="container py-3">
         <div class="d-flex align-items-center justify-content-between gap-2">
@@ -317,6 +317,22 @@
         raceType = document.querySelector('input[name="raceType"]')?.value || '';
     }
     window.isCustomProgram = raceType === 'custom';
+
+    var programId = null;
+    try {
+        programId = /*[[${programId}]]*/ null;
+    } catch(e) {
+        var attrVal = document.body ? document.body.getAttribute('data-program-id') : null;
+        if (attrVal) {
+            var parsed = parseInt(attrVal, 10);
+            if (!Number.isNaN(parsed)) {
+                programId = parsed;
+            }
+        }
+    }
+    if (programId !== undefined && programId !== null && programId !== '') {
+        window.rgProgramId = programId;
+    }
 </script>
 
 <script th:src="@{/app.js}"></script>
@@ -410,11 +426,21 @@
     
     // Fonctions pour gérer les séances terminées
     function getStorageKey() {
+        if (window.rgProgramId !== undefined && window.rgProgramId !== null && window.rgProgramId !== '') {
+            return `rg-completed-sessions-${window.rgProgramId}`;
+        }
+
         const raceTypeEl = document.querySelector('input[name="raceType"]');
         const niveauEl = document.querySelector('input[name="niveau"]');
+        const vmaEl = document.querySelector('input[name="vma"]');
+        const objectifEl = document.querySelector('input[name="objectif"]');
+
         const raceType = raceTypeEl ? raceTypeEl.value : 'unknown';
         const niveau = niveauEl ? niveauEl.value : 'unknown';
-        return `rg-completed-sessions-${raceType}-${niveau}`;
+        const vma = vmaEl ? vmaEl.value : 'na';
+        const objectif = objectifEl ? objectifEl.value : 'na';
+
+        return `rg-completed-sessions-${raceType}-${niveau}-${vma}-${objectif}`;
     }
     
     function markSessionAsCompleted(week, sessionIndex) {

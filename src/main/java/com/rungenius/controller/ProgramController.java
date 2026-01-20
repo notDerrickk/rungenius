@@ -170,6 +170,7 @@ public class ProgramController {
             model.addAttribute("distanceLabel", distanceLabel);
             model.addAttribute("weekTotals", weekTotals);
             model.addAttribute("seanceNumbers", seanceNumbers);
+            model.addAttribute("programId", session.getAttribute("rg.programId"));
 
             // Stocker en session pour rendre le feedback utilisable
             session.setAttribute(SESSION_PROGRAMME, programme);
@@ -323,6 +324,7 @@ public class ProgramController {
         Object objectifObj = session.getAttribute(SESSION_OBJECTIF);
         Object raceDateObj = session.getAttribute(SESSION_RACEDATE);
         Object distanceKmObj = session.getAttribute(SESSION_DISTANCEKM);
+        Object programIdObj = session.getAttribute("rg.programId");
 
         if (!(pObj instanceof Programme) || !(profilObj instanceof Profil) || !(raceTypeObj instanceof String)) {
             return "redirect:/";
@@ -370,6 +372,7 @@ public class ProgramController {
         model.addAttribute("distanceLabel", distanceLabel);
         model.addAttribute("weekTotals", weekTotals);
         model.addAttribute("seanceNumbers", seanceNumbers);
+        model.addAttribute("programId", (programIdObj instanceof Long) ? (Long) programIdObj : null);
 
         return "result";
     }
