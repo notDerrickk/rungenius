@@ -84,6 +84,37 @@
                     <div class="value" th:text="${allures[3]}">—</div>
                 </div>
             </div>
+
+            <!-- Barre d'action (version mobile) -->
+            <div class="rg-actionbar rg-actionbar-inline d-sm-none" style="position: static; border-top: 1px solid var(--stroke); margin-top: 0.75rem;">
+                <div class="container">
+                    <div class="wrap">
+                        <button class="rg-btn rg-btn-primary" onclick="window.print()">Imprimer / PDF</button>
+
+                        <form action="/download" method="post" target="_blank" style="display:inline">
+                            <input type="hidden" name="raceType" th:value="${raceType}">
+                            <input type="hidden" name="niveau" th:value="${profil.niveau}">
+                            <input type="hidden" name="sorties" th:value="${profil.sortiesParSemaine}">
+                            <input type="hidden" name="vma" th:value="${profil.vma}">
+                            <input type="hidden" name="objectif" th:value="${objectif}">
+                            <input type="hidden" name="raceDate" th:value="${raceDate}">
+                            <button type="submit" class="rg-btn">Télécharger HTML</button>
+                        </form>
+
+                        <form action="/fit/export-all" method="post" style="display:inline">
+                            <input type="hidden" name="raceType" th:value="${raceType}">
+                            <input type="hidden" name="niveau" th:value="${profil.niveau}">
+                            <input type="hidden" name="sorties" th:value="${profil.sortiesParSemaine}">
+                            <input type="hidden" name="vma" th:value="${profil.vma}">
+                            <input type="hidden" name="objectif" th:value="${objectif}">
+                            <input type="hidden" name="raceDate" th:value="${raceDate}">
+                            <button type="submit" class="rg-btn">Exporter pour montre Garmin</button>
+                        </form>
+
+                        <a href="/" class="rg-btn">Nouveau</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -183,7 +214,8 @@
     </div>
 </div>
 
-<div class="rg-actionbar">
+<!-- Barre d'action fixe pour desktop/tablette, inline pour mobile ajoutée plus haut -->
+<div class="rg-actionbar rg-actionbar-fixed">
     <div class="container">
         <div class="wrap">
             <button class="rg-btn rg-btn-primary" onclick="window.print()">Imprimer / PDF</button>
@@ -212,6 +244,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Modal d'édition de séance -->
 <div id="editSeanceModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; justify-content:center; align-items:center; padding: 1rem;">

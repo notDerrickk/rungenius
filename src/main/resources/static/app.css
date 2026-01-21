@@ -528,7 +528,7 @@ a { color: inherit; }
   }
 }
 
-.rg-actionbar{
+.rg-actionbar-fixed{
   position: fixed;
   left:0; right:0; bottom:0;
   z-index: 120;
@@ -539,7 +539,12 @@ a { color: inherit; }
   overflow-x: auto;
   overflow-y: hidden;
 }
-.rg-actionbar .wrap{
+
+/* Inline version (used on mobile) - hidden by default */
+.rg-actionbar-inline{
+  display: none;
+}
+.rg-actionbar-fixed .wrap, .rg-actionbar-inline .wrap{
   padding: .9rem 0;
   display:flex;
   gap: .6rem;
@@ -566,7 +571,7 @@ a { color: inherit; }
 .rg-card, .rg-week, .rg-session { margin-left: auto; margin-right: auto; }
 
 @media (max-width: 576px) {
-  .rg-actionbar .wrap {
+  .rg-actionbar-fixed .wrap {
     padding: 0.75rem 0;
     gap: 0.5rem;
     justify-content: center;
@@ -589,6 +594,10 @@ a { color: inherit; }
   .rg-actionbar .wrap form button {
     width: 100%;
   }
+
+  /* Sur mobile, masquer la barre fixe en bas et afficher la version inline sous la zone d'allures */
+  .rg-actionbar-fixed { display: none !important; }
+  .rg-actionbar-inline { display: block !important; position: static; background: transparent; border-top: 1px solid transparent; }
 }
 
 img{ max-width: 100%; height: auto; display: block; }
