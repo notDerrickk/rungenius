@@ -144,8 +144,8 @@
                 <div class="rg-week-body">
                     <div th:each="seance, seanceStat : ${semaine}" class="rg-session"
                          th:attr="data-week=${stat.index + 1}, data-session=${seanceStat.index}">
-                        <div class="d-flex justify-content-between align-items-start gap-2">
-                            <div style="flex:1;">
+                        <div class="rg-session-layout">
+                            <div class="rg-session-content">
                                 <p class="rg-session-title">
                                     Séance <span th:text="${seanceNumbers[stat.index][seanceStat.index]}"></span> —
                                     <span class="rg-session-nom" th:text="${seance.nom}"></span>
@@ -161,40 +161,46 @@
                                 </div>
                             </div>
 
-                            <div class="text-end">
-                                <div class="rg-chip rg-allure-chip" th:text="${profil.getAllureFormatee(seance.pourcentageVMA)}">—</div>
-                                  <div class="mt-2 rg-session-distance" style="font-weight:900;"
-                                      th:text="${#numbers.formatDecimal(seance.getDistanceKm(profil), 1, 2)} + ' km'">—</div>
+                            <div class="rg-session-right">
+                                <div class="rg-session-meta">
+                                    <div class="rg-chip rg-allure-chip" th:text="${profil.getAllureFormatee(seance.pourcentageVMA)}">—</div>
+                                    <div class="rg-session-distance" style="font-weight:900;"
+                                        th:text="${#numbers.formatDecimal(seance.getDistanceKm(profil), 1, 2)} + ' km'">—</div>
+                                </div>
 
-                                <form th:action="@{/fit/export-single}" method="post" style="margin-top:10px">
-                                    <input type="hidden" name="nom" th:value="${seance.nom}">
-                                    <input type="hidden" class="rg-hidden-type" name="type" th:value="${seance.type}">
-                                    <input type="hidden" class="rg-hidden-echauffement" name="echauffement" th:value="${seance.dureeEchauffement}">
-                                    <input type="hidden" class="rg-hidden-corps" name="corps" th:value="${seance.corps}">
-                                    <input type="hidden" class="rg-hidden-cooldown" name="cooldown" th:value="${seance.dureeCooldown}">
-                                    <input type="hidden" class="rg-hidden-allurePct" name="allurePct" th:value="${seance.pourcentageVMA}">
-                                    <input type="hidden" name="vma" th:value="${profil.vma}">
-                                    <button type="submit" class="rg-btn">Exporter .fit</button>
-                                </form>
-                                
-                                <button type="button" class="rg-btn rg-edit-session-btn" style="margin-top:10px;"
-                                    th:attr="data-week=${stat.index + 1}, 
-                                             data-session=${seanceStat.index},
-                                             data-nom=${seance.nom},
-                                             data-type=${seance.type},
-                                             data-echauffement=${seance.dureeEchauffement},
-                                             data-corps=${seance.corps},
-                                             data-cooldown=${seance.dureeCooldown},
-                                             data-allurepct=${seance.pourcentageVMA}"
-                                    onclick="openEditSeanceModal(this)">
-                                    Éditer
-                                </button>
-                                
-                                    <button type="button" class="rg-btn rg-btn-primary rg-btn-feedback" style="margin-top:10px;"
+                                <div class="rg-session-actions">
+                                    <div class="rg-session-actions-row">
+                                        <form th:action="@{/fit/export-single}" method="post">
+                                            <input type="hidden" name="nom" th:value="${seance.nom}">
+                                            <input type="hidden" class="rg-hidden-type" name="type" th:value="${seance.type}">
+                                            <input type="hidden" class="rg-hidden-echauffement" name="echauffement" th:value="${seance.dureeEchauffement}">
+                                            <input type="hidden" class="rg-hidden-corps" name="corps" th:value="${seance.corps}">
+                                            <input type="hidden" class="rg-hidden-cooldown" name="cooldown" th:value="${seance.dureeCooldown}">
+                                            <input type="hidden" class="rg-hidden-allurePct" name="allurePct" th:value="${seance.pourcentageVMA}">
+                                            <input type="hidden" name="vma" th:value="${profil.vma}">
+                                            <button type="submit" class="rg-btn rg-btn-export">Exporter .fit</button>
+                                        </form>
+                                        
+                                        <button type="button" class="rg-btn rg-edit-session-btn"
+                                            th:attr="data-week=${stat.index + 1}, 
+                                                     data-session=${seanceStat.index},
+                                                     data-nom=${seance.nom},
+                                                     data-type=${seance.type},
+                                                     data-echauffement=${seance.dureeEchauffement},
+                                                     data-corps=${seance.corps},
+                                                     data-cooldown=${seance.dureeCooldown},
+                                                     data-allurepct=${seance.pourcentageVMA}"
+                                            onclick="openEditSeanceModal(this)">
+                                            Éditer
+                                        </button>
+                                    </div>
+                                    
+                                    <button type="button" class="rg-btn rg-btn-primary rg-btn-feedback"
                                         th:attr="data-week=${stat.index + 1}, data-session=${seanceStat.index}, data-session-type=${seance.type}"
                                         th:onclick="'openFeedbackModal(' + ${numeroSemaine} + ',' + ${seanceStat.index} + ')'">
                                         Séance terminée ✓
                                     </button>
+                                </div>
                             </div>
                         </div>
                     </div>

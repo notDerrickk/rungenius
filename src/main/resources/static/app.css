@@ -398,6 +398,114 @@ a { color: inherit; }
   text-align: center;
 }
 .rg-pace-card .label{ font-size: .88rem; opacity: .92; font-weight: 800; }
+
+/* Disposition des séances - Desktop (par défaut) */
+.rg-session-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.rg-session-content {
+  flex: 1;
+}
+
+.rg-session-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rg-session-meta {
+  text-align: right;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.rg-session-meta .rg-allure-chip {
+  margin-bottom: 0;
+}
+
+.rg-session-meta .rg-session-distance {
+  margin-top: 0 !important;
+}
+
+.rg-session-actions {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rg-session-actions-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rg-session-actions form {
+  margin: 0;
+}
+
+.rg-btn-export,
+.rg-edit-session-btn,
+.rg-btn-feedback {
+  white-space: nowrap;
+}
+
+/* Disposition mobile */
+@media (max-width: 767px) {
+  .rg-session-layout {
+    flex-direction: column;
+    gap: 1rem;
+  }
+    
+  .rg-session-content {
+    width: 100%;
+  }
+    
+  .rg-session-right {
+    width: 100%;
+  }
+    
+  .rg-session-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    text-align: left;
+  }
+    
+  .rg-session-actions {
+    width: 100%;
+    text-align: left;
+  }
+    
+  .rg-session-actions-row {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+    
+  .rg-session-actions-row form,
+  .rg-session-actions-row button {
+    flex: 1;
+  }
+    
+  .rg-btn-export,
+  .rg-edit-session-btn {
+    width: 100%;
+  }
+    
+  .rg-btn-feedback {
+    width: 100%;
+  }
+}
+
 .rg-pace-card .value{ font-size: 1.35rem; font-weight: 950; margin-top: .45rem; }
 
 @media (max-width: 576px) {
