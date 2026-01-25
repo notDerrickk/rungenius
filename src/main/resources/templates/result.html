@@ -440,19 +440,16 @@
             if (data.ok) {
                 markSessionAsCompleted(currentWeek, currentSessionIndex);
                 
-                alert(data.message || 'Feedback enregistré - Séance marquée comme terminée !');
-                modal.style.display = 'none';
-                
                 if (window.rgProgramId !== undefined && window.rgProgramId !== null && window.rgProgramId !== '') {
                     window.location.href = '/programme/' + window.rgProgramId;
                 } else {
+                    alert(data.message || 'Feedback enregistré - Séance marquée comme terminée !');
                     modal.style.display = 'none';
                 }
             } else {
                 alert(data.message || 'Erreur lors du feedback');
+                modal.style.display = 'none';
             }
-            
-            modal.style.display = 'none';
         } catch (err) {
             alert('Erreur réseau: ' + err.message);
         }
@@ -485,12 +482,12 @@
     
     function markSessionAsCompleted(week, sessionIndex) {
         const key = getStorageKey();
-        let completed = JSON.parse(sessionStorage.getItem(key) || '{}');
+        let completed = JSON.parse(localStorage.getItem(key) || '{}');
         if (!completed[week]) completed[week] = [];
         if (!completed[week].includes(sessionIndex)) {
             completed[week].push(sessionIndex);
         }
-        sessionStorage.setItem(key, JSON.stringify(completed));
+        localStorage.setItem(key, JSON.stringify(completed));
         
         applyCompletedStyle(week, sessionIndex);
     }
@@ -523,7 +520,7 @@
     
     function loadCompletedSessions() {
         const key = getStorageKey();
-        const completed = JSON.parse(sessionStorage.getItem(key) || '{}');
+        const completed = JSON.parse(localStorage.getItem(key) || '{}');
         
         for (const week in completed) {
             for (const sessionIndex of completed[week]) {
@@ -600,13 +597,12 @@
             const data = await response.json();
             
             if (data.ok) {
-                alert(data.message || 'Séance mise à jour avec succès !');
                 editModal.style.display = 'none';
                 
                 if (window.rgProgramId !== undefined && window.rgProgramId !== null && window.rgProgramId !== '') {
                     window.location.href = '/programme/' + window.rgProgramId;
                 } else {
-                    editModal.style.display = 'none';
+                    alert(data.message || 'Séance mise à jour avec succès !');
                 }
             } else {
                 alert(data.message || 'Erreur lors de la mise à jour');
