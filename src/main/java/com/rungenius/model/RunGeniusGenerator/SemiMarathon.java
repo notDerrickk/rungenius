@@ -2,6 +2,7 @@ package com.rungenius.model.RunGeniusGenerator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +16,7 @@ public class SemiMarathon implements Programme {
     // suivi pour AS (ordre + cumul km)
     private int asSequenceIndex = 0;
     private int fractionneCycleIndex = 0;
+    private Random random = new Random();
 
     // Séquences prédéfinies pour AS selon niveau
     private List<CorpsDeSeance> asSequenceDebutant;
@@ -82,11 +84,21 @@ public class SemiMarathon implements Programme {
     private void genererSemaines() {
         for (int i = 0; i < nbSemaines; i++) {
             boolean semaineRepos = ((i + 1) % 5 == 0);
-            Seance[] semaine = genererSemaine(i + 1, semaineRepos);
+            int zone = determinerZone(i + 1);
+            Seance[] semaine = genererSemaine(i + 1, semaineRepos, zone);
             semaines.add(semaine);
         }
         // Appliquer l'affûtage sur les 2 dernières semaines
         appliquerAffutage();
+    }
+
+
+    private int determinerZone(int numeroSemaine) {
+        int deuxCinquiemes = (nbSemaines * 2) / 5;
+        if (numeroSemaine <= deuxCinquiemes) {
+            return 1;
+        }
+        return 2;
     }
 
     private void appliquerAffutage() {
@@ -165,14 +177,14 @@ public class SemiMarathon implements Programme {
         return corps;
     }
 
-    private Seance[] genererSemaine(int numeroSemaine, boolean repos) {
+    private Seance[] genererSemaine(int numeroSemaine, boolean repos, int zone) {
         int nbSeances = profil.getSortiesParSemaine();
         if (repos) {
             return genererSemaineRepos(numeroSemaine, nbSeances);
         } else {
             Seance[] semaine = new Seance[nbSeances];
             for (int i = 0; i < nbSeances; i++) {
-                semaine[i] = creerSeanceNormale(i, numeroSemaine);
+                semaine[i] = creerSeanceNormale(i, numeroSemaine, zone);
             }
             return semaine;
         }
@@ -207,10 +219,14 @@ public class SemiMarathon implements Programme {
         String niveau = profil.getNiveau();
         int difficulte = niveauToDifficulte(niveau);
 
-        CorpsDeSeance ex = banque.getExerciceAleatoire("Tempo", difficulte);
+        // Garder l'ordre des exercices (pas de random)
+        CorpsDeSeance ex = getNextExerciceEnOrdre("Tempo", difficulte);
 
         if (ex == null) {
-            ex = banque.getExerciceAleatoire("Tempo");
+            List<CorpsDeSeance> tempoList = banque.getExercicesParDifficulte("Tempo", difficulte);
+            if (tempoList != null && !tempoList.isEmpty()) {
+                ex = tempoList.get(0);
+            }
         }
 
         double pSeuil;
@@ -253,7 +269,7 @@ public class SemiMarathon implements Programme {
         return useLong;
     }
 
-    private Seance creerSeanceNormale(int jour, int semaine) {
+    private Seance creerSeanceNormale(int jour, int semaine, int zone) {
         String niveau = profil.getNiveau();
 
         double[] p = profil.getPourcentagesPrincipales(targetDistanceKm);
@@ -266,7 +282,10 @@ public class SemiMarathon implements Programme {
             String typeFrac = useLong ? "Fractionné Long" : "Fractionné Court";
             String nom = "Séance 1 - " + typeFrac;
             int difficulteFrac = choisirDifficulteFractionne(niveau);
-            CorpsDeSeance ex = banque.getExerciceAleatoire(typeFrac, difficulteFrac);
+            
+            // Garder l'ordre des exercices (pas de random)
+            CorpsDeSeance ex = getNextExerciceEnOrdre(typeFrac, difficulteFrac);
+            
             String corps;
             double pourcentageFractionne;
             if (ex != null) {
@@ -295,7 +314,18 @@ public class SemiMarathon implements Programme {
                 }
             }
             
-            // Séance Allure Spécifique (pour < 3 sorties ou séances impaires)
+            // Gestion de l'allure spécifique selon la zone
+            boolean inclureAS = doitInclureAllureSpecifique(semaine, zone);
+            
+            if (!inclureAS) {
+                // Semaine sans AS: EF avec progression
+                double km = computeEnduranceKmForWeekAndZone(semaine, zone);
+                String nom = "Séance " + (jour + 1) + " - Endurance fondamentale";
+                String corps = formatKmValue(km) + "km en endurance fondamentale";
+                return new Seance(nom, "Endurance Fondamentale", 5, corps, 5, pEF);
+            }
+            
+            // Séance Allure Spécifique
             String distanceLabel = (Math.abs(targetDistanceKm - Math.round(targetDistanceKm)) < 1e-6)
                     ? String.format(Locale.US, "%d", (int)Math.round(targetDistanceKm))
                     : String.format(Locale.US, "%.1f", targetDistanceKm);
@@ -322,6 +352,17 @@ public class SemiMarathon implements Programme {
 
             Integer diff = (exAS != null) ? exAS.getDifficulte() : null;
             return new Seance(nom, "Allure Spécifique", 15, corpsAS, 10, pourcentageAS, diff, getTypeAllureSpecifique());
+        }
+    }
+
+
+    private boolean doitInclureAllureSpecifique(int semaine, int zone) {
+        if (zone == 1) {
+            // Zone 1: jamais d'AS, uniquement EF avec progression
+            return false;
+        } else {
+            // Zone 2: AS toutes les semaines
+            return true;
         }
     }
 
@@ -383,6 +424,48 @@ public class SemiMarathon implements Programme {
         if (semaine > 6) add++;
         if (semaine > 12) add++;
         return 5.0 + Math.min(add, 2);
+    }
+    
+
+    private double computeEnduranceKmForWeekAndZone(int semaine, int zone) {
+        String niveau = profil.getNiveau();
+        if (niveau == null) niveau = "";
+        String niv = niveau.toLowerCase();
+        
+        // Distance de base selon niveau
+        double baseKm;
+        boolean isDebutant = false;
+        if (niv.contains("début") || niv.contains("debut") || niv.contains("debutant")) {
+            baseKm = 5.0;
+            isDebutant = true;
+        } else if (niv.contains("avanc") || niv.contains("expert")) {
+            baseKm = 15.0;
+        } else {
+            // Moyen/intermédiaire
+            baseKm = 10.0;
+        }
+        
+        if (zone == 1) {
+            int nbSemainesAvant = 0;
+            for (int s = 1; s < semaine; s++) {
+                if (determinerZone(s) == 1) {
+                    nbSemainesAvant++;
+                }
+            }
+            
+            double km;
+            if (isDebutant) {
+                // Débutant: +1km par semaine
+                km = baseKm + nbSemainesAvant;
+            } else {
+                // Moyen/Expert: +10% par semaine
+                km = baseKm * Math.pow(1.10, nbSemainesAvant);
+            }
+            return Math.min(km, 20.0); // Max 20km
+        } else {
+            // Zone 2: distance stable ou légère progression
+            return Math.min(baseKm + 2.0, 20.0);
+        }
     }
 
     private String formatKmValue(double km) {
@@ -454,5 +537,21 @@ public class SemiMarathon implements Programme {
 
     public String getTitle() {
         return title;
+    }
+    
+    private CorpsDeSeance getNextExerciceEnOrdre(String type, int difficulte) {
+        List<CorpsDeSeance> exercices = banque.getExercicesParDifficulte(type, difficulte);
+        if (exercices == null || exercices.isEmpty()) {
+            return null;
+        }
+        
+        // Sélection aléatoire pour les fractionnés
+        if (type.equals("Fractionné Court") || type.equals("Fractionné Long")) {
+            int index = random.nextInt(exercices.size());
+            return exercices.get(index);
+        } else {
+            // Pour les autres types (Tempo), prendre le premier
+            return exercices.get(0);
+        }
     }
 }
