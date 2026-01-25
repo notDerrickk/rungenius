@@ -441,11 +441,12 @@
                 markSessionAsCompleted(currentWeek, currentSessionIndex);
                 
                 alert(data.message || 'Feedback enregistré - Séance marquée comme terminée !');
-                if (data.updatedWeek && data.updatedSessionIndex !== undefined) {
-                    location.reload();
+                modal.style.display = 'none';
+                
+                if (window.rgProgramId !== undefined && window.rgProgramId !== null && window.rgProgramId !== '') {
+                    window.location.href = '/programme/' + window.rgProgramId;
                 } else {
                     modal.style.display = 'none';
-                    location.reload();
                 }
             } else {
                 alert(data.message || 'Erreur lors du feedback');
@@ -601,7 +602,12 @@
             if (data.ok) {
                 alert(data.message || 'Séance mise à jour avec succès !');
                 editModal.style.display = 'none';
-                location.reload();
+                
+                if (window.rgProgramId !== undefined && window.rgProgramId !== null && window.rgProgramId !== '') {
+                    window.location.href = '/programme/' + window.rgProgramId;
+                } else {
+                    editModal.style.display = 'none';
+                }
             } else {
                 alert(data.message || 'Erreur lors de la mise à jour');
             }
